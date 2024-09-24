@@ -1,0 +1,10 @@
+<div class="nv-keret">
+    @if (napok && napok.length > 0) {
+    @for (nap of napok; track nap) {
+    <div class="nv-nap"
+         (click)="napKivalasztasa(nap)"
+         [ngClass]="{'kivalasztott': nap.getTime() == kivalasztottNap.getTime()}">
+        {{napNev(nap)}}</div>
+    }
+    }
+</div>

@@ -1,0 +1,67 @@
+@if(!ujListaModalLathato && !listaModositasModalLathato) {
+<div class="lista-keret">
+    <div class="lista-fej">
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  label="Új lista rögzítése"
+                  (onClick)="ujListaFelvetelInditas()"></p-button>
+    </div>
+    @for (lista of listaLista(); track lista.azon) {
+    <div class="lista-tetel">
+        <div class="lt-kiv">
+            @if (kivalasztottListaE(lista.azon)) {
+            <span class="pi pi-caret-right"></span>
+            }
+        </div>
+        <div class="lt-inter"
+             (click)="listaKivalasztas(lista)">
+            {{lista.kezdonapForras}} - {{lista.vegeNapForras}}
+            @if (listabanVanMentendotetel(lista)) {
+            &nbsp;(<span class="pi pi-save"></span>)
+            }
+        </div>
+        <div class="lt-mod">
+            <p-button icon="pi pi-pencil"
+                      [rounded]="true"
+                      [text]="true"
+                      (onClick)="listaModositas(lista)"></p-button>
+        </div>
+        <div class="lt-torles">
+            <p-button icon="pi pi-trash"
+                      severity="danger"
+                      [rounded]="true"
+                      [text]="true"
+                      (onClick)="listaTorles($event, lista)">
+                <p-confirmPopup #confirmPopupRef>
+                    <ng-template pTemplate="headless"
+                                 let-message>
+                        <div class="torles-confirm-keret">
+                            <div class="tc-uzi">
+                                <span>{{ message.message }}</span>
+                            </div>
+                            <div class="tc-gombok">
+                                <p-button icon="pi pi-trash"
+                                          severity="danger"
+                                          [rounded]="true"
+                                          [text]="true"
+                                          (onClick)="accept()"></p-button>
+                                <p-button icon="pi pi pi-undo"
+                                          [rounded]="true"
+                                          [text]="true"
+                                          (onClick)="reject()"></p-button>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-confirmPopup>
+            </p-button>
+        </div>
+    </div>
+    }
+</div>
+}
+@if(ujListaModalLathato) {
+    <app-akcio-lista-felvetel (kesz)="ujFelvetelKesz($event)"></app-akcio-lista-felvetel>
+}
+@if(listaModositasModalLathato) {
+    <app-akcio-lista-felvetel [szerkesztendoListaAzon]="modositandoListaAzon" [listaIntervallumDatumok]="modositandoIntervallumDatumok" (kesz)="modositasKesz($event)"></app-akcio-lista-felvetel>
+}

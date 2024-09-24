@@ -1,0 +1,74 @@
+.lista-keret {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .lista-fej {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 50px;
+        margin-top: 20px;
+    }
+
+    .lista-tetel {
+
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        padding: 5px 10px;
+        background-color: #ffe9e9;
+        padding: 10px;
+        background-clip: content-box;
+        border-radius: 20px;
+
+        .lt-kiv {
+            width: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lt-inter {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .lt-mod {
+
+        }
+
+        .lt-torles {
+
+        }
+    }
+}
+
+
+.torles-confirm-keret {
+
+    max-width: 200px;
+    text-align: center;
+
+    .tc-uzi {
+        font-weight: 700;
+        padding: 10px 5px 0 5px;
+    }
+
+    .tc-gombok {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+}

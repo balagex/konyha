@@ -1,0 +1,44 @@
+<div class="login-wrapper">
+    <div class="login-panel">
+        <div class="fej">
+            Konyhai kisokos
+            <!-- <div class="fej-bal"><em>&lt;A</em></div>
+            <div class="fej-kozep">Akciók</div>
+            <div class="fej-jobb"><em>B&gt;</em></div> -->
+        </div> 
+        <div class="login-mezo cimke">
+            <span>Felhasználó név</span>
+        </div>
+        <div class="login-mezo">
+            <input class="username"
+                   autocapitalize="off"
+                   id="username"
+                   type="text"
+                   tabindex="1"
+                   [(ngModel)]="loginname" />
+        </div>
+        <div class="login-mezo cimke">
+            <span>Jelszó</span>
+        </div>
+        <div class="login-mezo">
+            <input class="password"
+                   id="password"
+                   type="password"
+                   tabindex="2"
+                   [(ngModel)]="password"
+                   (keypress)="keypress($event)" />
+        </div>
+        <div class="login-mezo gomb">
+            <button id="login-button"
+                    class="bejelentkezes"
+                    (click)="loginHandler()"
+                    tabindex="3"
+                    [ngClass]="{'disabled': !(loginname && password) || loading}">
+                BEJELENTKEZÉS
+            </button>
+        </div>
+        <div class="login-hiba">
+            <div class="hiba" *ngIf="loginError">Hiba történt a bejelentkezés során! Próbáld újra...</div>
+        </div>
+    </div>
+</div>

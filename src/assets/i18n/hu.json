@@ -1,0 +1,38 @@
+{
+    
+    "primeng": {
+        "startsWith": "Ezzel kezdődik",
+        "contains": "Tartalmazza",
+        "notContains": "Nem tartalmazza",
+        "endsWith": "Ezzel végződik",
+        "equals": "Egyenlő",
+        "notEquals": "Nem egyenlő",
+        "noFilter": "No Filter",
+        "lt": "Kisebb mint",
+        "lte": "Kisebb vagy egyenlő",
+        "gt": "Nagyobb mint",
+        "gte": "Nagyobb vagy egyenlő",
+        "is": "Is",
+        "isNot": "Is not",
+        "before": "Előtte",
+        "after": "Utána",
+        "clear": "Törlés",
+        "apply": "Alkalmaz",
+        "matchAll": "Teljes egy",
+        "matchAny": "Bármelyik",
+        "addRule": "+ Szabály",
+        "removeRule": "- Szabály",
+        "accept": "Igen",
+        "reject": "Nem",
+        "choose": "Választás",
+        "upload": "Feltöltés",
+        "cancel": "Mégse",
+        "dayNames": ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat"],
+        "dayNamesShort": ["Vas", "Hét", "Kedd", "Sze", "Csüt", "Pén", "Szo"],
+        "dayNamesMin": ["V","H","K","Sz","Cs","P","Szo"],
+        "monthNames": ["Január","Február","Március","Április","Május","Június","Július","Augusztus","Szeptember","Október","November","December"],
+        "monthNamesShort": ["Jan", "Feb", "Márc", "Ápr", "Máj", "Jún","Júl", "Aug", "Szep", "Okt", "Nov", "Dec"],
+        "today": "Ma/Most",
+        "weekHeader": "Hét"
+    }
+}

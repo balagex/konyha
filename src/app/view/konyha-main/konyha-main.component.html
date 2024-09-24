@@ -1,0 +1,16 @@
+<p>konyha-main works!</p>
+@if (testImgUrl) {
+    <img src="{{testImgUrl}}" height="300px" width="530px"/> 
+}
+
+<div class="kepfeltoltes">
+    <input type="file"
+    id="file"
+    #userPhoto
+    (change)="onFileSelected($event)"
+    name="image"
+    accept="image/png, image/jpg, image/jpeg"
+    autocomplete="off"
+    />
+   </div>
+

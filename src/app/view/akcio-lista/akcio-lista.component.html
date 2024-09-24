@@ -1,0 +1,131 @@
+@if (kivalasztottLista()) {
+<div class="al-keret">
+    <div class="al-szuro">
+        @for (bolt of boltok; track bolt.order) {
+        <div class="szuro-bolt"
+             [ngClass]="{'aktiv': boltSzuro().length > 0 && ezKijeloltBolt(bolt), 'halvany': boltSzuro().length > 0 && !ezKijeloltBolt(bolt)}"
+             (click)="boltSzuroKlikk(bolt)">
+            <img [src]="bolt.image">
+        </div>
+        }
+        <!-- <p *ngFor="let bolt of boltok | keyvalue">
+            {{ bolt.key }} - {{ bolt.value}}
+        </p> -->
+    </div>
+    <div class="al-kereso">
+        <div class="kereso-gomb">
+            <p-button [loading]="loading"
+                      size="small"
+                      [label]="keresoGombSzoveg()"
+                      (onClick)="rotalas()"></p-button>
+        </div>
+        <div class="kereso-szoveg">
+            <input type="text"
+                   pInputText
+                   [ngModel]="szuroSzoveg()"
+                   (ngModelChange)="szuroSzoveg.set($event)" />
+        </div>
+        <div class="kereso-torlo">
+            <p-button icon="pi pi-filter-slash"
+                      severity="danger"
+                      [rounded]="true"
+                      (onClick)="szuroTorles()"
+                      [ngClass]="{'rejtett': boltSzuro().length == 0 && szuroSzoveg().length == 0}"></p-button>
+        </div>
+    </div>
+    <div class="al-torzs">
+        @for (boltkey of kivalasztottListaTetelei().keys(); track boltkey) {
+        <div class="torzs-bolt">
+            <div class="bolt-fej">
+                {{boltkey}}
+            </div>
+            <div class="bolt-torzs">
+                @for (intervallumkey of kivalasztottListaTetelei().get(boltkey).keys(); track intervallumkey) {
+                <div class="intervallum-blokk">
+                    <div class="intervallum-fej">
+                        {{kivalasztottListaTetelei().get(boltkey).get(intervallumkey)[0].kezdoNapNevRov}} -
+                        {{kivalasztottListaTetelei().get(boltkey).get(intervallumkey)[0].vegeNapNevRov}}</div>
+                    <div class="intervallum-torzs">
+                        @for (tetel of kivalasztottListaTetelei().get(boltkey).get(intervallumkey); track tetel) {
+                        <div class="tetel-sor"
+                             [ngClass]="{'kivalasztott-sor': tetel.azon == kivalasztottTetel()?.azon}">
+                            <div class="tetel-info"
+                                 [ngClass]="{'kiemelt-sor': tetel.kiemeltE, 'mobil-info': mobilE, 'nagyi': nagyiMod()}"
+                                 (click)="tetelKijeloles(tetel)">
+                                @if (tetel.mentendo) {<span class="pi pi-save tetel-mentendo"></span>}
+                                {{tetel.nev}}
+                                @if (tetel.kiemeltE) {<span class="tetel-kiemelt"> !!!</span>}
+                                @if (tetel.megjegyzes) {<span class="tetel-megjegyzes"> ({{tetel.megjegyzes}})</span>}
+                            </div>
+                            <div class="tetel-gombok">
+                                @if (!mobilE) {
+                                <!-- <div class="tetel-mod"
+                                     (click)="tetelModositas(tetel)">
+                                    <span class="pi pi-pencil"></span>
+                                </div> -->
+                                <div class="tetel-torles"
+                                     (click)="tetelTorles($event, tetel)">
+                                    <span class="pi pi-trash"></span>
+                                    <p-confirmPopup #confirmPopupRef>
+                                        <ng-template pTemplate="headless"
+                                                     let-message>
+                                            <div class="torles-confirm-keret">
+                                                <div class="tc-uzi">
+                                                    <span>{{ message.message }}</span>
+                                                </div>
+                                                <div class="tc-gombok">
+                                                    <p-button icon="pi pi-trash"
+                                                              severity="danger"
+                                                              [rounded]="true"
+                                                              [text]="true"
+                                                              (onClick)="accept()"></p-button>
+                                                    <p-button icon="pi pi pi-undo"
+                                                              [rounded]="true"
+                                                              [text]="true"
+                                                              (onClick)="reject()"></p-button>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </p-confirmPopup>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                        <!-- @for (item of [].constructor(50); track $index) {
+                        <div class="tetel-sor">{{$index}}</div>
+                        } -->
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+        @empty {
+        <div class="ures-lista">
+            <div class="ures-uzi">
+                Az adott intervallumhoz nem került még egy akciós tétel sem rögzítésrem, vagy a szűrés szerint nincs
+                megjeleníthető tétel.
+            </div>
+        </div>
+        }
+    </div>
+</div>
+}
+@else {
+@if (!ujListaModalLathato) {
+<div class="nincs-lista-keret">
+    <div class="nincs-lista-uzi">Az adott dátumhoz mégnem került lista rögzítésre.
+    </div>
+    <div class="nincs-lista-uj">
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  label="Új lista rögzítése"
+                  (onClick)="ujListaFelvetelInditas()"></p-button>
+    </div>
+</div>
+}
+@else {
+<app-akcio-lista-felvetel (kesz)="ujFelvetelKesz($event)"></app-akcio-lista-felvetel>
+}
+}

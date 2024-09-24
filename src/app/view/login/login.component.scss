@@ -1,0 +1,179 @@
+@import "../../app-colors.scss";
+
+.login-wrapper {
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url(../../../assets/pizza.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    .login-panel {
+        z-index: 2;
+        display: flex;
+        height: 60%;
+        width: 50%;
+        max-width: 460px;
+        // margin          : auto;
+        // background-color   : $fornax-blue;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        min-width: 260px;
+        min-height: 560px;
+        position: relative;
+
+        .login-mezo {
+            width: 200px;
+            display: block;
+        }
+
+        .gomb {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .fej {
+            width: 100%;
+            // display: flex;
+            // flex-direction: row;
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 30px;
+            font-weight: 600;
+            // background-color: $ak-kek;
+            background: linear-gradient(45deg, #f7883a, #39ee35);
+            opacity: 0.9;
+            padding: 20px 20px;
+            // padding: 20px 0 !important;
+
+            .fej-bal {
+                width: 20%;
+                height: 100%;
+                font-size: 30px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: left;
+                padding-left: 15px;
+            }
+
+            .fej-kozep {
+                text-align: center;
+                width: 60%;
+                height: 100%;
+                padding: 20px 20px;
+                font-size: 30px;
+                font-weight: 600;
+            }
+
+            .fej-jobb {
+                width: 20%;
+                height: 100%;
+                font-size: 30px;
+                font-weight: 600;
+                text-align: right;
+                justify-content: right;
+                display: flex;
+                align-items: center;
+                padding-right: 15px;
+            }
+        }
+
+        .cimke {
+            color: white;
+            font-weight: 700;
+
+            span {
+                // background-color: $ak-piros;
+                background-color: #2c7920;
+                padding: 3px 10px;
+                border-radius: 5px;
+            }
+        }
+
+        .username,
+        .password {
+            width: 200px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .bejelentkezes {
+            display: inline-block;
+            text-align: center;
+            padding: 10px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            color: #ffffff;
+            background: #5f0164;
+            border: 1px solid $emu-extra-dark-blue;
+            font-size: 15px;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+            border-radius: 5px;
+
+            &.disabled {
+                opacity: 0.5;
+            }
+        }
+
+        .login-hiba {
+            width: 200px;
+            margin-top: 20px;
+            min-height: 90px;
+
+            .hiba {
+                color: $ak-piros;
+                background-color: aliceblue;
+                margin-top: 20px;
+                text-align: center;
+                font-weight: 700;
+                border-radius: 10px;
+                padding: 5px;
+                background-color: aliceblue;
+                animation-name: error-color;
+                animation-duration: 2s;
+                animation-iteration-count: infinite;
+            }
+        }
+
+    }
+
+}
+
+.login-panel::after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    // background-color: rgba(0, 122, 217, 0.4);
+    // background-color: rgba(241, 38, 73, 0.1);
+    background: linear-gradient(45deg, #f97316, #6de66a);
+    opacity: 0.4;
+    z-index: -1;
+
+}
+
+@keyframes error-color {
+    0% {
+        background-color: aliceblue;
+    }
+
+    50% {
+        background-color: #4285f4;
+    }
+
+    100% {
+        background-color: aliceblue;
+    }
+}

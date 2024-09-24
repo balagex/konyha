@@ -1,0 +1,217 @@
+.tetel-szerk-keret {
+    width: 100%;
+    height: 100%;
+
+    .tsz-fej {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        padding-top: 20px;
+        padding-bottom: 50px;
+        height: 116px;
+    }
+
+    .nlsz-torzs {
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 116px);
+        width: 100%;
+
+        .nlsz-fej {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .nlsz-lista {
+            overflow-y: auto;
+
+            .nlsz-nev-sor {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                max-height: 30px;
+
+                .nlsz-nev-sor-tartalom {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: start;
+                    align-items: center;
+                    width: 300px;
+
+                    .nlsz-nev-nev {
+                        // width: calc(85% - 30px);
+                    }
+    
+                    .nlsz-nev-torles {
+                        width: 30px;
+                        margin-right: 15px;
+                    }
+    
+                }
+
+            }
+        }
+
+        .nlsz-felvetel {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            width: 100%;
+
+            .nlsz-f-input {
+                max-width: 70%;
+                padding-right: 3%;
+            }
+
+            .nlsz-f-gomb {
+                //
+            }
+        }
+}
+
+    .tsz-torzs {
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        min-height: 60%;
+
+        .bolt-valaszto {
+
+            // height: 55px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            // margin-bottom: 30px;
+
+            .bolt-gomb {
+
+                margin: 0 10px;
+                border: 2px white solid;
+                background-color: white;
+                position: relative;
+                box-sizing: border-box;
+                line-height: 0px;
+
+                &.aktiv {
+                    border: 2px red solid;
+                    background-color: red;
+                }
+
+                &.mobil {
+                    margin: 0 3px;
+                }
+
+                &.halvany::after {
+                    content: "";
+                    position: absolute;
+                    top: 0px;
+                    right: 0px;
+                    bottom: 0px;
+                    left: 0px;
+                    background-color: white;
+                    opacity: 0.3;
+                }
+
+                img {
+                    max-height: 50px;
+                }
+            }
+        }
+
+        .tsz-intervallum {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-evenly;
+
+            &.mobil {
+                flex-direction: column;
+                justify-content: center;
+            }
+
+        }
+
+        .tsz-nev {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+
+            .tszn-label {
+                min-width: 160px;
+                width: 20%;
+                text-align: right;
+                padding-right: 20px;
+            }
+
+            .tszn-input {
+                width: 60%;
+
+                .tszni-i {
+                    width: 100%;
+                }
+            }
+        }
+
+        .tsz-megjegyzes {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+
+            .tszm-label {
+                min-width: 160px;
+                width: 20%;
+                text-align: right;
+                padding-right: 20px;
+            }
+
+            .tszm-input {
+                width: 60%;
+
+                .tszmi-i {
+                    width: 100%;
+                }
+            }
+        }
+
+        .tsz-kiemelt {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+
+            .tszk-label {
+                min-width: 160px;
+                width: 20%;
+                text-align: right;
+                padding-right: 20px;
+            }
+
+            .tszk-input {
+                width: 60%;
+            }
+        }
+    }
+
+    .tsz-gombok {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+    }
+}

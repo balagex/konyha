@@ -1,0 +1,46 @@
+<div class="lista-felvetel">
+    <div class="felvetel-form">
+        <div class="ff-fej">
+            @if (szerkesztendoListaAzon && modositandoLista()) {
+                {{modositandoLista().kezdonapForras}} - {{modositandoLista().vegeNapForras}}
+                <br>
+                intervallum módosítása
+            } @else {
+                Intervallum megadása
+            }
+        </div>
+        <div class="ff-intervallum">
+            <p-calendar [(ngModel)]="listaIntervallumDatumok"
+                        selectionMode="range"
+                        [dateFormat]="dateFormat"
+                        [readonlyInput]="true"
+                        [firstDayOfWeek]="1"
+                        [inline]="true"
+                        (onSelect)="hetek($event)"></p-calendar>
+        </div>
+        <div class="ff-hiba">
+            {{listaFelvetelHiba()}}
+        </div>
+    </div>
+    <div class="felvetel-gombok">
+        @if (!szerkesztendoListaAzon) {
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  label="Felvétel"
+                  [disabled]="!intervallumMegadott()"
+                  (onClick)="ujListaFelvetele()"></p-button>
+        }
+        @if (szerkesztendoListaAzon) {
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  label="Módosítás"
+                  [disabled]="!intervallumMegadott() || listaFelvetelHiba()?.length > 0"
+                  (onClick)="listaModositasa()"></p-button>
+        }
+        <p-button icon="pi pi-undo"
+                  severity="warning"
+                  label="Mégse"
+                  (onClick)="listaMegse()"></p-button>
+
+    </div>
+</div>

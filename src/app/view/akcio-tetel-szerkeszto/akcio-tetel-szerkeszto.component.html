@@ -1,0 +1,163 @@
+<div class="tetel-szerk-keret">
+    <div class="tsz-fej">
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  label="Új tétel adatok megadása"
+                  (onClick)="ujTetelFelvetelInditas(kivalasztottBolt ? kivalasztottBolt.id : null,null,null)"
+                  [disabled]="kivalasztottLista() == null"></p-button>
+        @if (vanMentendoTetel()) {
+        <p-button icon="pi pi-save"
+                  severity="warning"
+                  label="Mentendő adatok mentése"
+                  (onClick)="mentendoAdatokMentese()"
+                  [disabled]="kivalasztottLista() == null"></p-button>
+        }
+        @else {
+        <p-button icon="pi pi-pencil"
+                  severity="info"
+                  label="Névlista szerkesztő"
+                  (onClick)="nevlistaSzerkesztendoInditas()"></p-button>
+        }
+    </div>
+    @if (nevlistaSzerkesztendo){
+    <div class="nlsz-torzs">
+        <div class="nlsz-fej">
+            <p-button icon="pi pi-undo"
+                      severity="warning"
+                      label="Megszakítás"
+                      (onClick)="nevlistaSzerkesztesMegszakitasa()">
+            </p-button>
+            <p-button icon="pi pi-save"
+                      severity="success"
+                      label="Lista mentése"
+                      (onClick)="nevlistaMentes()">
+            </p-button>
+        </div>
+        <div class="nlsz-lista">
+            @for (nev of tetelNevekSorban(); track $index) {
+            <div class="nlsz-nev-sor">
+                <div class="nlsz-nev-sor-tartalom">
+                    <div class="nlsz-nev-torles">
+                        <p-button icon="pi pi-trash"
+                                  severity="danger"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="nevDarabTorles($event, nev)">
+                        </p-button>
+                    </div>
+                    <div class="nlsz-nev-nev">
+                        {{nev}}
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="nlsz-felvetel">
+            <div class="nlsz-f-input">
+                <input type="text"
+                       pInputText
+                       [ngModel]="ujNev()"
+                       (ngModelChange)="ujNev.set($event)" />
+            </div>
+            <div class="nlsz-f-gomb">
+                <p-button size="small"
+                          [label]="'Új név'"
+                          (onClick)="nevDarabFelvetel()"
+                          [disabled]=" ujNevMarLetezikE()">
+                </p-button>
+            </div>
+        </div>
+    </div>
+    }
+    @if (kivalasztottTetel() && !nevlistaSzerkesztendo) {
+    <div class="tsz-torzs">
+        @if (mobilE && intervallumStr) {
+        <div class="tsz-lista-intervallum">Lista intervaluma: {{intervallumStr}}</div>
+        }
+        <div class="bolt-valaszto">
+            @for (bolt of boltok; track bolt.order) {
+            <div class="bolt-gomb"
+                 [ngClass]="{'aktiv': kivalasztottBolt?.id == bolt.id, 'halvany': kivalasztottBolt == null || kivalasztottBolt?.id != bolt.id, 'mobil': mobilE}"
+                 (click)="boltValasztas(bolt)">
+                <img [src]="bolt.image">
+            </div>
+            }
+        </div>
+        <div class="tsz-intervallum"
+             [ngClass]="{'mobil': mobilE}">
+            <div class="tszi-start">
+                <app-nap-valaszto [napok]="intervallumDatumok"
+                                  [kivalasztottNap]="tetelStart"
+                                  (napValasztas)="startNapValasztas($event)"></app-nap-valaszto>
+            </div>
+            <div class="tszi-jel">
+                @if (mobilE) {
+                <span class="pi pi-arrow-down"></span>
+                }
+                @else {
+                <span class="pi pi-arrow-right"></span>
+                }
+            </div>
+            <div class="tszi-end">
+                <app-nap-valaszto [napok]="intervallumDatumok"
+                                  [kivalasztottNap]="tetelEnd"
+                                  (napValasztas)="endNapValasztas($event)"></app-nap-valaszto>
+            </div>
+        </div>
+        <div class="tsz-nev">
+            <div class="tszn-label">Név:</div>
+            <div class="tszn-input">
+                @if (ujTetel) {
+                <p-autoComplete [(ngModel)]="tetelNev"
+                                [suggestions]="szurtNevDarabok"
+                                (completeMethod)="nevSzukites($event)"
+                                class="tszni-i"></p-autoComplete>
+                }
+                @else {
+                <input type="text"
+                       pInputText
+                       class="tszni-i"
+                       [(ngModel)]="tetelNev" />
+                }
+            </div>
+        </div>
+        <div class="tsz-megjegyzes">
+            <div class="tszm-label">Megjegyzés:</div>
+            <div class="tszm-input">
+                <input type="text"
+                       pInputText
+                       class="tszmi-i"
+                       [(ngModel)]="tetelMegjegyzes" />
+            </div>
+        </div>
+        <div class="tsz-kiemelt">
+            <div class="tszk-label">Kiemelt:</div>
+            <div class="tszk-input">
+                <p-checkbox [(ngModel)]="tetelKiemeltE"
+                            [binary]="true"
+                            inputId="binary"></p-checkbox>
+            </div>
+        </div>
+    </div>
+    <div class="tsz-gombok">
+        @if (ujTetel) {
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  label="Új adatok listába"
+                  (onClick)="ujTetelMentes()"
+                  [disabled]="tetelNev == null || tetelNev?.length == 0"></p-button>
+        }
+        @else {
+        <p-button icon="pi pi-save"
+                  severity="success"
+                  label="Módosítás"
+                  (onClick)="tetelModositas()"
+                  [disabled]="tetelNev == null || tetelNev?.length == 0"></p-button>
+        <p-button icon="pi pi-trash"
+                  severity="danger"
+                  label="Tétel törlése"
+                  (onClick)="tetelTorles()"></p-button>
+        }
+    </div>
+    }
+</div>

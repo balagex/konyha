@@ -25,6 +25,7 @@ export class AdatServiceService {
     public nagyiMod = signal<boolean>(false);
     public akcioTetelNevLista = signal<string[]>([]);
     public receptLista = signal<Recept[]>([]);
+    public sajatReceptLista = signal<Recept[]>([]);
     public kedvencReceptekLista = signal<KedvencReceptek[]>([]);
 
     constructor(protected httpClient: HttpClient, protected fireAuthService: FireAuthService) { }
@@ -140,7 +141,8 @@ export class AdatServiceService {
             map(response => response instanceof Array ? Recept.convertFromIfList(response) : Recept.convertFromObject(response)),
             tap(rl => {
                 this.receptLista.set(rl);
-                this.bejelentkezettFelhKedvencReceptekKigyujtese();
+                this.sajatReceptListaKivalogatasa();
+                this.sajatKedvencReceptekBeallitasa();
             })
         );
     }
@@ -154,7 +156,7 @@ export class AdatServiceService {
             map(response => KedvencReceptek.convertFromIfList(response)),
             tap(kl => {
                 this.kedvencReceptekLista.set(kl);
-                this.bejelentkezettFelhKedvencReceptekKigyujtese();
+                this.sajatKedvencReceptekBeallitasa();
             })
         );
     }
@@ -222,32 +224,47 @@ export class AdatServiceService {
         return from(deletePromise);
     }
 
-    bejelentkezettFelhKedvencReceptekKigyujtese() {
+    sajatReceptListaKivalogatasa() {
         const belepettFelhasznaloAzon = this.fireAuthService.getEmail();
-        if (belepettFelhasznaloAzon && this.receptLista()?.length > 0 && this.kedvencReceptekLista()?.length > 0) {
-            console.debug('Van bejelntekezz felhasználó, recep és kedvenc recet lista is... ', belepettFelhasznaloAzon, this.receptLista(), this.kedvencReceptekLista());
+        if (belepettFelhasznaloAzon && this.receptLista()?.length > 0) {
+            console.debug('AdatServiceService -  Van bejelntekezz felhasználó és a teljes recept lista sem üres, indulhat a válogatás... ', belepettFelhasznaloAzon, this.receptLista());
+            const sajatReceptek: Recept[] = [];
+            this.receptLista().forEach(recept => {
+                if (recept.gazdaFelhasznaloAzon == belepettFelhasznaloAzon) {
+                    console.debug('AdatServiceService - Ez a recept saját: ', recept);
+                    sajatReceptek.push(recept);
+                } else {
+                    console.debug('AdatServiceService - Ez a recept NEM saját: ', recept);
+                }
+                this.sajatReceptLista.set(sajatReceptek);
+            });
+            console.debug('AdatServiceService - sajatReceptListaKivalogatasa végeredmény:', this.sajatReceptLista());
+        } else {
+            console.debug('AdatServiceService - A teljes recept lista üres, vagy a bejelentkezett felhasználó azon nem ismert, ezért saját recep lista is üres lett. ', belepettFelhasznaloAzon, this.receptLista());
+            this.sajatReceptLista.set([]);
+        }
+    }
+
+    sajatKedvencReceptekBeallitasa() {
+        const belepettFelhasznaloAzon = this.fireAuthService.getEmail();
+        if (belepettFelhasznaloAzon && this.sajatReceptLista()?.length > 0 && this.kedvencReceptekLista()?.length > 0) {
+            console.debug('AdatServiceService - Van bejelentkezett felhasználó, saját recept lista és kedvenc recet lista is... ', belepettFelhasznaloAzon, this.sajatReceptLista(), this.kedvencReceptekLista());
             this.kedvencReceptekLista().forEach(kr => {
-                if (kr.felhasznaloAzon == this.fireAuthService.getEmail()) {
-                    console.debug('EZEK AZ ÉN KEDVENCEIM: ', kr.kedvencek);
+                if (kr.felhasznaloAzon == belepettFelhasznaloAzon) {
+                    console.debug('AdatServiceService - EZEK AZ ÉN KEDVENCEIM: ', kr.kedvencek);
                     kr.kedvencek.forEach(kedvencListaAzon => {
-                        const kedvencRecept = this.receptLista().find(r => r.azon == kedvencListaAzon);
+                        const kedvencRecept = this.sajatReceptLista().find(r => r.azon == kedvencListaAzon);
                         if (kedvencRecept) {
-                            console.debug('Kedvenc recept azon alapján megtalálva: ', kedvencListaAzon, kedvencRecept);
-                            if (kedvencRecept.gazdaFelhasznaloAzon == kr.felhasznaloAzon) {
-                                console.debug('A megtalált kedvenc recept gazdája azonos a bejelentkezett felhasználóval.');
-                                kedvencRecept.kedvencE = true;
-                            } else {
-                                console.error('A megtalált kedvenc recept gazdája nem azonos a bejelentkezett felhasználóval!', kedvencRecept.gazdaFelhasznaloAzon, kr.felhasznaloAzon);
-                            }
+                            console.debug('AdatServiceService - Kedvenc recept azon alapján megtalálva: ', kedvencListaAzon, kedvencRecept);
                         } else {
-                            console.error('Kedvenc recept azonosítóhoz nem található recept a recept listában!');
+                            console.error('AdatServiceService - Kedvenc recept azonosítóhoz nem található recept a saját recept listában!');
                         }
                     });
-                    console.debug('Kedvencek mazsolázása után a recept lista: ', this.receptLista());
+                    console.debug('AdatServiceService - Kedvencek mazsolázása után a saját recept lista: ', this.sajatReceptLista());
                 }
             });
         } else {
-            console.debug('Valami még hiányzik a kedvencek mazsolázásához ', belepettFelhasznaloAzon, this.receptLista(), this.kedvencReceptekLista());
+            console.debug('AdatServiceService - Valami még hiányzik a kedvencek mazsolázásához ', belepettFelhasznaloAzon, this.sajatReceptLista(), this.kedvencReceptekLista());
         }
     }
 

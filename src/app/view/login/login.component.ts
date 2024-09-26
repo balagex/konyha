@@ -1,7 +1,7 @@
 import { Component, ModelSignal, OnInit, model, signal } from '@angular/core';
 import { FireAuthService } from '../../fire-auth.service';
 import { Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
+// import { ButtonModule } from 'primeng/button';
 import { NgClass, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { dateToYYYYMMDD, napRovidites } from '../../utils';
@@ -9,7 +9,7 @@ import { dateToYYYYMMDD, napRovidites } from '../../utils';
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, NgClass, FormsModule, NgIf],
+    imports: [NgClass, FormsModule, NgIf],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss'
 })

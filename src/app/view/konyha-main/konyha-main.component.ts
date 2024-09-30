@@ -4,18 +4,21 @@ import { FireAuthService } from '../../fire-auth.service';
 import { getDatabase, ref, child, get, set, push } from "firebase/database";
 import { Recept } from '../../model/recept.type';
 import { UJ_SOR } from '../../common.constants';
+import { ButtonModule } from 'primeng/button';
 
 
 @Component({
     selector: 'app-konyha-main',
     standalone: true,
-    imports: [],
+    imports: [ButtonModule],
     templateUrl: './konyha-main.component.html',
     styleUrl: './konyha-main.component.scss'
 })
 export class KonyhaMainComponent implements OnInit {
 
     testImgUrl: string = null;
+    public ful: number = 1;
+    public nagyiMod: boolean = false;
 
     constructor(private adatServiceService: AdatServiceService, private fireAuthService: FireAuthService) { }
 
@@ -96,6 +99,14 @@ export class KonyhaMainComponent implements OnInit {
         //         console.error('AkcioMainComponent - URL LEKÉRÉS HIBA ! ', kuh);
         //     }
         // });
+    }
+
+    balra(): void {
+        this.ful = this.ful - 1;
+    }
+
+    jobbra(): void {
+        this.ful = this.ful + 1;
     }
 
     // Firebase fájl feltöltés példa. Itt kellene még kódban is méret ellenőrzés, illetve típus korlátozás van, de azt is ellenőrizni.

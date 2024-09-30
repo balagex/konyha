@@ -1,5 +1,52 @@
-<p>konyha-main works!</p>
-@if (testImgUrl) {
+<div class="kmain-keret">
+    <div class="keret-fej">
+        <div class="fej-bal">
+            @if (ful > 1) {
+            <p-button icon="pi pi-angle-double-left"
+                      class="fej-gomb"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (onClick)="balra()"></p-button>
+            }
+        </div>
+        <div class="fej-kozep fk-min ">
+            @if (ful===1) {
+                Receptek
+            } @else {
+                Recept szerkesztő
+            }
+        </div>
+        <div class="fej-kozep fk-max">
+            KONYHAI KISOKOS
+        </div>
+        <div class="fej-jobb">
+            @if (ful < 2) {
+              <p-button icon="pi pi-angle-double-right"
+                        class="fej-gomb"
+                        [rounded]="true"
+                        [outlined]="true"
+                        (onClick)="jobbra()"></p-button>
+            }
+        </div>
+    </div>
+    <div class="keret-torzs">
+        <div class="torzs-bal">
+            Itt lesznek a receptek desktop módban
+        </div>
+        <div class="torzs-jobb">
+            Itt lesz a szerkesztő desktop módban
+        </div>
+        <div class="full-torzs">
+            @if (ful===1) {
+                tt lesznek a receptek mobil módban
+            }
+            @else {
+                Itt lesz a szerkesztő mobil módban
+            }
+        </div>
+    </div>
+</div>
+<!-- @if (testImgUrl) {
     <img src="{{testImgUrl}}" height="300px" width="530px"/> 
 }
 
@@ -12,5 +59,5 @@
     accept="image/png, image/jpg, image/jpeg"
     autocomplete="off"
     />
-   </div>
+</div> -->
 

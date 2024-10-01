@@ -1,0 +1,54 @@
+<div class="rl-wrapper">
+    <div class="lista-szuro">
+        <div class="sorrend-gomb">
+            <p-button [icon]="rendezesGombIkon()"
+                      severity="secondary"
+                      [rounded]="true"
+                      [text]="true"
+                      [raised]="true"
+                      (onClick)="listaRendezes()"></p-button>
+        </div>
+        <div class="kereso-szoveg">
+            <input type="text"
+                   pInputText
+                   [(ngModel)]="szuroSzoveg" />
+        </div>
+        <div class="kereso-torlo">
+            <p-button icon="pi pi-filter-slash"
+                      severity="danger"
+                      [rounded]="true"
+                      (onClick)="szuroTorles()"
+                      [ngClass]="{'rejtett': szuroSzoveg().length == 0}"></p-button>
+        </div>
+    </div>
+    <div class="lista-torzs">
+        @for (recept of receptLista(); track "azon") {
+        <div class="recept-panel">
+            <div class="recept-nev">
+                {{recept.nev}}
+            </div>
+            <div class="recept-keszites">
+                {{recept.keszites}}
+            </div>
+            <div class="recept-info">
+                Itt lesznek gombok
+            </div>
+        </div>
+        }
+    </div>
+    <!-- <div class="lista-torzs">
+        @for (item of [].constructor(20); track $index) {
+        <div class="recept-panel">
+            <div class="recept-nev">
+                {{$index}}
+            </div>
+            <div class="recept-keszites">
+                80 fok 120 perc
+            </div>
+            <div class="recept-info">
+                Itt lesznek gombok
+            </div>
+        </div>
+        }
+    </div> -->
+</div>

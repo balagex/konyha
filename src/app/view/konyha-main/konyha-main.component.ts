@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, model, signal } from '@angular/core';
 import { AdatServiceService } from '../../adat-service.service';
 import { FireAuthService } from '../../fire-auth.service';
 import { getDatabase, ref, child, get, set, push } from "firebase/database";
 import { Recept } from '../../model/recept.type';
 import { UJ_SOR } from '../../common.constants';
 import { ButtonModule } from 'primeng/button';
+import { ReceptListaComponent } from '../recept-lista/recept-lista.component';
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 
 @Component({
     selector: 'app-konyha-main',
     standalone: true,
-    imports: [ButtonModule],
+    imports: [ButtonModule, ReceptListaComponent],
     templateUrl: './konyha-main.component.html',
     styleUrl: './konyha-main.component.scss'
 })
@@ -26,23 +30,23 @@ export class KonyhaMainComponent implements OnInit {
 
         this.adatServiceService.receptekLekereseAlap(this.fireAuthService.getToken()).subscribe({
             next: (receptek) => {
-                console.debug('AkcioMainComponent - RECEPTEK: ', receptek);
+                console.debug('KonyhaMainComponent - RECEPTEK: ', receptek);
 
                 this.adatServiceService.kedvencReceptekLekereseAlap(this.fireAuthService.getToken()).subscribe({
                     next: (kReceptek) => {
                         const receptLista = this.adatServiceService.receptLista();
                         const kedvencReceptekLista = this.adatServiceService.kedvencReceptekLista();
-                        console.debug('AkcioMainComponent - KEDVENC RECEPTEK: ', kReceptek, receptLista, kedvencReceptekLista);
+                        console.debug('KonyhaMainComponent - KEDVENC RECEPTEK: ', kReceptek, receptLista, kedvencReceptekLista);
 
                     },
                     error: (kReceptekError) => {
-                        console.error('AkcioMainComponent - KEDVENC RECEPT LISTA LEKERES HIBA ', kReceptekError);
+                        console.error('KonyhaMainComponent - KEDVENC RECEPT LISTA LEKERES HIBA ', kReceptekError);
                         this.fireAuthService.logout();
                     }
                 });
             },
             error: (receptekError) => {
-                console.error('AkcioMainComponent - RECEPT LISTA LEKERES HIBA ', receptekError);
+                console.error('KonyhaMainComponent - RECEPT LISTA LEKERES HIBA ', receptekError);
                 this.fireAuthService.logout();
             }
         });
@@ -118,21 +122,21 @@ export class KonyhaMainComponent implements OnInit {
 
         this.adatServiceService.receptKepFeltoltese(file).subscribe({
             next: (valasz) => {
-                console.debug('AkcioMainComponent - UPLOAD RESULT', valasz);
+                console.debug('KonyhaMainComponent - UPLOAD RESULT', valasz);
                 setTimeout(() => {
                     this.adatServiceService.receptKepTorlese(file.name).subscribe({
                         next: () => {
-                            console.debug('AkcioMainComponent - SIKERES FÁJL TÖRLÉS');
+                            console.debug('KonyhaMainComponent - SIKERES FÁJL TÖRLÉS');
                         },
                         error: (kdh) => {
-                            console.error('AkcioMainComponent - FÁJL TÖRLÉS HIBA ! ', kdh);
+                            console.error('KonyhaMainComponent - FÁJL TÖRLÉS HIBA ! ', kdh);
                         }
                     });
                 }, 10000);
 
             },
             error: (hiba) => {
-                console.error('AkcioMainComponent - UPLOAD HIBA ! ', hiba);
+                console.error('KonyhaMainComponent - UPLOAD HIBA ! ', hiba);
             }
         });
     }

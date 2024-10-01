@@ -1,0 +1,112 @@
+.rl-wrapper {
+    width: 100%;
+    height: 100%;
+
+    .lista-szuro {
+        width: 100%;
+        height: 60px;
+        padding: 0 5%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+
+        .sorrend-gomb {
+            min-width: 50px;
+        }
+
+        .kereso-szoveg {
+            width: 65%;
+
+            .p-inputtext {
+                width: 100%;
+            }
+        }
+
+        .kereso-torlo {
+            min-width: 50px;
+
+            .rejtett {
+                display: none;
+            }
+        }
+    }
+
+    .lista-torzs{
+        width: 100%;
+        height: calc(100% - 60px);
+        overflow-x: hidden;
+        overflow-y: auto;        
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+        container-type: inline-size;
+        container-name: receptlista;
+        // padding-top: 30px;
+    
+        .recept-panel {
+            width: 90%;
+            // min-height: 100px;
+            display: flex;
+            flex-wrap: wrap;
+            background-color: aqua;
+            margin: 10px 0;
+            border-radius: 10px;
+    
+            .recept-nev {
+                background-color: red;
+                width: 60%;
+                border-top-left-radius: 10px;
+                padding: 5px 5px 5px 16px;
+                font-weight: 900;
+            }
+    
+            .recept-keszites {
+                width: 40%;
+                border-top-right-radius: 10px;
+                padding: 5px 16px 5px 10px;
+            }
+    
+            .recept-info {
+                width: 100%;
+                border-bottom-right-radius: 10px;
+                border-bottom-left-radius: 10px;
+                padding: 10px 16px;
+            }
+        }
+        
+        /* If the container is larger than 700px */
+        @container receptlista (min-width: 800px) {
+            .recept-panel {
+                width: 45%;
+                // min-height: 200px;
+                
+                .recept-nev {
+                    background-color: orange;
+                    width: 100%;
+                    border-top-right-radius: 10px;
+                    padding-right: 16px;
+                }
+    
+                .recept-keszites {
+                    width: 100%;
+                    border-top-right-radius: 0;
+                    padding-left: 16px;
+                }
+            }
+        }
+    }
+
+    
+
+}
+
+
+
+// .recept-panel {
+//     min-width: 300px;
+//     max-width: 400px;
+//     margin: 20px;
+// }

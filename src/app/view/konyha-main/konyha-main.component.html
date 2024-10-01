@@ -11,37 +11,39 @@
         </div>
         <div class="fej-kozep fk-min ">
             @if (ful===1) {
-                Receptek
+            Receptek
             } @else {
-                Recept szerkesztő
+            Recept szerkesztő
             }
         </div>
         <div class="fej-kozep fk-max">
             KONYHAI KISOKOS
         </div>
         <div class="fej-jobb">
-            @if (ful < 2) {
-              <p-button icon="pi pi-angle-double-right"
-                        class="fej-gomb"
-                        [rounded]="true"
-                        [outlined]="true"
-                        (onClick)="jobbra()"></p-button>
-            }
+            @if (ful < 2)
+              {
+              <p-button
+              icon="pi pi-angle-double-right"
+              class="fej-gomb"
+              [rounded]="true"
+              [outlined]="true"
+              (onClick)="jobbra()"></p-button>
+                }
         </div>
     </div>
     <div class="keret-torzs">
         <div class="torzs-bal">
-            Itt lesznek a receptek desktop módban
+            <app-recept-lista [mobilE]="false"></app-recept-lista>
         </div>
         <div class="torzs-jobb">
             Itt lesz a szerkesztő desktop módban
         </div>
         <div class="full-torzs">
             @if (ful===1) {
-                tt lesznek a receptek mobil módban
+            <app-recept-lista [mobilE]="true"></app-recept-lista>
             }
             @else {
-                Itt lesz a szerkesztő mobil módban
+            Itt lesz a szerkesztő mobil módban
             }
         </div>
     </div>
@@ -60,4 +62,3 @@
     autocomplete="off"
     />
 </div> -->
-

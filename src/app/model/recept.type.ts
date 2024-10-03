@@ -17,6 +17,8 @@ export class Recept {
     // származtatott érték, a kedvenxek lekérése után lehet a bejelentkezett felhazsnáló kapcsán megvizsgálni, hogy
     // az adott recept kedvenc-e
     kedvencE: boolean = false;
+    // származtatott érték, a bejelentkezett felhasználó azonja és a tulaj összehasonlítása alapján
+    sajatE: boolean = false;
 
     static convertFromIfList(list: ReceptIF[]): Recept[] {
         const result: Recept[] = [];
@@ -61,6 +63,7 @@ export class Recept {
                 });
             }
             this.kedvencE = false;
+            this.sajatE = false;
         } else {
             this.azon = 'RE' + (new Date()).getTime();
             this.nev = null;
@@ -71,6 +74,7 @@ export class Recept {
             this.linkek = [];
             this.megjegyzesek = [];
             this.kedvencE = false;
+            this.sajatE = false;
         }
     }
 

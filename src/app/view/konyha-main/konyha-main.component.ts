@@ -8,7 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { ReceptListaComponent } from '../recept-lista/recept-lista.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 
 
 @Component({
@@ -111,6 +111,13 @@ export class KonyhaMainComponent implements OnInit {
 
     jobbra(): void {
         this.ful = this.ful + 1;
+    }
+
+    receptKivalasztas(event: Recept): void {
+        console.debug('KonyhaMainComponent - receptKivalasztas', event);
+        if (this.ful === 1 && event?.azon) {
+            this.jobbra();
+        }
     }
 
     // Firebase fájl feltöltés példa. Itt kellene még kódban is méret ellenőrzés, illetve típus korlátozás van, de azt is ellenőrizni.

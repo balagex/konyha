@@ -3,15 +3,16 @@ import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { AkcioTetelIF } from './model/akcio-tetel.interface';
 import { AkciosListaIF } from './model/akcios-lista.interface';
-import { Observable, from, map, tap } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, from, map, tap } from 'rxjs';
 import { AkciosLista } from './model/akcios-lista.type';
 import { AkcioTetel } from './model/akcio-tetel.type';
-import { dateToYYYYMMDD, resizeImage } from './utils';
+import { dateToYYYYMMDD, resizeImage, sortFunction } from './utils';
 import { FirebaseStorage, StringFormat, UploadResult, deleteObject, getDownloadURL, getStorage, ref, uploadString } from 'firebase/storage';
 import { Recept } from './model/recept.type';
 import { ReceptIF } from './model/recept.interface';
 import { KedvencReceptek } from './model/kedvenc-receptek.type';
 import { KedvencReceptekIF } from './model/kedvenc-receptek.interface';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
     providedIn: 'root'
@@ -22,11 +23,42 @@ export class AdatServiceService {
     public kivalasztottLista = signal<AkciosLista>(null);
     public akciosTetelLista = signal<AkcioTetel[]>([]);
     public kivalasztottTetel = signal<AkcioTetel>(null);
+
     public nagyiMod = signal<boolean>(false);
     public akcioTetelNevLista = signal<string[]>([]);
+
     public receptLista = signal<Recept[]>([]);
-    public sajatReceptLista = signal<Recept[]>([]);
     public kedvencReceptekLista = signal<KedvencReceptek[]>([]);
+    public kivalasztottRecept = signal<Recept>(null);
+
+    public sortDir = signal<1 | -1>(1); // asc: 1, desc: -1
+    public csakKedvencekE = signal<boolean>(false);
+    public csakSajatE = signal<boolean>(false);
+    public listaSzuroSzoveg = signal<string>('');
+
+    kesleltetettSzuroSzoveg = toSignal(toObservable(this.listaSzuroSzoveg).pipe(debounceTime(500), distinctUntilChanged()), {
+        initialValue: '',
+    });
+
+    public jeloltReceptLista = computed<Recept[]>(() => {
+        const belepettFelhasznaloAzon = this.fireAuthService.getEmail();
+        const kedvencReceptek = this.kedvencReceptekLista()?.find(x => x.felhasznaloAzon == belepettFelhasznaloAzon)?.kedvencek;
+        const eredmenyLista: Recept[] = this.receptLista()
+            .map(recept => ({ ...recept, sajatE: recept.gazdaFelhasznaloAzon == belepettFelhasznaloAzon } as Recept))
+            .map(recipe => ({ ...recipe, kedvencE: kedvencReceptek?.findIndex(kedvencReceptAzon => kedvencReceptAzon == recipe.azon) > -1 } as Recept))
+            .filter(tetel => (this.listaSzuroSzoveg().length < 1
+                || this.kesleltetettSzuroSzoveg().length < 1
+                || (tetel.nev.toLowerCase().indexOf(this.kesleltetettSzuroSzoveg().toLowerCase()) > -1)
+            ))
+            .filter(szurtTetel => (this.csakKedvencekE() && szurtTetel.kedvencE) || !this.csakKedvencekE())
+            .filter(szTetel => (this.csakSajatE() && szTetel.sajatE) || !this.csakSajatE())
+            .sort((a, b) => {
+                return sortFunction(a, b, this.sortDir(), 'nev', null, false);
+            });
+
+        // console.debug('AdatServiceService - jeloltReceptLista', eredmenyLista);
+        return eredmenyLista;
+    });
 
     constructor(protected httpClient: HttpClient, protected fireAuthService: FireAuthService) { }
 
@@ -141,8 +173,9 @@ export class AdatServiceService {
             map(response => response instanceof Array ? Recept.convertFromIfList(response) : Recept.convertFromObject(response)),
             tap(rl => {
                 this.receptLista.set(rl);
-                this.sajatReceptListaKivalogatasa();
-                this.sajatKedvencReceptekBeallitasa();
+                if (this.kivalasztottRecept() && rl.findIndex(recept => recept.azon === this.kivalasztottRecept().azon) < 0) {
+                    this.kivalasztottRecept.set(null);
+                }
             })
         );
     }
@@ -156,7 +189,6 @@ export class AdatServiceService {
             map(response => KedvencReceptek.convertFromIfList(response)),
             tap(kl => {
                 this.kedvencReceptekLista.set(kl);
-                this.sajatKedvencReceptekBeallitasa();
             })
         );
     }
@@ -223,51 +255,6 @@ export class AdatServiceService {
         const deletePromise = deleteObject(desertRef);
         return from(deletePromise);
     }
-
-    sajatReceptListaKivalogatasa() {
-        const belepettFelhasznaloAzon = this.fireAuthService.getEmail();
-        if (belepettFelhasznaloAzon && this.receptLista()?.length > 0) {
-            console.debug('AdatServiceService -  Van bejelntekezz felhasználó és a teljes recept lista sem üres, indulhat a válogatás... ', belepettFelhasznaloAzon, this.receptLista());
-            const sajatReceptek: Recept[] = [];
-            this.receptLista().forEach(recept => {
-                if (recept.gazdaFelhasznaloAzon == belepettFelhasznaloAzon) {
-                    console.debug('AdatServiceService - Ez a recept saját: ', recept);
-                    sajatReceptek.push(recept);
-                } else {
-                    console.debug('AdatServiceService - Ez a recept NEM saját: ', recept);
-                }
-                this.sajatReceptLista.set(sajatReceptek);
-            });
-            console.debug('AdatServiceService - sajatReceptListaKivalogatasa végeredmény:', this.sajatReceptLista());
-        } else {
-            console.debug('AdatServiceService - A teljes recept lista üres, vagy a bejelentkezett felhasználó azon nem ismert, ezért saját recep lista is üres lett. ', belepettFelhasznaloAzon, this.receptLista());
-            this.sajatReceptLista.set([]);
-        }
-    }
-
-    sajatKedvencReceptekBeallitasa() {
-        const belepettFelhasznaloAzon = this.fireAuthService.getEmail();
-        if (belepettFelhasznaloAzon && this.sajatReceptLista()?.length > 0 && this.kedvencReceptekLista()?.length > 0) {
-            console.debug('AdatServiceService - Van bejelentkezett felhasználó, saját recept lista és kedvenc recet lista is... ', belepettFelhasznaloAzon, this.sajatReceptLista(), this.kedvencReceptekLista());
-            this.kedvencReceptekLista().forEach(kr => {
-                if (kr.felhasznaloAzon == belepettFelhasznaloAzon) {
-                    console.debug('AdatServiceService - EZEK AZ ÉN KEDVENCEIM: ', kr.kedvencek);
-                    kr.kedvencek.forEach(kedvencListaAzon => {
-                        const kedvencRecept = this.sajatReceptLista().find(r => r.azon == kedvencListaAzon);
-                        if (kedvencRecept) {
-                            console.debug('AdatServiceService - Kedvenc recept azon alapján megtalálva: ', kedvencListaAzon, kedvencRecept);
-                        } else {
-                            console.error('AdatServiceService - Kedvenc recept azonosítóhoz nem található recept a saját recept listában!');
-                        }
-                    });
-                    console.debug('AdatServiceService - Kedvencek mazsolázása után a saját recept lista: ', this.sajatReceptLista());
-                }
-            });
-        } else {
-            console.debug('AdatServiceService - Valami még hiányzik a kedvencek mazsolázásához ', belepettFelhasznaloAzon, this.sajatReceptLista(), this.kedvencReceptekLista());
-        }
-    }
-
 }
 
 // Lehet más módon is lekérni a listát, vagy egy konkrét elemét a listának.

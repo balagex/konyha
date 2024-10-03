@@ -40,7 +40,7 @@
         </div>
         <div class="full-torzs">
             @if (ful===1) {
-            <app-recept-lista [mobilE]="true"></app-recept-lista>
+            <app-recept-lista [mobilE]="true" (receptKivalasztva)="receptKivalasztas($event)"></app-recept-lista>
             }
             @else {
             Itt lesz a szerkesztő mobil módban
@@ -48,6 +48,7 @@
         </div>
     </div>
 </div>
+
 <!-- @if (testImgUrl) {
     <img src="{{testImgUrl}}" height="300px" width="530px"/> 
 }

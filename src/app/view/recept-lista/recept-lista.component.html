@@ -1,17 +1,36 @@
 <div class="rl-wrapper">
     <div class="lista-szuro">
-        <div class="sorrend-gomb">
-            <p-button [icon]="rendezesGombIkon()"
-                      severity="secondary"
-                      [rounded]="true"
-                      [text]="true"
-                      [raised]="true"
-                      (onClick)="listaRendezes()"></p-button>
+        <div class="szuro-gombok">
+            <div class="szuro-gomb">
+                <p-button [icon]="kedvencGombIkon()"
+                          [severity]="csakKedvencekE() ? 'warning' : 'secondary'"
+                          [rounded]="true"
+                          [text]="true"
+                          [raised]="true"
+                          (onClick)="kedvenceketEAllitas()"></p-button>
+            </div>
+            <div class="szuro-gomb">
+                <p-button [icon]="rendezesGombIkon()"
+                          [severity]="sortDir() === 1 ? 'secondary' : 'primary'"
+                          [rounded]="true"
+                          [text]="true"
+                          [raised]="true"
+                          (onClick)="listaRendezes()"></p-button>
+            </div>
+            <div class="szuro-gomb">
+                <p-button [icon]="sajatGombIkon()"
+                          [severity]="csakSajatE() ? 'help' : 'secondary'"
+                          [rounded]="true"
+                          [text]="true"
+                          [raised]="true"
+                          (onClick)="csakSajatEAllitas()"></p-button>
+            </div>
         </div>
         <div class="kereso-szoveg">
             <input type="text"
                    pInputText
-                   [(ngModel)]="szuroSzoveg" />
+                   [ngModel]="szuroSzoveg()"
+                   (ngModelChange)="szuroSzovegAllitas($event)" />
         </div>
         <div class="kereso-torlo">
             <p-button icon="pi pi-filter-slash"
@@ -23,20 +42,30 @@
     </div>
     <div class="lista-torzs">
         @for (recept of receptLista(); track "azon") {
-        <div class="recept-panel">
+        <div class="recept-panel"
+             (click)="receptKivalasztas(recept)"
+             [ngClass]="{'kivalasztott': kivalasztottReceptAzon() == recept.azon}">
             <div class="recept-nev">
                 {{recept.nev}}
+                @if (recept.kedvencE || recept.sajatE) {
+                    <span class="nev-kieg">
+                        (
+                            @if (recept.sajatE) {
+                                <span class="sajat-jel">S</span>
+                            }
+                            <span class="pi pi-star-fill kedvenc-ikon" [ngClass]="{'sajat-is': recept.sajatE}"></span>
+                        )
+                    </span>
+                }
             </div>
             <div class="recept-keszites">
-                {{recept.keszites}}
+                {{recept.keszites ? recept.keszites : 'n/a'}}
             </div>
-            <div class="recept-info">
+            <!-- <div class="recept-info">
                 Itt lesznek gombok
-            </div>
+            </div> -->
         </div>
         }
-    </div>
-    <!-- <div class="lista-torzs">
         @for (item of [].constructor(20); track $index) {
         <div class="recept-panel">
             <div class="recept-nev">
@@ -45,10 +74,7 @@
             <div class="recept-keszites">
                 80 fok 120 perc
             </div>
-            <div class="recept-info">
-                Itt lesznek gombok
-            </div>
         </div>
         }
-    </div> -->
+    </div>
 </div>

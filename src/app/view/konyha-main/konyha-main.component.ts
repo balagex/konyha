@@ -9,20 +9,25 @@ import { ReceptListaComponent } from '../recept-lista/recept-lista.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { ReceptSzerkesztoComponent } from '../recept-szerkeszto/recept-szerkeszto.component';
 
 
 @Component({
     selector: 'app-konyha-main',
     standalone: true,
-    imports: [ButtonModule, ReceptListaComponent],
+    imports: [ButtonModule, ReceptListaComponent, ReceptSzerkesztoComponent],
     templateUrl: './konyha-main.component.html',
     styleUrl: './konyha-main.component.scss'
 })
 export class KonyhaMainComponent implements OnInit {
 
     testImgUrl: string = null;
-    public ful: number = 1;
-    public nagyiMod: boolean = false;
+    public ful = signal<number>(1);
+    public nagyiMod = signal<boolean>(false);
+
+    kivalasztottRecept = computed<Recept>(() => {
+        return this.adatServiceService.kivalasztottRecept();
+    });
 
     constructor(private adatServiceService: AdatServiceService, private fireAuthService: FireAuthService) { }
 
@@ -106,17 +111,30 @@ export class KonyhaMainComponent implements OnInit {
     }
 
     balra(): void {
-        this.ful = this.ful - 1;
+        this.ful.set(1);
     }
 
     jobbra(): void {
-        this.ful = this.ful + 1;
+        // if (!this.adatServiceService.kivalasztottRecept()?.azon) {
+        //     this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
+        // }
+        // this.adatServiceService.kivalasztottRecept.set(null);
+        this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
+        this.ful.set(2);
     }
 
     receptKivalasztas(event: Recept): void {
         console.debug('KonyhaMainComponent - receptKivalasztas', event);
-        if (this.ful === 1 && event?.azon) {
-            this.jobbra();
+        if (this.ful() === 1 && event?.azon) {
+            this.ful.set(2);
+        }
+    }
+
+
+    receptSzerkesztesKesz(event: Recept): void {
+        console.debug('KonyhaMainComponent - receptSzerkesztesKesz', event);
+        if (this.ful() === 2 && event?.azon) {
+            this.balra();
         }
     }
 

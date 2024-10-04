@@ -45,7 +45,7 @@
             font-size: 30px;
             font-weight: 600;
             // background-color: $ak-kek;
-            background: linear-gradient(45deg, #f7883a, #39ee35);
+            background: linear-gradient(45deg, $kk-fej-sarga, $kk-fej-zold);
             opacity: 0.9;
             padding: 20px 20px;
             // padding: 20px 0 !important;
@@ -88,8 +88,7 @@
             font-weight: 700;
 
             span {
-                // background-color: $ak-piros;
-                background-color: #2c7920;
+                background-color: $kk-sotetzold;
                 padding: 3px 10px;
                 border-radius: 5px;
             }
@@ -114,8 +113,8 @@
             user-select: none;
 
             color: #ffffff;
-            background: #5f0164;
-            border: 1px solid $emu-extra-dark-blue;
+            background: $kk-sotetlila;
+            border: 1px solid $kk-sotetlila;
             font-size: 15px;
             transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
             border-radius: 5px;
@@ -131,7 +130,7 @@
             min-height: 90px;
 
             .hiba {
-                color: $ak-piros;
+                color: $kk-piros;
                 background-color: aliceblue;
                 margin-top: 20px;
                 text-align: center;
@@ -158,7 +157,7 @@
     left: 0px;
     // background-color: rgba(0, 122, 217, 0.4);
     // background-color: rgba(241, 38, 73, 0.1);
-    background: linear-gradient(45deg, #f97316, #6de66a);
+    background: linear-gradient(45deg, $kk-hatter-sarga, $kk-hatter-zold);
     opacity: 0.4;
     z-index: -1;
 
@@ -170,7 +169,7 @@
     }
 
     50% {
-        background-color: #4285f4;
+        background-color: $kk-red-lighter;
     }
 
     100% {

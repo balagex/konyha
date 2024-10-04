@@ -66,12 +66,12 @@
             flex-wrap: wrap;
             margin: 10px 0;
             border-radius: 10px;
-            border: 1px solid #2c7920;
+            border: 1px solid $kk-sotetzold;
             min-height: 3rem;
             align-items: center;
 
             &.kivalasztott {
-                border: 2px solid $primme-warning;
+                border: 2px solid $prime-warning;
             }
     
             .recept-nev {
@@ -81,7 +81,7 @@
                 font-weight: 900;
 
                 .nev-kieg {
-                    color: orange;
+                    color: $kk-naracs;
                     font-size: 0.9rem;
                     font-weight: 400;
                     margin-left: 0.3rem;

@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Recept } from '../../model/recept.type';
 import { AdatServiceService } from '../../adat-service.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-recept-lista',
@@ -85,6 +86,8 @@ export class ReceptListaComponent {
 
     receptKivalasztas(kivalasztottRecept: Recept): void {
         this.adatServiceService.kivalasztottRecept.set(kivalasztottRecept);
+        const masolat = cloneDeep(kivalasztottRecept);
+        this.adatServiceService.szerkesztendoRecept.set(masolat);
         if (this.mobilE) {
             this.receptKivalasztva.emit(kivalasztottRecept);
         }

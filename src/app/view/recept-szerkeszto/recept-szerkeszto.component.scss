@@ -1,0 +1,39 @@
+@import "../../app-colors.scss";
+
+.recept-szerk-keret {
+
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    .resze-fej {
+        width: 100%;
+        height: 60px;
+        padding: 0 5%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+
+        .resze-fej-duma {
+            max-width: 60%;
+            text-align: center;
+            color: $kk-piros;
+            font-weight: 500;
+        }
+    }
+
+    .resze-torzs {
+        width: 100%;
+        max-height: calc(100% - 60px);
+        overflow-x: hidden;
+        overflow-y: auto;        
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        background-color: pink;
+    }
+}

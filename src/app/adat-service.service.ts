@@ -30,6 +30,7 @@ export class AdatServiceService {
     public receptLista = signal<Recept[]>([]);
     public kedvencReceptekLista = signal<KedvencReceptek[]>([]);
     public kivalasztottRecept = signal<Recept>(null);
+    public szerkesztendoRecept = signal<Recept>(null);
 
     public sortDir = signal<1 | -1>(1); // asc: 1, desc: -1
     public csakKedvencekE = signal<boolean>(false);
@@ -61,6 +62,14 @@ export class AdatServiceService {
     });
 
     constructor(protected httpClient: HttpClient, protected fireAuthService: FireAuthService) { }
+
+    ujSzerkesztendoReceptLetrehozasa(): void {
+        this.kivalasztottRecept.set(null);
+        const ujRecept = new Recept();
+        ujRecept.gazdaFelhasznaloAzon = this.fireAuthService.getEmail();
+        ujRecept.sajatE = true;
+        this.szerkesztendoRecept.set(ujRecept);
+    }
 
     akcioTetelNevekLekereseAlap(token: string): Observable<string[]> {
         this.kivalasztottTetel.set(null);
@@ -175,6 +184,7 @@ export class AdatServiceService {
                 this.receptLista.set(rl);
                 if (this.kivalasztottRecept() && rl.findIndex(recept => recept.azon === this.kivalasztottRecept().azon) < 0) {
                     this.kivalasztottRecept.set(null);
+                    this.szerkesztendoRecept.set(null);
                 }
             })
         );

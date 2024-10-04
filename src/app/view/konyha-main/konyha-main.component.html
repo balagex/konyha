@@ -1,7 +1,7 @@
 <div class="kmain-keret">
     <div class="keret-fej">
         <div class="fej-bal">
-            @if (ful > 1) {
+            @if (ful() > 1) {
             <p-button icon="pi pi-angle-double-left"
                       class="fej-gomb"
                       [rounded]="true"
@@ -10,7 +10,7 @@
             }
         </div>
         <div class="fej-kozep fk-min ">
-            @if (ful===1) {
+            @if (ful()===1) {
             Receptek
             } @else {
             Recept szerkesztő
@@ -20,15 +20,18 @@
             KONYHAI KISOKOS
         </div>
         <div class="fej-jobb">
-            @if (ful < 2)
-              {
-              <p-button
-              icon="pi pi-angle-double-right"
-              class="fej-gomb"
-              [rounded]="true"
-              [outlined]="true"
-              (onClick)="jobbra()"></p-button>
-                }
+            @if (ful() < 2) {
+                <p-button icon="pi pi-plus"
+                    class="fej-gomb"
+                    [rounded]="true"
+                    [outlined]="true"
+                    (onClick)="jobbra()"></p-button>
+                <!-- <p-button [icon]="kivalasztottRecept()?.azon ? 'pi pi-file-edit' : 'pi pi-plus'"
+                    class="fej-gomb"
+                    [rounded]="true"
+                    [outlined]="true"
+                    (onClick)="jobbra()"></p-button> -->
+            }
         </div>
     </div>
     <div class="keret-torzs">
@@ -36,14 +39,15 @@
             <app-recept-lista [mobilE]="false"></app-recept-lista>
         </div>
         <div class="torzs-jobb">
-            Itt lesz a szerkesztő desktop módban
+            <app-recept-szerkeszto [mobilE]="false"></app-recept-szerkeszto>
         </div>
         <div class="full-torzs">
-            @if (ful===1) {
-            <app-recept-lista [mobilE]="true" (receptKivalasztva)="receptKivalasztas($event)"></app-recept-lista>
+            @if (ful()===1) {
+            <app-recept-lista [mobilE]="true"
+                              (receptKivalasztva)="receptKivalasztas($event)"></app-recept-lista>
             }
             @else {
-            Itt lesz a szerkesztő mobil módban
+                <app-recept-szerkeszto [mobilE]="true" (szerkesztesVege)="receptSzerkesztesKesz($event)"></app-recept-szerkeszto>
             }
         </div>
     </div>

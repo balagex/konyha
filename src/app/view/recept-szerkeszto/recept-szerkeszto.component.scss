@@ -34,6 +34,78 @@
         flex-direction: column;
         justify-content: start;
         align-items: center;
-        background-color: pink;
+        // background-color: pink;
+
+        .torzs-sor {
+            margin: 5px 0;
+        }
+
+        .nev, .keszites, .leiras, .megjegyzesek {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+
+            .mezo-felirat {
+                min-width: 160px;
+                width: 20%;
+                text-align: right;
+                padding-right: 20px;
+            }
+
+            .mezo-torzs {
+                width: 60%;
+
+                .mezo-input {
+                    width: 100%;
+                    max-width: 100%;
+                    min-width: 100%;
+                    min-height: 46px;
+                }
+            }
+        }
+
+        .leiras, .megjegyzesek{
+            align-items: start;
+
+            .mezo-felirat {
+                margin-top: 0.8rem;
+            }
+        }
+
+        .megjegyzesek {
+
+            .megj-torzs {
+
+                .megj-blokk {
+                    display: flex;
+                    flex-direction: column;
+                    margin: 10px 0;
+                    border-radius: 1rem;
+                    padding: 0.3rem;
+                    background-color: antiquewhite;
+
+                    .mb-bal {
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: wrap;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 0.3rem;
+                    }
+
+                    .mb-jobb {
+                        
+                        .mb-input {
+                            width: 100%;
+                            max-width: 100%;
+                            min-width: 100%;
+                            min-height: 46px;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

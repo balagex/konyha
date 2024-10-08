@@ -13,6 +13,7 @@ import { ReceptIF } from './model/recept.interface';
 import { KedvencReceptek } from './model/kedvenc-receptek.type';
 import { KedvencReceptekIF } from './model/kedvenc-receptek.interface';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { ReceptMegjegyzes } from './model/recept-megjegyzes.type';
 
 @Injectable({
     providedIn: 'root'
@@ -46,6 +47,7 @@ export class AdatServiceService {
         const kedvencReceptek = this.kedvencReceptekLista()?.find(x => x.felhasznaloAzon == belepettFelhasznaloAzon)?.kedvencek;
         const eredmenyLista: Recept[] = this.receptLista()
             .map(recept => ({ ...recept, sajatE: recept.gazdaFelhasznaloAzon == belepettFelhasznaloAzon } as Recept))
+            // .map(recept => ({ ...recept, megjegyzesek: recept.megjegyzesek.map(megj => ({ ...megj, sajatE: megj.felhasznaloAzon == belepettFelhasznaloAzon } as ReceptMegjegyzes)) } as Recept))
             .map(recipe => ({ ...recipe, kedvencE: kedvencReceptek?.findIndex(kedvencReceptAzon => kedvencReceptAzon == recipe.azon) > -1 } as Recept))
             .filter(tetel => (this.listaSzuroSzoveg().length < 1
                 || this.kesleltetettSzuroSzoveg().length < 1

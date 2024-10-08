@@ -1,15 +1,17 @@
-import { KedvencReceptekIF } from './../../model/kedvenc-receptek.interface';
 import { AdatServiceService } from './../../adat-service.service';
-import { cloneDeep } from 'lodash';
 import { Component, input, output, computed, signal, OnInit } from '@angular/core';
 import { Recept } from '../../model/recept.type';
 import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 
 @Component({
     selector: 'app-recept-szerkeszto',
     standalone: true,
-    imports: [ButtonModule],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
 })
@@ -34,6 +36,11 @@ export class ReceptSzerkesztoComponent implements OnInit {
         };
     });
 
+    vanSajatMegjegyzes = computed(() => {
+        let result = this.szerkesztesiAdatok() && this.szerkesztesiAdatok().recept()?.megjegyzesek?.findIndex(m => m.sajatE) > -1;
+        return result;
+    });
+
     torzsMegjelenithetoE = computed(() => {
         let result = this.adatServiceService.szerkesztendoRecept()?.azon;
         console.debug('ReceptSzerkesztoComponent - torzsMegjelenithetoE', this.adatServiceService.szerkesztendoRecept()?.azon, result);
@@ -52,6 +59,31 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     ujReceptFelvetelInditas(): void {
         this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
+    }
+
+    nevModositas(nev: string): void {
+        const recept = this.szerkesztesiAdatok().recept();
+        recept.nev = nev;
+        this.szerkesztesiAdatok().recept.set(recept);
+        console.debug('ReceptSzerkesztoComponent - nevModositas ', nev);
+    }
+
+    keszitesModositas(keszites: string): void {
+        const recept = this.szerkesztesiAdatok().recept();
+        recept.keszites = keszites;
+        this.szerkesztesiAdatok().recept.set(recept);
+        console.debug('ReceptSzerkesztoComponent - keszitesModositas ', keszites);
+    }
+
+    leirasModositas(leiras: string): void {
+        const recept = this.szerkesztesiAdatok().recept();
+        recept.leiras = leiras;
+        this.szerkesztesiAdatok().recept.set(recept);
+        console.debug('ReceptSzerkesztoComponent - leirasModositas ', leiras);
+    }
+
+    ujMegjegyzesRogzitesInditas(): void {
+        console.debug('ReceptSzerkesztoComponent - ujMegjegyzesRogzitesInditas ');
     }
 
     mentes(): void {

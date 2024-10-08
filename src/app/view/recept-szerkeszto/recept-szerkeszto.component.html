@@ -1,35 +1,110 @@
 <div class="recept-szerk-keret">
     <div class="resze-fej">
         @if (szerkesztesiAdatok()?.recept()?.azon) {
-            @if (szerkesztesiAdatok()?.recept()?.sajatE) {
-                <p-button icon="pi pi-save"
-                    severity="primary"
-                    [text]="true"
-                    [raised]="true"
-                    label="Mentés"
-                    (onClick)="mentes()"
-                    [disabled]="!receptMentheto()"></p-button>
-            } @else {
-                <div class="resze-fej-duma">A kiválasztott recept nem saját, így csak a saját megjegyzések módosíthatók.</div>
-            }
+        @if (szerkesztesiAdatok()?.recept()?.sajatE) {
+        <p-button icon="pi pi-save"
+                  severity="primary"
+                  [text]="true"
+                  [raised]="true"
+                  label="Mentés"
+                  (onClick)="mentes()"
+                  [disabled]="!receptMentheto()"></p-button>
+        } @else {
+        <div class="resze-fej-duma">A kiválasztott recept nem saját, így csak a saját megjegyzések módosíthatók.</div>
+        }
         }
         @if (!mobilE()) {
-            <p-button icon="pi pi-plus"
-                severity="success"
-                [text]="true"
-                [raised]="true"
-                label="Új recept"
-                (onClick)="ujReceptFelvetelInditas()"></p-button>
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  [text]="true"
+                  [raised]="true"
+                  label="Új recept"
+                  (onClick)="ujReceptFelvetelInditas()"></p-button>
         }
     </div>
     <div class="resze-torzs">
         @if (torzsMegjelenithetoE()) {
-            azon: {{szerkesztesiAdatok()?.recept()?.azon}}
-            név: {{szerkesztesiAdatok()?.recept()?.nev}}
+        <div class="torzs-sor nev">
+            <div class="mezo-felirat">Név:</div>
+            <div class="mezo-torzs">
+                <input type="text"
+                       pInputText
+                       class="mezo-input"
+                       [ngClass]="{'ng-invalid ng-dirty': szerkesztesiAdatok()?.recept()?.nev?.length < 1}"
+                       [disabled]="!szerkesztesiAdatok()?.recept()?.sajatE"
+                       [ngModel]="szerkesztesiAdatok()?.recept().nev"
+                       (ngModelChange)="nevModositas($event)" />
+            </div>
+        </div>
+        <div class="torzs-sor keszites">
+            <div class="mezo-felirat">Készítés:</div>
+            <div class="mezo-torzs">
+                <input type="text"
+                       pInputText
+                       class="mezo-input"
+                       [disabled]="!szerkesztesiAdatok()?.recept()?.sajatE"
+                       [ngModel]="szerkesztesiAdatok()?.recept().keszites"
+                       (ngModelChange)="keszitesModositas($event)" />
+            </div>
+        </div>
+        <div class="torzs-sor leiras">
+            <div class="mezo-felirat">Leírás:</div>
+            <div class="mezo-torzs">
+                <textarea rows="5"
+                          class="mezo-input"
+                          pInputTextarea
+                          [disabled]="!szerkesztesiAdatok()?.recept()?.sajatE"
+                          [ngClass]="{'ng-invalid ng-dirty': szerkesztesiAdatok()?.recept()?.leiras?.length < 1}"
+                          [ngModel]="szerkesztesiAdatok()?.recept().leiras"
+                          (ngModelChange)="leirasModositas($event)">
+                </textarea>
+            </div>
+        </div>
+        <div class="torzs-sor megjegyzesek">
+            <div class="mezo-felirat">Megjegyzések:</div>
+            <div class="mezo-torzs megj-torzs">
+                @if (szerkesztesiAdatok()?.recept()?.megjegyzesek?.length > 0) {
+                @for (megjegyzes of szerkesztesiAdatok()?.recept()?.megjegyzesek; track megjegyzes) {
+                <div class="megj-blokk">
+                    <div class="mb-bal">
+                        <div class="mb-bal-felh">
+                            {{megjegyzes.felhasznaloAzon}}
+                        </div>
+                        <div class="mb-bal-ido">
+                            {{megjegyzes.idopont}}
+                        </div>
+                    </div>
+                    <div class="mb-jobb">
+                        <textarea rows="2"
+                                  class="mb-input"
+                                  pInputTextarea
+                                  [disabled]="!megjegyzes.sajatE"
+                                  [ngClass]="{'ng-invalid ng-dirty': megjegyzes.duma.length < 1}"
+                                  [(ngModel)]="megjegyzes.duma">
+                        </textarea>
+                    </div>
+                </div>
+                }
+                } @else {
+                <div class="nincs-megj">Nincs megjegyzés rögzítve</div>
+                }
+                @if (!vanSajatMegjegyzes()) {
+                <div class="uj-megjegyzes">
+                    <div class="uj-megj-gomb"
+                         (click)="ujMegjegyzesRogzitesInditas()">
+                        <span class="pi pi-plus"></span> Új megjegyzés felvétele
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="torzs-sor">
+            Linkek... {{szerkesztesiAdatok()?.recept()?.linkek?.length}}db
+        </div>
+        <div class="torzs-sor">
+            Képek... {{szerkesztesiAdatok()?.recept()?.kepek?.length}}db
+        </div>
         }
-        <br>
-        {{szerkesztesiAdatok()?.forrasRecept?.azon}}
-        {{mobilE()}}
         <!-- ITT LESZNEK A RECEPT MEZŐK
         <p-button [icon]="'pi pi-plus'"
                   [severity]="'help'"

@@ -59,6 +59,9 @@ export class Recept {
             if (recept.megjegyzesek && recept.megjegyzesek.length > 0) {
                 recept.megjegyzesek.forEach(rmi => {
                     const rm = new ReceptMegjegyzes(rmi);
+                    if (rm.felhasznaloAzon && rm.felhasznaloAzon === recept.gazdaFelhasznaloAzon) {
+                        rm.sajatE = true;
+                    }
                     this.megjegyzesek.push(rm);
                 });
             }
@@ -77,7 +80,6 @@ export class Recept {
             this.sajatE = false;
         }
     }
-
 
     convertForSave(): ReceptIF {
 

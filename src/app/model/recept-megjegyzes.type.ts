@@ -1,10 +1,13 @@
+import { dateToYYYYMMDD, dateToYYYYMMDDhhmmss } from "../utils";
 import { ReceptMegjegyzesIF } from "./recept-megjegyzes.interface";
 
 export class ReceptMegjegyzes {
 
     duma: string;
     felhasznaloAzon: string;
-    idopont: Date;
+    idopont: string;
+    // származtatott, megadja, hogy a bejelentkezett felhasználó által felvett megjegyzése-e
+    sajatE: boolean = false;
 
     static convertFromIfList(list: ReceptMegjegyzesIF[]): ReceptMegjegyzes[] {
         const result: ReceptMegjegyzes[] = [];
@@ -20,11 +23,13 @@ export class ReceptMegjegyzes {
         if (megjegyzes) {
             this.duma = megjegyzes.duma;
             this.felhasznaloAzon = megjegyzes.felhasznaloAzon;
-            this.idopont = new Date(megjegyzes.idopont);
+            this.idopont = megjegyzes.idopont;
+            this.sajatE = false;
         } else {
             this.duma = null;
             this.felhasznaloAzon = null;
-            this.idopont = new Date();
+            this.idopont = dateToYYYYMMDDhhmmss(new Date(), true);
+            this.sajatE = false;
         }
     }
 
@@ -33,7 +38,7 @@ export class ReceptMegjegyzes {
         return {
             duma: this.duma,
             felhasznaloAzon: this.felhasznaloAzon,
-            idopont: this.idopont ? this.idopont.getTime() : null
+            idopont: this.idopont ? this.idopont : null
         };
     }
 

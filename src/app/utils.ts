@@ -28,6 +28,26 @@ export function dateToYYYYMMDD(datum: Date): string {
     }
 }
 
+export function dateToYYYYMMDDhhmmss(datum: Date, jelekkel: boolean): string {
+    if (datum && datum instanceof Date) {
+        let result = datum.toLocaleDateString('hu-HU', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        if (jelekkel) {
+            return result.replace(' ', '').replace(' ', '');
+        } else {
+            return result.replaceAll('.', '').replaceAll(' ', '').replaceAll(':', '');
+        }
+    } else {
+        return null;
+    }
+}
+
 export function intervallDates(start: Date, end: Date): Date[] {
     if (start && start instanceof Date && end && end instanceof Date && start <= end) {
         const result: Date[] = [];

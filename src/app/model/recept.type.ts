@@ -32,10 +32,12 @@ export class Recept {
 
     static convertFromObject(objektum: any): Recept[] {
         const result: Recept[] = [];
-        for (const [k, v] of Object.entries(objektum)) {
-            console.debug('objektumban lévő recept kulcsa  és értéke', k, v);
-            const adatIf = v as ReceptIF;
-            result.push(new Recept(adatIf));
+        if (objektum) {
+            for (const [k, v] of Object.entries(objektum)) {
+                console.debug('objektumban lévő recept kulcsa  és értéke', k, v);
+                const adatIf = v as ReceptIF;
+                result.push(new Recept(adatIf));
+            }
         }
         return result;
     }

@@ -1,9 +1,10 @@
+import { cloneDeep } from 'lodash';
 import { FireAuthService } from './fire-auth.service';
 import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { AkcioTetelIF } from './model/akcio-tetel.interface';
 import { AkciosListaIF } from './model/akcios-lista.interface';
-import { Observable, debounceTime, distinctUntilChanged, from, map, tap } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, from, map, tap, switchMap, concatMap } from 'rxjs';
 import { AkciosLista } from './model/akcios-lista.type';
 import { AkcioTetel } from './model/akcio-tetel.type';
 import { dateToYYYYMMDD, resizeImage, sortFunction } from './utils';
@@ -175,6 +176,15 @@ export class AdatServiceService {
         return result;
     }
 
+    receptlistaAllitas(receptlista: Recept[]): void {
+        this.receptLista.set(receptlista);
+        if (this.kivalasztottRecept() && receptlista.findIndex(recept => recept.azon === this.kivalasztottRecept().azon) < 0) {
+            this.kivalasztottRecept.set(null);
+            this.szerkesztendoRecept.set(null);
+        }
+        // console.debug('AdatServiceService - receptlistaAllitas', receptlista, this.receptLista(), this.jeloltReceptLista());
+    }
+
     receptekLekereseAlap(token: string): Observable<Recept[]> {
         return this.httpClient.get<any>('https://bevasarlolista-8247e.firebaseio.com/receptek.json?auth=' + token, {
             observe: 'body',
@@ -183,11 +193,7 @@ export class AdatServiceService {
             // tap(x => console.debug('receptek RESPONSE ', x)),
             map(response => response instanceof Array ? Recept.convertFromIfList(response) : Recept.convertFromObject(response)),
             tap(rl => {
-                this.receptLista.set(rl);
-                if (this.kivalasztottRecept() && rl.findIndex(recept => recept.azon === this.kivalasztottRecept().azon) < 0) {
-                    this.kivalasztottRecept.set(null);
-                    this.szerkesztendoRecept.set(null);
-                }
+                this.receptlistaAllitas(rl);
             })
         );
     }
@@ -202,6 +208,48 @@ export class AdatServiceService {
             tap(kl => {
                 this.kedvencReceptekLista.set(kl);
             })
+        );
+    }
+
+    receptCsere(mentendoRecept: Recept, receptLista: Recept[]): Recept[] {
+        let receptek: Recept[] = [];
+        if (receptLista.findIndex(r => r.azon === mentendoRecept.azon) > -1) {
+            receptek = receptLista.map(r => {
+                if (r.azon === mentendoRecept.azon) {
+                    //TODO: itt kellene kezelni / összefésülni az esetlegesen párhuzamosan módosított megjegyzéseket/linkeket/képeket
+                    return mentendoRecept;
+                } else {
+                    return r;
+                }
+            })
+        } else {
+            receptek = [mentendoRecept].concat(receptLista);
+        }
+        return receptek;
+    }
+
+    recepMentese(mentendoRecept: Recept, token: string): Observable<Recept[]> {
+
+        // Ha más mentett, mikötben mi editáltunk valamit, és mi nem kérnénk le mentés előtt az aktuális szerver oldali listát, 
+        // akkor a mentéskor, ami teljes lista felülírást jelent, egy korábbi állapottal felülvágnánk mások mentését.
+        // TODO: azon eset kezelése, ha valaki a mi receptünknél a saját megjegyzését módosította...
+        return this.receptekLekereseAlap(token).pipe(
+            map(rl => this.receptCsere(mentendoRecept, rl)),
+            tap(x => console.debug('AdatServiceService - recepMentese x', x)),
+            concatMap(csereltLista => this.httpClient.put<ReceptIF[]>('https://bevasarlolista-8247e.firebaseio.com/receptek.json?auth=' + token,
+                csereltLista,
+                {
+                    observe: 'body',
+                    responseType: 'json'
+                }).pipe(
+                    map(response => Recept.convertFromIfList(response)),
+                    tap(mentettReceptek => {
+                        // A receptCsere során ugyan kicserélődik a mentésnek átadott elem, de a receptLista signal-ban a lekérdezéskor kapott
+                        // receptek maradnak, ezért kell a mentés után is elvégezni az állítást. 
+                        this.receptlistaAllitas(mentettReceptek);
+                        // console.debug('AdatServiceService - recepMentese y', this.jeloltReceptLista());
+                    })
+                ))
         );
     }
 

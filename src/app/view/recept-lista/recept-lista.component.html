@@ -53,7 +53,9 @@
                             @if (recept.sajatE) {
                                 <span class="sajat-jel">S</span>
                             }
-                            <span class="pi pi-star-fill kedvenc-ikon" [ngClass]="{'sajat-is': recept.sajatE}"></span>
+                            @if(recept.kedvencE) {
+                                <span class="pi pi-star-fill kedvenc-ikon" [ngClass]="{'sajat-is': recept.kedvencE}"></span>
+                            }
                         )
                     </span>
                 }

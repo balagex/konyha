@@ -6,6 +6,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Recept } from '../../model/recept.type';
 import { AdatServiceService } from '../../adat-service.service';
 import { cloneDeep } from 'lodash';
+import { GrowlService } from '../growl/growl.service';
+import { GrowlMsg } from '../../model/groel-msg.type';
 
 @Component({
     selector: 'app-recept-lista',
@@ -61,7 +63,7 @@ export class ReceptListaComponent {
 
     receptKivalasztva = output<Recept>();
 
-    constructor(private adatServiceService: AdatServiceService) { }
+    constructor(private adatServiceService: AdatServiceService, private growlService: GrowlService) { }
 
     kedvenceketEAllitas(): void {
         this.adatServiceService.csakKedvencekE.set(!this.adatServiceService.csakKedvencekE());
@@ -86,6 +88,8 @@ export class ReceptListaComponent {
 
     receptKivalasztas(kivalasztottRecept: Recept): void {
         this.adatServiceService.kivalasztottRecept.set(kivalasztottRecept);
+        // const uzi = new GrowlMsg(kivalasztottRecept.nev, kivalasztottRecept.sajatE ? 'info' : 'hiba')
+        // this.growlService.idozitettUzenetMegjelenites(uzi, kivalasztottRecept.sajatE ? 2000 : 0);
         const masolat = cloneDeep(kivalasztottRecept);
         this.adatServiceService.szerkesztendoRecept.set(masolat);
         if (this.mobilE) {

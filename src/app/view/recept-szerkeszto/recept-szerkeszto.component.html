@@ -10,7 +10,10 @@
                   (onClick)="mentes()"
                   [disabled]="!receptMentheto()"></p-button>
         } @else {
-        <div class="resze-fej-duma">A kiválasztott recept nem saját, így csak a saját megjegyzések módosíthatók.</div>
+        <div class="resze-fej-duma">
+            A kiválasztott recept nem saját, így csak a saját megjegyzések
+            módosíthatók.
+        </div>
         }
         }
         @if (!mobilE()) {
@@ -50,10 +53,11 @@
         <div class="torzs-sor leiras">
             <div class="mezo-felirat">Leírás:</div>
             <div class="mezo-torzs">
-                <textarea rows="5"
+                <textarea rows="2"
                           class="mezo-input"
                           pInputTextarea
                           [disabled]="!szerkesztesiAdatok()?.recept()?.sajatE"
+                          [autoResize]="true"
                           [ngClass]="{'ng-invalid ng-dirty': szerkesztesiAdatok()?.recept()?.leiras?.length < 1}"
                           [ngModel]="szerkesztesiAdatok()?.recept().leiras"
                           (ngModelChange)="leirasModositas($event)">
@@ -68,10 +72,10 @@
                 <div class="megj-blokk">
                     <div class="mb-bal">
                         <div class="mb-bal-felh">
-                            {{megjegyzes.felhasznaloAzon}}
+                            {{ megjegyzes.felhasznaloAzon }}
                         </div>
                         <div class="mb-bal-ido">
-                            {{megjegyzes.idopont}}
+                            {{ megjegyzes.idopont }}
                         </div>
                     </div>
                     <div class="mb-jobb">
@@ -79,16 +83,17 @@
                                   class="mb-input"
                                   pInputTextarea
                                   [disabled]="!megjegyzes.sajatE"
-                                  [ngClass]="{'ng-invalid ng-dirty': megjegyzes.duma.length < 1}"
-                                  [(ngModel)]="megjegyzes.duma">
+                                  [autoResize]="true"
+                                  [ngClass]="{ 'ng-invalid ng-dirty': megjegyzes.duma?.length < 1 }"
+                                  [(ngModel)]="megjegyzes.duma"
+                                  (ngModelChange)="megjegyzesModositas(megjegyzes)">
                         </textarea>
                     </div>
                 </div>
                 }
                 } @else {
                 <div class="nincs-megj">Nincs megjegyzés rögzítve</div>
-                }
-                @if (!vanSajatMegjegyzes()) {
+                } @if (!vanSajatMegjegyzes()) {
                 <div class="uj-megjegyzes">
                     <div class="uj-megj-gomb"
                          (click)="ujMegjegyzesRogzitesInditas()">
@@ -99,10 +104,10 @@
             </div>
         </div>
         <div class="torzs-sor">
-            Linkek... {{szerkesztesiAdatok()?.recept()?.linkek?.length}}db
+            Linkek... {{ szerkesztesiAdatok()?.recept()?.linkek?.length }}db
         </div>
         <div class="torzs-sor">
-            Képek... {{szerkesztesiAdatok()?.recept()?.kepek?.length}}db
+            Képek... {{ szerkesztesiAdatok()?.recept()?.kepek?.length }}db
         </div>
         }
         <!-- ITT LESZNEK A RECEPT MEZŐK

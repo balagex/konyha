@@ -1,0 +1,37 @@
+@import "../../app-colors.scss";
+
+.growl-layout {
+    position: fixed;
+    right: 10px;
+    top: 64px;
+    z-index: 24;
+    display: block;
+    background-color: transparent;
+    text-align: -webkit-right;
+
+    .growl-msg-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 81%;
+        min-width: 400px;
+        min-height: 7rem;
+        border-radius: 1rem;
+
+        &.info {
+            background-color: $kk-growl-info;
+        }
+
+        &.error {
+            background-color: $kk-growl-error;
+        }
+
+        .growl-msg {
+            font-weight: 500;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 2rem;
+            white-space: pre-wrap;
+        }
+    }
+}

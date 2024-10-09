@@ -1,0 +1,48 @@
+{
+    "workbench.startupEditor": "newUntitledFile",
+    "git.confirmSync": false,
+    "editor.minimap.enabled": false,
+    // The number of spaces a tab is equal to. This setting is overriden
+    // based on the file contents when `editor.detectIndentation` is true.
+    "editor.tabSize": 4,
+    // Insert spaces when pressing Tab. This setting is overriden
+    // based on the file contents when `editor.detectIndentation` is true.
+    "editor.insertSpaces": true,
+    // When opening a file, `editor.tabSize` and `editor.insertSpaces`
+    // will be detected based on the file contents.
+    "editor.detectIndentation": false,
+    "sassFormat.indent": 4,
+    "html.format.wrapAttributes": "force-aligned",
+    "[typescript]": {
+      "editor.formatOnSave": true,
+      "editor.formatOnPaste": true,
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "workbench.colorTheme": "Visual Studio Light",
+    "editor.tokenColorCustomizations": {
+      "comments": "#97c6b1",
+      "strings": "#FF0000",
+      "types": "#fc1bb1"
+    },
+    "workbench.colorCustomizations": {
+    
+      "sideBar.background": "#fcfcfb"
+    },
+    "git.enableSmartCommit": true,
+    "gitlens.advanced.messages": {
+      "suppressCommitNotFoundWarning": true,
+      "suppressShowKeyBindingsNotice": true
+    },
+    "gitlens.historyExplorer.enabled": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
+    "terminal.integrated.rendererType": "dom",
+    "update.channel": "manual",
+    "update.enableWindowsBackgroundUpdates": false,
+    "breadcrumbs.enabled": true,
+    "[html]": {
+      "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always"
+  }

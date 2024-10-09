@@ -5,12 +5,13 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, FirebaseStorage, uploadBytes, ref } from 'firebase/storage';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrimeNGConfig } from 'primeng/api';
+import { GrowlComponent } from './view/growl/growl.component';
 
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, TranslateModule],
+    imports: [CommonModule, RouterOutlet, TranslateModule, GrowlComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })

@@ -1,0 +1,9 @@
+<div class="growl-layout">
+    @if (uzenet()?.uzenet?.length > 0) {
+    <div class="growl-msg-box"
+         (click)="uzenetElrejtes()"
+         [ngClass]="{'info': uzenet()?.tipus == 'info' , 'error': uzenet()?.tipus == 'hiba'}">
+        <div class="growl-msg">{{uzenet()?.uzenet}}</div>
+    </div>
+    }
+</div>

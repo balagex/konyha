@@ -73,6 +73,10 @@
             &.kivalasztott {
                 border: 2px solid $prime-warning;
             }
+
+            &.sajat {
+                color: $kk-lila;
+            }
     
             .recept-nev {
                 width: 60%;
@@ -86,16 +90,8 @@
                     font-weight: 400;
                     margin-left: 0.3rem;
 
-                    .sajat-jel {
-                        font-weight: 600;
-                    }
-
                     .kedvenc-ikon {
                         font-size: 0.9rem;
-
-                        &.sajat-is {
-                            padding-left: 0.3rem;
-                        }
                     }
                 }
             }

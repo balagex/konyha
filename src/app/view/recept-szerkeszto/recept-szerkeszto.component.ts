@@ -55,6 +55,10 @@ export class ReceptSzerkesztoComponent implements OnInit {
         return result;
     });
 
+    ujReceptE = computed(() => {
+        return this.adatServiceService.szerkesztendoReceptUjReceptE();
+    });
+
     // receptMentheto = computed<boolean>(() => {
     //     this.adatServiceService.szerkesztendoRecept();
     //     const recept = this.szerkesztesiAdatok().recept();
@@ -114,23 +118,62 @@ export class ReceptSzerkesztoComponent implements OnInit {
     }
 
     mentes(): void {
-        // TODO megcsinálni
+        // TODO service oldalon a megjegyzés fésülés hátravan
         const mentendoRecept = this.szerkesztesiAdatok().recept();
         console.debug('ReceptSzerkesztoComponent - mentes ', this.szerkesztesiAdatok().recept(), mentendoRecept);
+
+        // Azért jegyezzük meg mentés előtt, mert utána automata átvált false-ra és nem indul a kedvenc aktualizálás.
+        const ujReceptetMentunkE = this.ujReceptE();
 
         this.adatServiceService.recepMentese(mentendoRecept, this.fireAuthService.getToken()).subscribe({
             next: (receptek) => {
                 console.debug('ReceptSzerkesztoComponent - mentés válasz: ', receptek, this.adatServiceService.receptLista());
-                const uzi = new GrowlMsg('Sikeres mentés', 'info');
-                this.growlService.idozitettUzenetMegjelenites(uzi, 2000);
+                if (ujReceptetMentunkE) {
+                    this.kedvencekAktualizalasa(mentendoRecept);
+                } else {
+                    const uzi = new GrowlMsg('Sikeres mentés', 'info');
+                    this.growlService.idozitettUzenetMegjelenites(uzi, 2000);
+                }
             },
             error: (receptekError) => {
-                console.error('KonyhaMainComponent - RECEPT LISTA MENTÉS HIBA ', receptekError);
+                console.error('ReceptSzerkesztoComponent - RECEPT LISTA MENTÉS HIBA ', receptekError);
                 let duma = 'Hiba történt a mentés során!' + UJ_SOR + UJ_SOR +
                     'Valószínűleg lejárt a kapcsolati idő, újra be kell lépni.';
                 if (receptekError instanceof HttpErrorResponse) {
                     duma = duma + UJ_SOR + UJ_SOR +
                         JSON.stringify(receptekError?.error);
+                }
+                const uzi = new GrowlMsg(duma, 'hiba');
+                this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+            }
+        });
+    }
+
+    kedvencsegAllitas(): void {
+        const recept = this.szerkesztesiAdatok().recept();
+        recept.kedvencE = !recept.kedvencE;
+        this.szerkesztesiAdatok().recept.set(recept);
+        console.debug('ReceptSzerkesztoComponent - kedvencsegAllitas ', recept.kedvencE);
+        if (!this.ujReceptE()) {
+            this.kedvencekAktualizalasa(recept);
+        }
+    }
+
+    kedvencekAktualizalasa(recept: Recept): void {
+        console.debug('ReceptSzerkesztoComponent - kedvencekAktualizalasa ', recept);
+        this.adatServiceService.receptKedvencsegModositasMentese(recept, this.fireAuthService.getEmail(), this.fireAuthService.getToken()).subscribe({
+            next: (kedvencek) => {
+                console.debug('ReceptSzerkesztoComponent - mentés válasz: ', kedvencek);
+                const uzi = new GrowlMsg('Sikeres mentés', 'info');
+                this.growlService.idozitettUzenetMegjelenites(uzi, 2000);
+            },
+            error: (kedvencekError) => {
+                console.error('ReceptSzerkesztoComponent - RECEPT LISTA MENTÉS HIBA ', kedvencekError);
+                let duma = 'Hiba történt a mentés során!' + UJ_SOR + UJ_SOR +
+                    'Valószínűleg lejárt a kapcsolati idő, újra be kell lépni.';
+                if (kedvencekError instanceof HttpErrorResponse) {
+                    duma = duma + UJ_SOR + UJ_SOR +
+                        JSON.stringify(kedvencekError?.error);
                 }
                 const uzi = new GrowlMsg(duma, 'hiba');
                 this.growlService.idozitettUzenetMegjelenites(uzi, 0);

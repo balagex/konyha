@@ -2,10 +2,7 @@
     <div class="login-panel">
         <div class="fej">
             Konyhai kisokos
-            <!-- <div class="fej-bal"><em>&lt;A</em></div>
-            <div class="fej-kozep">Akciók</div>
-            <div class="fej-jobb"><em>B&gt;</em></div> -->
-        </div> 
+        </div>
         <div class="login-mezo cimke">
             <span>Felhasználó név</span>
         </div>
@@ -38,7 +35,9 @@
             </button>
         </div>
         <div class="login-hiba">
-            <div class="hiba" *ngIf="loginError">Hiba történt a bejelentkezés során! Próbáld újra...</div>
+
+            <div class="hiba"
+                 *ngIf="loginError">Hiba történt a bejelentkezés során! Próbáld újra...</div>
         </div>
     </div>
 </div>

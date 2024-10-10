@@ -64,6 +64,15 @@ export class AdatServiceService {
         return eredmenyLista;
     });
 
+    public szerkesztendoReceptUjReceptE = computed<boolean>(() => {
+        let result = true;
+        if (this.receptLista()?.length > 0 && this.szerkesztendoRecept()?.azon?.length > 0 && this.receptLista().findIndex(r => r.azon === this.szerkesztendoRecept().azon) > -1) {
+            result = false;
+        }
+
+        return result;
+    });
+
     constructor(protected httpClient: HttpClient, protected fireAuthService: FireAuthService) { }
 
     ujSzerkesztendoReceptLetrehozasa(): void {
@@ -221,7 +230,7 @@ export class AdatServiceService {
                 } else {
                     return r;
                 }
-            })
+            });
         } else {
             receptek = [mentendoRecept].concat(receptLista);
         }
@@ -248,6 +257,75 @@ export class AdatServiceService {
                         // receptek maradnak, ezért kell a mentés után is elvégezni az állítást. 
                         this.receptlistaAllitas(mentettReceptek);
                         // console.debug('AdatServiceService - recepMentese y', this.jeloltReceptLista());
+                    })
+                ))
+        );
+    }
+
+    // Azért nem használhatjuk a recept gazda felhasználó azonosítóját, mert más felhasználó receptjét is megjelölhetjük kedvencnek
+    sajatKedvencReceptekListaKalkulalasa(recept: Recept, kedvencReceptekLista: KedvencReceptek[], felhasznaloAzon: string): KedvencReceptek[] {
+        let sajatKedvencek: KedvencReceptek = kedvencReceptekLista.find(krl => krl.felhasznaloAzon === felhasznaloAzon);
+        if (!sajatKedvencek) {
+            if (recept.kedvencE) {
+                // Ha nincs még saját kedvenc lista, de a recept kedvenc, akkor létre kell hozniegy listát, azt betenni a sajátba, a sajátot meg a közösbe.
+                sajatKedvencek = new KedvencReceptek({
+                    felhasznaloAzon: felhasznaloAzon,
+                    kedvencek: [recept.azon]
+                });
+                console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - NINCS MÉG KEDVENC, BE KELL TENNI...', sajatKedvencek);
+                return [sajatKedvencek].concat(kedvencReceptekLista);
+            } else {
+                // Ha nincs még saját kedvenc lista, és a recept sem kedvenc, akkor nincs teendő.
+                console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - NINCS MÉG KEDVENC, DE NEM IS KELL BETENNI...');
+                return kedvencReceptekLista;
+            }
+        } else {
+            // Ha van mar sajat kedvenc lista, akkor ha a recept is kedvenc, akkor bele kell tenni, ha még nincs benne,
+            // vagy ha nem kedvenc a recept, de a saját listában benne van, akkor ki kell venni.
+            const eredmeny = kedvencReceptekLista.map(kr => {
+                if (kr.felhasznaloAzon === felhasznaloAzon) {
+
+                    const sajatKedvencek = kr;
+                    console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - Ez a saját: ', kr);
+
+                    if (recept.kedvencE && kr.kedvencek?.findIndex(k => k === recept.azon) < 0) {
+                        console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - betennénk a kedvencek közé ', recept);
+                        sajatKedvencek.kedvencek = [recept.azon].concat(kr.kedvencek);
+                    }
+                    if (!recept.kedvencE) {
+                        console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - kivennénk a kedvencek közül ', recept);
+                        sajatKedvencek.kedvencek = kr.kedvencek?.filter(k => k !== recept.azon);
+                    }
+
+                    return sajatKedvencek;
+                } else {
+                    console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - Nem ez a saját: ', kr);
+                    return kr;
+                }
+            });
+
+            console.debug('AdatServiceService - sajatKedvencReceptekListaKalkulalasa - VAN MÁR KEDVENC...', eredmeny);
+
+            return eredmeny;
+        }
+    }
+
+    receptKedvencsegModositasMentese(recept: Recept, felhasznaloAzon: string, token: string): Observable<KedvencReceptek[]> {
+        // Ha más is variálta a kedvenc receptjeit, akkor lekérjük az aktuális listát, hogy módosítását ne vágjük felül.
+        // Szerencsére a kedvencek felhasználónként szeparáltak, így az adott recept tulajdonoságoz tartozó kedvenc listát kell csak mogyorózni.
+        return this.kedvencReceptekLekereseAlap(token).pipe(
+            map(krl => this.sajatKedvencReceptekListaKalkulalasa(recept, krl, felhasznaloAzon)),
+            tap(x => console.debug('AdatServiceService - receptKedvencsegModositasMentese x', x)),
+            concatMap(ujLista => this.httpClient.put<KedvencReceptekIF[]>('https://bevasarlolista-8247e.firebaseio.com/kedvencReceptek.json?auth=' + token,
+                ujLista,
+                {
+                    observe: 'body',
+                    responseType: 'json'
+                }).pipe(
+                    map(response => KedvencReceptek.convertFromIfList(response)),
+                    tap(mentettKedvencek => {
+                        this.kedvencReceptekLista.set(mentettKedvencek);
+                        console.debug('AdatServiceService - receptKedvencsegModositasMentese y', mentettKedvencek, this.jeloltReceptLista());
                     })
                 ))
         );

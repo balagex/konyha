@@ -1,6 +1,14 @@
 <div class="recept-szerk-keret">
     <div class="resze-fej">
         @if (szerkesztesiAdatok()?.recept()?.azon) {
+        <div class="kedvenc-allito">
+            <p-button [icon]="szerkesztesiAdatok()?.recept()?.kedvencE ? 'pi pi-star-fill' : 'pi pi-star'"
+                      severity="warning"
+                      [rounded]="true"
+                      [text]="true"
+                      [raised]="true"
+                      (onClick)="kedvencsegAllitas()"></p-button>
+        </div>
         @if (szerkesztesiAdatok()?.recept()?.sajatE) {
         <p-button icon="pi pi-save"
                   severity="primary"
@@ -28,7 +36,7 @@
     <div class="resze-torzs">
         @if (torzsMegjelenithetoE()) {
         <div class="torzs-sor nev">
-            <div class="mezo-felirat">Név:</div>
+            <div class="mezo-felirat">Név: {{ujReceptE()}}</div>
             <div class="mezo-torzs">
                 <input type="text"
                        pInputText

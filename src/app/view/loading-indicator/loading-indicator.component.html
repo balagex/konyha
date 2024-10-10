@@ -1,0 +1,5 @@
+<div class="loading-indicator-shadow" [ngClass]="{'loading' : loading()}"></div>
+@if (loading()) {
+    <div class="loading-indicator-foreground"><img class="image" src="/assets/loading.png" alt="" width="120" height="120"></div>
+}
+

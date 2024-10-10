@@ -44,19 +44,14 @@
         @for (recept of receptLista(); track "azon") {
         <div class="recept-panel"
              (click)="receptKivalasztas(recept)"
-             [ngClass]="{'kivalasztott': kivalasztottReceptAzon() == recept.azon}">
+             [ngClass]="{'kivalasztott': kivalasztottReceptAzon() == recept.azon, 'sajat': recept.sajatE}">
             <div class="recept-nev">
                 {{recept.nev}}
-                @if (recept.kedvencE || recept.sajatE) {
+                @if (recept.kedvencE) {
                     <span class="nev-kieg">
                         (
-                            @if (recept.sajatE) {
-                                <span class="sajat-jel">S</span>
-                            }
-                            @if(recept.kedvencE) {
-                                <span class="pi pi-star-fill kedvenc-ikon" [ngClass]="{'sajat-is': recept.kedvencE}"></span>
-                            }
-                        )
+                            <span class="pi pi-star-fill kedvenc-ikon"></span>
+                        )    
                     </span>
                 }
             </div>

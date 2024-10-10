@@ -6,12 +6,13 @@ import { getStorage, FirebaseStorage, uploadBytes, ref } from 'firebase/storage'
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { GrowlComponent } from './view/growl/growl.component';
+import { LoadingIndicatorComponent } from './view/loading-indicator/loading-indicator.component';
 
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, TranslateModule, GrowlComponent],
+    imports: [CommonModule, RouterOutlet, TranslateModule, GrowlComponent, LoadingIndicatorComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })

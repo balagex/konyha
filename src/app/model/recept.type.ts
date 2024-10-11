@@ -112,5 +112,4 @@ export class Recept {
             megjegyzesek: megjegyzesLista
         };
     }
-
 }

@@ -19,9 +19,17 @@
                   [disabled]="!receptMentheto()"></p-button>
         } @else {
         <div class="resze-fej-duma">
-            A kiválasztott recept nem saját, így csak a saját megjegyzések
-            módosíthatók.
+            A kiválasztott recept nem saját, így csak a saját megjegyzés módosítható.
         </div>
+        @if (sajatMegjegyzesVanE()) {
+        <p-button icon="pi pi-save"
+                  severity="primary"
+                  [text]="true"
+                  [raised]="true"
+                  label="Mentés"
+                  (onClick)="mentes()"
+                  [disabled]="!receptMentheto()"></p-button>
+        }
         }
         }
         @if (!mobilE()) {
@@ -92,27 +100,140 @@
                                   pInputTextarea
                                   [disabled]="!megjegyzes.sajatE"
                                   [autoResize]="true"
-                                  [ngClass]="{ 'ng-invalid ng-dirty': megjegyzes.duma?.length < 1 }"
+                                  [ngClass]="{ 'ng-invalid ng-dirty': megjegyzes.sajatE && megjegyzes.duma?.length < 1}"
                                   [(ngModel)]="megjegyzes.duma"
                                   (ngModelChange)="megjegyzesModositas(megjegyzes)">
                         </textarea>
                     </div>
+                    @if (megjegyzes.sajatE) {
+                    <div class="megj-torles">
+                        <p-button icon="pi pi-trash"
+                                  severity="danger"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  [raised]="true"
+                                  (onClick)="sajatMegjegyzesTorles($event, megjegyzes)"></p-button>
+                        <p-confirmPopup #megjegyzesConfirmPopupRef>
+                            <ng-template pTemplate="headless"
+                                         let-message>
+                                <div class="torles-confirm-keret">
+                                    <div class="tc-uzi">
+                                        <span>{{ message.message }}</span>
+                                    </div>
+                                    <div class="tc-gombok">
+                                        <p-button icon="pi pi-trash"
+                                                  severity="danger"
+                                                  [rounded]="true"
+                                                  [text]="true"
+                                                  (onClick)="megjTorlesAccept()"></p-button>
+                                        <p-button icon="pi pi pi-undo"
+                                                  [rounded]="true"
+                                                  [text]="true"
+                                                  (onClick)="megjTorlesReject()"></p-button>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-confirmPopup>
+                    </div>
+                    }
                 </div>
                 }
                 } @else {
-                <div class="nincs-megj">Nincs megjegyzés rögzítve</div>
-                } @if (!vanSajatMegjegyzes()) {
+                <div class="nincs-megj">
+                    <em>Nincs megjegyzés rögzítve</em>
+                </div>
+                } @if (!sajatMegjegyzesVanE()) {
                 <div class="uj-megjegyzes">
-                    <div class="uj-megj-gomb"
-                         (click)="ujMegjegyzesRogzitesInditas()">
-                        <span class="pi pi-plus"></span> Új megjegyzés felvétele
+                    <div class="uj-megj-gomb">
+                        <p-button icon="pi pi-plus"
+                                  severity="help"
+                                  [text]="true"
+                                  [raised]="true"
+                                  label="Új megjegyzés"
+                                  (onClick)="ujMegjegyzesRogzitesInditas()"></p-button>
                     </div>
                 </div>
                 }
             </div>
         </div>
-        <div class="torzs-sor">
-            Linkek... {{ szerkesztesiAdatok()?.recept()?.linkek?.length }}db
+        <div class="torzs-sor linkek">
+            <div class="mezo-felirat">Linkek:</div>
+            <div class="mezo-torzs link-torzs"
+                 [ngClass]="{ 'idegen': !szerkesztesiAdatok()?.recept()?.sajatE}">
+                @if (szerkesztesiAdatok()?.recept()?.linkek?.length > 0) {
+                @for (link of szerkesztesiAdatok()?.recept()?.linkek; track link) {
+                @if (szerkesztesiAdatok()?.recept()?.sajatE) {
+                <div class="link-blokk">
+                    <div class="link-mod">
+                        <p-button icon="pi pi-file-edit"
+                                  severity="warning"
+                                  [size]="'small'"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="linkModositas(link)"></p-button>
+                    </div>
+                    <div class="link-nev">
+                        <p-button [label]="link.nev"
+                                  [link]="true"
+                                  (click)="openLink(link)" />
+                    </div>
+                    <div class="link-torles">
+                        <p-button icon="pi pi-trash"
+                                  severity="danger"
+                                  [size]="'small'"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="linkTorles($event, link)"></p-button>
+                        <p-confirmPopup #linkConfirmPopupRef>
+                            <ng-template pTemplate="headless"
+                                         let-message>
+                                <div class="torles-confirm-keret">
+                                    <div class="tc-uzi">
+                                        <span>{{ message.message }}</span>
+                                    </div>
+                                    <div class="tc-gombok">
+                                        <p-button icon="pi pi-trash"
+                                                  severity="danger"
+                                                  [rounded]="true"
+                                                  [text]="true"
+                                                  (onClick)="linkTorlesAccept()"></p-button>
+                                        <p-button icon="pi pi pi-undo"
+                                                  [rounded]="true"
+                                                  [text]="true"
+                                                  (onClick)="linkTorlesReject()"></p-button>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </p-confirmPopup>
+                    </div>
+                    <!-- <a (click)="openLink(link)">{{link.nev}}</a> -->
+                </div>
+                } @else {
+                <div class="idegen-link">
+                    <p-button [label]="link.nev"
+                              [link]="true"
+                              (click)="openLink(link)" />
+                </div>
+                }
+                }
+                }@else {
+                <div class="nincs-link">
+                    <em>Nincs Link rögzítve</em>
+                </div>
+                }
+                @if (szerkesztesiAdatok()?.recept()?.sajatE) {
+                <div class="uj-link">
+                    <div class="uj-link-gomb">
+                        <p-button icon="pi pi-plus"
+                                  severity="help"
+                                  [text]="true"
+                                  [raised]="true"
+                                  label="Új link"
+                                  (onClick)="ujLinkRogzitesInditas()"></p-button>
+                    </div>
+                </div>
+                }
+            </div>
         </div>
         <div class="torzs-sor">
             Képek... {{ szerkesztesiAdatok()?.recept()?.kepek?.length }}db

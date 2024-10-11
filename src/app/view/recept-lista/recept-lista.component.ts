@@ -7,7 +7,6 @@ import { Recept } from '../../model/recept.type';
 import { AdatServiceService } from '../../adat-service.service';
 import { cloneDeep } from 'lodash';
 import { GrowlService } from '../growl/growl.service';
-import { GrowlMsg } from '../../model/groel-msg.type';
 
 @Component({
     selector: 'app-recept-lista',
@@ -53,6 +52,7 @@ export class ReceptListaComponent {
     });
 
     receptLista = computed<Recept[]>(() => {
+        // console.debug('ReceptListaComponent - receptLista', this.adatServiceService.jeloltReceptLista());
         return this.adatServiceService.jeloltReceptLista();
     });
 
@@ -87,10 +87,10 @@ export class ReceptListaComponent {
     }
 
     receptKivalasztas(kivalasztottRecept: Recept): void {
+        console.debug('ReceptListaComponent - receptKivalasztas', kivalasztottRecept, kivalasztottRecept instanceof Recept);
         this.adatServiceService.kivalasztottRecept.set(kivalasztottRecept);
-        // const uzi = new GrowlMsg(kivalasztottRecept.nev, kivalasztottRecept.sajatE ? 'info' : 'hiba')
-        // this.growlService.idozitettUzenetMegjelenites(uzi, kivalasztottRecept.sajatE ? 2000 : 0);
         const masolat = cloneDeep(kivalasztottRecept);
+        console.debug('ReceptListaComponent - receptKivalasztas', masolat, masolat instanceof Recept);
         this.adatServiceService.szerkesztendoRecept.set(masolat);
         if (this.mobilE) {
             this.receptKivalasztva.emit(kivalasztottRecept);

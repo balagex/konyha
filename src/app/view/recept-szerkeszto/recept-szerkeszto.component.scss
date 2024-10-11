@@ -40,7 +40,7 @@
             margin: 5px 0;
         }
 
-        .nev, .keszites, .leiras, .megjegyzesek {
+        .nev, .keszites, .leiras, .megjegyzesek, .linkek {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -66,7 +66,7 @@
             }
         }
 
-        .leiras, .megjegyzesek{
+        .leiras, .megjegyzesek, .linkek{
             align-items: start;
 
             .mezo-felirat {
@@ -85,6 +85,7 @@
                     border-radius: 1rem;
                     padding: 0.3rem;
                     background-color: antiquewhite;
+                    position: relative;
 
                     .mb-bal {
                         display: flex;
@@ -104,8 +105,94 @@
                             min-height: 46px;
                         }
                     }
+
+                    .megj-torles {
+                        position: absolute;
+                        bottom: 10%;
+                        left: -60px;
+                    }
+                }
+
+                .nincs-megj {
+                    margin-top: 0.8rem;
+                    text-align: center;
+                    margin-bottom: 1rem;
+                }
+
+                .uj-megjegyzes {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
+        }
+
+        .linkek {
+
+            .link-torzs{
+
+                &.idegen {
+                    display: flex;
+                    flex-wrap: wrap;
+                    column-gap: 1rem;
+                    row-gap: 10px;
+                }
+
+                .link-blokk {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 0 20px;
+                    background-color: aliceblue;
+                    border-radius: 1rem;
+                    margin: 0.3rem 0;
+
+                    .link-nev {
+                        flex-grow: 1;
+                        background-color: #d5eafb82;
+                        margin: 0.2rem 0;
+                        border-radius: 0.5rem;
+                        line-height: 0.7rem;
+                    }
+                }
+
+                .idegen-link {
+                    padding: 0 20px;
+                    background-color: aliceblue;
+                    border-radius: 1rem;
+                    margin: 0.3rem 0;
+                }
+
+                .nincs-link {
+                    margin-top: 0.8rem;
+                    text-align: center;
+                    margin-bottom: 1rem;
+                }
+                
+                .uj-link {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
             }
         }
     }
+}
+
+.torles-confirm-keret {
+
+    max-width: 200px;
+    text-align: center;
+
+    .tc-uzi {
+        font-weight: 700;
+        padding: 10px 5px 0 5px;
+    }
+
+    .tc-gombok {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+    }
+
 }

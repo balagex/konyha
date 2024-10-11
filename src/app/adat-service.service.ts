@@ -47,9 +47,12 @@ export class AdatServiceService {
         const belepettFelhasznaloAzon = this.fireAuthService.getEmail();
         const kedvencReceptek = this.kedvencReceptekLista()?.find(x => x.felhasznaloAzon == belepettFelhasznaloAzon)?.kedvencek;
         const eredmenyLista: Recept[] = this.receptLista()
-            .map(recept => ({ ...recept, sajatE: recept.gazdaFelhasznaloAzon == belepettFelhasznaloAzon } as Recept))
-            // .map(recept => ({ ...recept, megjegyzesek: recept.megjegyzesek.map(megj => ({ ...megj, sajatE: megj.felhasznaloAzon == belepettFelhasznaloAzon } as ReceptMegjegyzes)) } as Recept))
-            .map(recipe => ({ ...recipe, kedvencE: kedvencReceptek?.findIndex(kedvencReceptAzon => kedvencReceptAzon == recipe.azon) > -1 } as Recept))
+            .map(recept => {
+                recept.sajatE = recept.gazdaFelhasznaloAzon == belepettFelhasznaloAzon;
+                recept.kedvencE = kedvencReceptek?.findIndex(kedvencReceptAzon => kedvencReceptAzon == recept.azon) > -1;
+                recept.megjegyzesek.forEach(megj => megj.sajatE = megj.felhasznaloAzon == belepettFelhasznaloAzon);
+                return recept;
+            })
             .filter(tetel => (this.listaSzuroSzoveg().length < 1
                 || this.kesleltetettSzuroSzoveg().length < 1
                 || (tetel.nev.toLowerCase().indexOf(this.kesleltetettSzuroSzoveg().toLowerCase()) > -1)
@@ -237,6 +240,16 @@ export class AdatServiceService {
         return receptek;
     }
 
+    mentendoReceptListaConvertForSave(receptLista: Recept[]): ReceptIF[] {
+        const mentendoTetelek: ReceptIF[] = [];
+        if (receptLista?.length > 0) {
+            receptLista.forEach(recept => {
+                mentendoTetelek.push(recept.convertForSave());
+            });
+        }
+        return mentendoTetelek;
+    }
+
     recepMentese(mentendoRecept: Recept, token: string): Observable<Recept[]> {
 
         // Ha más mentett, mikötben mi editáltunk valamit, és mi nem kérnénk le mentés előtt az aktuális szerver oldali listát, 
@@ -246,7 +259,7 @@ export class AdatServiceService {
             map(rl => this.receptCsere(mentendoRecept, rl)),
             tap(x => console.debug('AdatServiceService - recepMentese x', x)),
             concatMap(csereltLista => this.httpClient.put<ReceptIF[]>('https://bevasarlolista-8247e.firebaseio.com/receptek.json?auth=' + token,
-                csereltLista,
+                this.mentendoReceptListaConvertForSave(csereltLista),
                 {
                     observe: 'body',
                     responseType: 'json'
@@ -310,6 +323,16 @@ export class AdatServiceService {
         }
     }
 
+    mentendoKedvencReceptekConvertForSave(kedvencek: KedvencReceptek[]): KedvencReceptekIF[] {
+        const mentendoTetelek: KedvencReceptekIF[] = [];
+        if (kedvencek?.length > 0) {
+            kedvencek.forEach(kedvenc => {
+                mentendoTetelek.push(kedvenc.convertForSave());
+            });
+        }
+        return mentendoTetelek;
+    }
+
     receptKedvencsegModositasMentese(recept: Recept, felhasznaloAzon: string, token: string): Observable<KedvencReceptek[]> {
         // Ha más is variálta a kedvenc receptjeit, akkor lekérjük az aktuális listát, hogy módosítását ne vágjük felül.
         // Szerencsére a kedvencek felhasználónként szeparáltak, így az adott recept tulajdonoságoz tartozó kedvenc listát kell csak mogyorózni.
@@ -317,7 +340,7 @@ export class AdatServiceService {
             map(krl => this.sajatKedvencReceptekListaKalkulalasa(recept, krl, felhasznaloAzon)),
             tap(x => console.debug('AdatServiceService - receptKedvencsegModositasMentese x', x)),
             concatMap(ujLista => this.httpClient.put<KedvencReceptekIF[]>('https://bevasarlolista-8247e.firebaseio.com/kedvencReceptek.json?auth=' + token,
-                ujLista,
+                this.mentendoKedvencReceptekConvertForSave(ujLista),
                 {
                     observe: 'body',
                     responseType: 'json'

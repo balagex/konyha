@@ -1,0 +1,101 @@
+@if (sajatE()) {
+<div class="link-blokk">
+    @if (szerkesztesAlatt() || ujLinkFelvetelE()) {
+    <div class="link-szerk-cancel">
+        <p-button icon="pi pi-undo"
+                  severity="warning"
+                  [size]="'small'"
+                  [rounded]="true"
+                  [text]="true"
+                  [raised]="true"
+                  (onClick)="linkModMegse()"></p-button>
+    </div>
+    <div class="link-szerk-mezok">
+        <div class="link-szerk-mezo">
+            <div class="link-mezo-felirat">Név:</div>
+            <div class="link-mezo-torzs">
+                <input type="text"
+                       pInputText
+                       class="mezo-input"
+                       [ngClass]="{'ng-invalid ng-dirty': szerkesztettLink()?.nev?.length < 1}"
+                       [(ngModel)]="szerkesztettLink().nev"
+                       (ngModelChange)="linkNevModositas($event)" />
+            </div>
+        </div>
+        <div class="link-szerk-mezo">
+            <div class="link-mezo-felirat">Link:{{szerkesztettLink()?.link?.length}}</div>
+            <div class="link-mezo-torzs">
+                <input type="text"
+                       pInputText
+                       class="mezo-input"
+                       [ngClass]="{'ng-invalid ng-dirty': szerkesztettLink()?.link?.length < 1}"
+                       [(ngModel)]="szerkesztettLink().link"
+                       (ngModelChange)="linkLinkModositas($event)" />
+            </div>
+        </div>
+    </div>
+    <div class="link-szerk-ok">
+        <p-button icon="pi pi-check"
+                  severity="success"
+                  [size]="'small'"
+                  [rounded]="true"
+                  [raised]="true"
+                  [text]="true"
+                  [disabled]="szerkesztettLink()?.link?.length < 1 || szerkesztettLink()?.nev?.length < 1"
+                  (onClick)="linkModOK()"></p-button>
+    </div>
+    } @else {
+    <div class="link-mod">
+        <p-button icon="pi pi-file-edit"
+                  severity="warning"
+                  [size]="'small'"
+                  [rounded]="true"
+                  [text]="true"
+                  [raised]="true"
+                  (onClick)="linkModositasInditas()"></p-button>
+    </div>
+    <div class="link-nev">
+        <p-button [label]="link().nev"
+                  [link]="true"
+                  (click)="openLink()" />
+    </div>
+    <div class="link-torles">
+        <p-button icon="pi pi-trash"
+                  severity="danger"
+                  [size]="'small'"
+                  [rounded]="true"
+                  [text]="true"
+                  [raised]="true"
+                  (onClick)="linkTorles($event)"></p-button>
+        <p-confirmPopup #linkConfirmPopupRef
+                        key="linkConfirmPopupRef">
+            <ng-template pTemplate="headless"
+                         let-message>
+                <div class="egyszeru-confirm-keret">
+                    <div class="eck-uzi">
+                        <span>{{ message.message }}</span>
+                    </div>
+                    <div class="eck-gombok">
+                        <p-button icon="pi pi-trash"
+                                  severity="danger"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="linkTorlesAccept()"></p-button>
+                        <p-button icon="pi pi pi-undo"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="linkTorlesReject()"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+        </p-confirmPopup>
+    </div>
+    }
+</div>
+} @else {
+<div class="idegen-link">
+    <p-button [label]="link().nev"
+              [link]="true"
+              (click)="openLink()" />
+</div>
+}

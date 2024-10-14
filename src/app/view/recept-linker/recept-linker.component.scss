@@ -1,0 +1,71 @@
+@import "../../app-colors.scss";
+
+.link-blokk {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    background-color: aliceblue;
+    border-radius: 1rem;
+    margin: 0.3rem 0;
+
+    .link-nev, .link-szerk-mezok {
+        flex-grow: 1;
+        background-color: #d5eafb82;
+        margin: 0.2rem 0;
+        border-radius: 0.5rem;
+        line-height: 0.7rem;
+    }
+
+    .link-szerk-cancel, .link-mod {
+        display: flex;
+        align-items: center;
+        margin-right: 1rem;
+    }
+
+    .link-szerk-ok, .link-torles {
+        display: flex;
+        align-items: center;
+        margin-left: 1rem;
+    }
+
+    .link-szerk-mezok {
+        // flex-grow: 1;
+
+        .link-szerk-mezo {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.3rem;
+
+            .link-mezo-felirat {
+                width: 60px;
+                text-align: center;
+            }
+
+            .link-mezo-torzs {
+                flex-grow: 1;
+
+                .mezo-input {
+                    width: 100%;
+                    max-width: 100%;
+                    min-width: 100%;
+                    min-height: 46px;
+                }
+            }
+        }
+
+    }
+}
+
+:host::ng-deep .p-button-link {
+    width: 100%;
+}
+
+.idegen-link {
+    padding: 0 20px;
+    background-color: aliceblue;
+    border-radius: 1rem;
+    margin: 0.3rem 0;
+}

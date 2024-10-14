@@ -18,20 +18,21 @@ import { ConfirmPopup, ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmationService } from 'primeng/api';
 import { ReceptLink } from '../../model/recept-link.type';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ReceptLinkerComponent } from '../recept-linker/recept-linker.component';
 
 
 @Component({
     selector: 'app-recept-szerkeszto',
     standalone: true,
-    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent],
     providers: [ConfirmationService],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
 })
 export class ReceptSzerkesztoComponent implements OnInit {
 
-    @ViewChild('megjegyzesConfirmPopupRef', { static: false }) megjTorlesConfirmPopup!: ConfirmPopup;
-    @ViewChild('linkConfirmPopupRef', { static: false }) linkTorlesConfirmPopup!: ConfirmPopup;
+    @ViewChild('megjegyzesConfirmPopupRef', { static: false }) megjTorlesConfirmPopup: ConfirmPopup;
+    // @ViewChild('linkConfirmPopupRef', { static: false }) linkTorlesConfirmPopup!: ConfirmPopup;
 
     mobilE = input<boolean>(false);
 
@@ -54,7 +55,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     // megjegyzesListaBuzeralas = signal<ReceptMegjegyzes>(null);
 
-    // Ez a cucc a megjegyzesListaBuzeralas signal állíítás nélkül nem működik jól, mert sem új megjegyzés felvételekot, sem
+    // Ez a cucc a megjegyzesListaBuzeralas signal állítás nélkül nem működik jól, mert sem új megjegyzés felvételekot, sem
     // a saját megjegyzés törlésekor nem számolódik újra, hiába set-eljük be a recept-et, akár cloneDeep-pel.
     // A megjegyzesListaBuzeralas bevezetésével is csak úgy működött törléskor jól, ha a megjegyzesListaBuzeralas-t vagy a popup feltételekor beállítjuk 
     // és a törlés acceptben null-ra állítjuk, mert ekkor ez is újsraszámolódik, azaz figyelni kell, hogy a megjegyzesListaBuzeralas signal referencia 
@@ -161,10 +162,17 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     sajatMegjegyzesTorles(event: Event, megjegyzes: ReceptMegjegyzes): void {
 
+        // Miután a link szerkesztés átkerült egy alkomponensbe, és ott is használjuk a globális confirmationService-t,
+        // minden confirm metódus többször is lefutott, és több popup is megjelent. 
+        // https://stackoverflow.com/questions/68277753/angular-primeng-p-confirmdialog-display-twice
+        // A fenti link alapján használni kellett a key paramétert.
+        // Másik lehetőség lenne, hogy komponens szinten saját service-t használnánk.
+
         console.debug('ReceptSzerkesztoComponent - tetelTorles', event, megjegyzes);
         // this.megjegyzesListaBuzeralas.set(megjegyzes);
         this.confirmationService.confirm({
             target: event.target as EventTarget,
+            key: 'megjegyzesConfirmPopupRef',
             message: 'Biztos töröli a saját megjegyzését?',
             header: null,
             icon: 'pi pi-exclamation-triangle',
@@ -184,7 +192,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
                 // this.adatServiceService.kivalasztottTetel.set(null);
                 // this.adatServiceService.mentendoAdatokMentese(this.fireAuthService.getToken()).subscribe({
                 //     next: (mentettTetelek) => {
-                //         console.debug('AkcioListaComponent - A törlés és a mentendő tételek mentése után lekért akciós tételek: ', mentettTetelek);
+                //         console.debug('ReceptSzerkesztoComponent - A törlés és a mentendő tételek mentése után lekért akciós tételek: ', mentettTetelek);
                 //     },
                 //     error: (modositasError) => {
                 //         console.error('ReceptSzerkesztoComponent - HIBA AZ AKCIOS TÉTELEK MÓDOSÍTÁSA SORÁN ', modositasError);
@@ -208,55 +216,18 @@ export class ReceptSzerkesztoComponent implements OnInit {
         this.megjTorlesConfirmPopup.reject();
     }
 
-    // linkSafeURL(link: ReceptLink) {
-    //     let linkUrl = link.link;
-    //     if (linkUrl.indexOf('www.youtube.com/watch') > -1) {
-    //         linkUrl = linkUrl.replace('watch', 'embed');
-    //     }
-
-    //     return this.domSanitizer.bypassSecurityTrustResourceUrl(linkUrl);
-    // }
-
-    openLink(link: ReceptLink): void {
-        console.debug('ReceptSzerkesztoComponent - openLink ', link);
-        window.open(link.link, '_blnak');
-    }
-
-    linkModositas(link: ReceptLink): void {
-        console.debug('ReceptSzerkesztoComponent - linkModositas ', link);
-    }
-
     ujLinkRogzitesInditas(): void {
         console.debug('ReceptSzerkesztoComponent - ujLinkRogzitesInditas');
     }
 
-    linkTorles(event: Event, link: ReceptLink): void {
-        console.debug('ReceptSzerkesztoComponent - linkTorles', event, link);
-        this.confirmationService.confirm({
-            target: event.target as EventTarget,
-            message: 'Biztos töröli a linket?',
-            header: null,
-            icon: 'pi pi-exclamation-triangle',
-            acceptIcon: "none",
-            rejectIcon: "none",
-            rejectButtonStyleClass: "p-button-text",
-            accept: () => {
-                console.debug('ReceptSzerkesztoComponent - LINK tetelTorles OK', link);
-                this.confirmationService.close();
-            },
-            reject: () => {
-                console.debug('ReceptSzerkesztoComponent - LINK tetelTorles CANCEL', link);
-                this.confirmationService.close();
-            }
-        });
+    linkModositva(link: ReceptLink): void {
+        // TODO: megcsinálni a lekezelését
+        console.debug('ReceptSzerkesztoComponent - linkModositva', link);
     }
 
-    linkTorlesAccept() {
-        this.linkTorlesConfirmPopup.accept();
-    }
-
-    linkTorlesReject() {
-        this.linkTorlesConfirmPopup.reject();
+    linkTorlesOK(link: ReceptLink): void {
+        // TODO: megcsinálni a lekezelését
+        console.debug('ReceptSzerkesztoComponent - linkTorlesOK', link);
     }
 
     receptMentheto(): boolean {

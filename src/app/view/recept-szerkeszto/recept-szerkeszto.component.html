@@ -44,7 +44,7 @@
     <div class="resze-torzs">
         @if (torzsMegjelenithetoE()) {
         <div class="torzs-sor nev">
-            <div class="mezo-felirat">Név: {{ujReceptE()}}</div>
+            <div class="mezo-felirat">Név:</div>
             <div class="mezo-torzs">
                 <input type="text"
                        pInputText
@@ -113,14 +113,14 @@
                                   [text]="true"
                                   [raised]="true"
                                   (onClick)="sajatMegjegyzesTorles($event, megjegyzes)"></p-button>
-                        <p-confirmPopup #megjegyzesConfirmPopupRef>
+                        <p-confirmPopup #megjegyzesConfirmPopupRef key="megjegyzesConfirmPopupRef">
                             <ng-template pTemplate="headless"
                                          let-message>
-                                <div class="torles-confirm-keret">
-                                    <div class="tc-uzi">
+                                <div class="egyszeru-confirm-keret">
+                                    <div class="eck-uzi">
                                         <span>{{ message.message }}</span>
                                     </div>
-                                    <div class="tc-gombok">
+                                    <div class="eck-gombok">
                                         <p-button icon="pi pi-trash"
                                                   severity="danger"
                                                   [rounded]="true"
@@ -162,59 +162,11 @@
                  [ngClass]="{ 'idegen': !szerkesztesiAdatok()?.recept()?.sajatE}">
                 @if (szerkesztesiAdatok()?.recept()?.linkek?.length > 0) {
                 @for (link of szerkesztesiAdatok()?.recept()?.linkek; track link) {
-                @if (szerkesztesiAdatok()?.recept()?.sajatE) {
-                <div class="link-blokk">
-                    <div class="link-mod">
-                        <p-button icon="pi pi-file-edit"
-                                  severity="warning"
-                                  [size]="'small'"
-                                  [rounded]="true"
-                                  [text]="true"
-                                  (onClick)="linkModositas(link)"></p-button>
-                    </div>
-                    <div class="link-nev">
-                        <p-button [label]="link.nev"
-                                  [link]="true"
-                                  (click)="openLink(link)" />
-                    </div>
-                    <div class="link-torles">
-                        <p-button icon="pi pi-trash"
-                                  severity="danger"
-                                  [size]="'small'"
-                                  [rounded]="true"
-                                  [text]="true"
-                                  (onClick)="linkTorles($event, link)"></p-button>
-                        <p-confirmPopup #linkConfirmPopupRef>
-                            <ng-template pTemplate="headless"
-                                         let-message>
-                                <div class="torles-confirm-keret">
-                                    <div class="tc-uzi">
-                                        <span>{{ message.message }}</span>
-                                    </div>
-                                    <div class="tc-gombok">
-                                        <p-button icon="pi pi-trash"
-                                                  severity="danger"
-                                                  [rounded]="true"
-                                                  [text]="true"
-                                                  (onClick)="linkTorlesAccept()"></p-button>
-                                        <p-button icon="pi pi pi-undo"
-                                                  [rounded]="true"
-                                                  [text]="true"
-                                                  (onClick)="linkTorlesReject()"></p-button>
-                                    </div>
-                                </div>
-                            </ng-template>
-                        </p-confirmPopup>
-                    </div>
-                    <!-- <a (click)="openLink(link)">{{link.nev}}</a> -->
-                </div>
-                } @else {
-                <div class="idegen-link">
-                    <p-button [label]="link.nev"
-                              [link]="true"
-                              (click)="openLink(link)" />
-                </div>
-                }
+                <app-recept-linker [link]="link"
+                                   [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"
+                                   [ujLinkFelvetelE]="false"
+                                   (linkModositva)="linkModositva($event)"
+                                   (linkTorlesOK)="linkTorlesOK($event)"></app-recept-linker>
                 }
                 }@else {
                 <div class="nincs-link">

@@ -1,6 +1,6 @@
 @if (sajatE()) {
 <div class="link-blokk">
-    @if (szerkesztesAlatt() || ujLinkFelvetelE()) {
+    @if (szerkesztesAlatt()) {
     <div class="link-szerk-cancel">
         <p-button icon="pi pi-undo"
                   severity="warning"
@@ -44,7 +44,7 @@
                   [disabled]="szerkesztettLink()?.link?.length < 1 || szerkesztettLink()?.nev?.length < 1"
                   (onClick)="linkModOK()"></p-button>
     </div>
-    } @else {
+    } @else if(!ujLinkFelvetelE()) {
     <div class="link-mod">
         <p-button icon="pi pi-file-edit"
                   severity="warning"
@@ -92,6 +92,18 @@
     </div>
     }
 </div>
+@if (ujLinkFelvetelE() && !szerkesztesAlatt()) {
+<div class="uj-link">
+    <div class="uj-link-gomb">
+        <p-button icon="pi pi-plus"
+                  severity="help"
+                  [text]="true"
+                  [raised]="true"
+                  label="Új link"
+                  (onClick)="ujLinkRogzitesInditas()"></p-button>
+    </div>
+</div>
+}
 } @else {
 <div class="idegen-link">
     <p-button [label]="link().nev"

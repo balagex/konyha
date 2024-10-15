@@ -1,5 +1,13 @@
 <div class="recept-szerk-keret">
     <div class="resze-fej">
+        @if (szerkesztesiAdatok()?.kepkezelesAktiv()) {
+        <p-button icon="pi pi-chevron-left"
+                  severity="help"
+                  [text]="true"
+                  [raised]="true"
+                  [label]="'Vissza'"
+                  (onClick)="kepKezelesVege()"></p-button>
+        } @else {
         @if (szerkesztesiAdatok()?.recept()?.azon) {
         <div class="kedvenc-allito">
             <p-button [icon]="szerkesztesiAdatok()?.recept()?.kedvencE ? 'pi pi-star-fill' : 'pi pi-star'"
@@ -9,7 +17,13 @@
                       [raised]="true"
                       (onClick)="kedvencsegAllitas()"></p-button>
         </div>
-        @if (szerkesztesiAdatok()?.recept()?.sajatE) {
+        <p-button icon="pi pi-image"
+                  severity="help"
+                  [text]="true"
+                  [raised]="true"
+                  [label]="'Képek'"
+                  (onClick)="kepKezelesInditas()"></p-button>
+        @if (szerkesztesiAdatok()?.recept()?.sajatE || sajatMegjegyzesVanE()) {
         <p-button icon="pi pi-save"
                   severity="primary"
                   [text]="true"
@@ -17,19 +31,6 @@
                   label="Mentés"
                   (onClick)="mentes()"
                   [disabled]="!receptMentheto()"></p-button>
-        } @else {
-        <div class="resze-fej-duma">
-            A kiválasztott recept nem saját, így csak a saját megjegyzés módosítható.
-        </div>
-        @if (sajatMegjegyzesVanE()) {
-        <p-button icon="pi pi-save"
-                  severity="primary"
-                  [text]="true"
-                  [raised]="true"
-                  label="Mentés"
-                  (onClick)="mentes()"
-                  [disabled]="!receptMentheto()"></p-button>
-        }
         }
         }
         @if (!mobilE()) {
@@ -40,8 +41,23 @@
                   label="Új recept"
                   (onClick)="ujReceptFelvetelInditas()"></p-button>
         }
+        }
     </div>
+    @if (this.szerkesztesiAdatok()?.kepkezelesAktiv()) {
+    <div class="resze-torzs keptorzs">
+        @if (this.szerkesztesiAdatok()?.kepekInfo()?.items?.length > 0) {}
+        @for (kepInfo of this.szerkesztesiAdatok()?.kepekInfo()?.items; track kepInfo.name) {
+        <app-recept-kep-kezelo [kepInfo]="kepInfo"
+                               [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"></app-recept-kep-kezelo>
+        }
+    </div>
+    } @else {
     <div class="resze-torzs">
+        @if (!szerkesztesiAdatok()?.recept()?.sajatE) {
+        <div class="torzs-sor nem-sajat">
+            Nem saját recept esetén csak a saját megjegyzés módosítható.
+        </div>
+        }
         @if (torzsMegjelenithetoE()) {
         <div class="torzs-sor nev">
             <div class="mezo-felirat">Név:</div>
@@ -113,7 +129,8 @@
                                   [text]="true"
                                   [raised]="true"
                                   (onClick)="sajatMegjegyzesTorles($event, megjegyzes)"></p-button>
-                        <p-confirmPopup #megjegyzesConfirmPopupRef key="megjegyzesConfirmPopupRef">
+                        <p-confirmPopup #megjegyzesConfirmPopupRef
+                                        key="megjegyzesConfirmPopupRef">
                             <ng-template pTemplate="headless"
                                          let-message>
                                 <div class="egyszeru-confirm-keret">
@@ -165,16 +182,16 @@
                 <app-recept-linker [link]="link"
                                    [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"
                                    [ujLinkFelvetelE]="false"
-                                   (linkModositva)="linkModositva($event)"
-                                   (linkTorlesOK)="linkTorlesOK($event)"></app-recept-linker>
+                                   (linkModositva)="linkModositva($event, $index)"
+                                   (linkTorlesOK)="linkTorlesOK($event, $index)"></app-recept-linker>
                 }
-                }@else {
+                } @else {
                 <div class="nincs-link">
                     <em>Nincs Link rögzítve</em>
                 </div>
                 }
                 @if (szerkesztesiAdatok()?.recept()?.sajatE) {
-                <div class="uj-link">
+                <!-- <div class="uj-link">
                     <div class="uj-link-gomb">
                         <p-button icon="pi pi-plus"
                                   severity="help"
@@ -183,26 +200,30 @@
                                   label="Új link"
                                   (onClick)="ujLinkRogzitesInditas()"></p-button>
                     </div>
-                </div>
+                </div> -->
+                <app-recept-linker [link]="null"
+                                   [sajatE]="true"
+                                   [ujLinkFelvetelE]="true"
+                                   (linkModositva)="linkFelveve($event)"></app-recept-linker>
                 }
             </div>
         </div>
-        <div class="torzs-sor">
-            Képek... {{ szerkesztesiAdatok()?.recept()?.kepek?.length }}db
-        </div>
+        <!-- <div class="torzs-sor kepek">
+            <div class="mezo-felirat">Képek:</div>
+            <div class="mezo-torzs">
+                @if(szerkesztesiAdatok()?.forrasRecept?.azon) {
+                <p-button icon="pi pi-image"
+                          severity="help"
+                          [text]="true"
+                          [raised]="true"
+                          [label]="szerkesztesiAdatok()?.recept()?.kepek?.length + ' db'"
+                          (onClick)="kepKezelesInditas()"></p-button>
+                } @else {
+                <span class="kep-readonly">A recept elmentéséig a képek kezelése nem elérhető</span>
+                }
+            </div>
+        </div> -->
         }
-        <!-- ITT LESZNEK A RECEPT MEZŐK
-        <p-button [icon]="'pi pi-plus'"
-                  [severity]="'help'"
-                  [rounded]="true"
-                  [text]="true"
-                  [raised]="true"
-                  (onClick)="gombTeszt()">TESZT1</p-button>
-        <p-button [icon]="'pi pi-minus'"
-                  [severity]="'help'"
-                  [rounded]="true"
-                  [text]="true"
-                  [raised]="true"
-                  (onClick)="gombTeszt2()">TESZT2</p-button> -->
     </div>
+    }
 </div>

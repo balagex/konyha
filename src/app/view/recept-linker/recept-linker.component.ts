@@ -45,14 +45,23 @@ export class ReceptLinkerComponent {
         // this.linkModositva.emit(this.link());
     }
 
+    ujLinkRogzitesInditas(): void {
+        console.debug('ReceptLinkerComponent - ujLinkRogzitesInditas');
+        const ujREcept = new ReceptLink(null);
+        this.szerkesztettLink.set(ujREcept);
+        this.szerkesztesAlatt.set(true);
+    }
+
     linkModMegse(): void {
         console.debug('ReceptLinkerComponent - linkModositas ', this.ujLinkFelvetelE());
-        if (this.ujLinkFelvetelE()) {
-            this.linkModositva.emit(null);
-        } else {
-            this.szerkesztettLink.set(null);
-            this.szerkesztesAlatt.set(false);
-        }
+        this.szerkesztettLink.set(null);
+        this.szerkesztesAlatt.set(false);
+        // if (this.ujLinkFelvetelE()) {
+        //     this.linkModositva.emit(null);
+        // } else {
+        //     this.szerkesztettLink.set(null);
+        //     this.szerkesztesAlatt.set(false);
+        // }
     }
 
     linkNevModositas(nev: string): void {
@@ -67,6 +76,7 @@ export class ReceptLinkerComponent {
 
     linkModOK(): void {
         // TODO: befejezni
+        this.linkModositva.emit(this.szerkesztettLink());
         this.szerkesztesAlatt.set(false);
         console.debug('ReceptLinkerComponent - linkModOK ', this.szerkesztettLink());
     }

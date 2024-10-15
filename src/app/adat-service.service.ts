@@ -8,7 +8,7 @@ import { Observable, debounceTime, distinctUntilChanged, from, map, tap, switchM
 import { AkciosLista } from './model/akcios-lista.type';
 import { AkcioTetel } from './model/akcio-tetel.type';
 import { dateToYYYYMMDD, resizeImage, sortFunction } from './utils';
-import { FirebaseStorage, StringFormat, UploadResult, deleteObject, getDownloadURL, getStorage, ref, uploadString } from 'firebase/storage';
+import { FirebaseStorage, ListResult, StorageReference, StringFormat, UploadResult, deleteObject, getDownloadURL, getStorage, listAll, ref, uploadString } from 'firebase/storage';
 import { Recept } from './model/recept.type';
 import { ReceptIF } from './model/recept.interface';
 import { KedvencReceptek } from './model/kedvenc-receptek.type';
@@ -393,6 +393,12 @@ export class AdatServiceService {
     //     console.error('UPLOAD HIBA ! ', hiba);
     // });
 
+    receptFajlInfokLekerese(konyvtarNev: string): Observable<ListResult> {
+        const fbStorage: FirebaseStorage = getStorage();
+        const fileRef: StorageReference = ref(fbStorage, 'Koki/' + konyvtarNev);
+        const listAllPromise = listAll(fileRef);
+        return from(listAllPromise);
+    }
 
     // FIGYELEM, mint a tárolt adatok mennyisége korlátoa, mint a letöltési mennyiség! Ezeket átlépve fizetni kell! Mindenképp ez alatt kell maradni!
     receptKepURLLekerese(kepLink: string): Observable<string> {

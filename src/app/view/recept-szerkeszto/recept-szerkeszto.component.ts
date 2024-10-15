@@ -19,12 +19,14 @@ import { ConfirmationService } from 'primeng/api';
 import { ReceptLink } from '../../model/recept-link.type';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ReceptLinkerComponent } from '../recept-linker/recept-linker.component';
+import { ReceptKepKezeloComponent } from '../recept-kep-kezelo/recept-kep-kezelo.component';
+import { ListResult } from 'firebase/storage';
 
 
 @Component({
     selector: 'app-recept-szerkeszto',
     standalone: true,
-    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent],
     providers: [ConfirmationService],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
@@ -49,7 +51,9 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
         return {
             forrasRecept: this.adatServiceService.kivalasztottRecept(),
-            recept: signal<Recept>(this.adatServiceService.szerkesztendoRecept())
+            recept: signal<Recept>(this.adatServiceService.szerkesztendoRecept()),
+            kepkezelesAktiv: signal<boolean>(false),
+            kepekInfo: signal<ListResult>(null)
         };
     });
 
@@ -220,14 +224,60 @@ export class ReceptSzerkesztoComponent implements OnInit {
         console.debug('ReceptSzerkesztoComponent - ujLinkRogzitesInditas');
     }
 
-    linkModositva(link: ReceptLink): void {
-        // TODO: megcsinálni a lekezelését
-        console.debug('ReceptSzerkesztoComponent - linkModositva', link);
+    linkFelveve(ujLink: ReceptLink): void {
+        console.debug('ReceptSzerkesztoComponent - linkFelveve', ujLink);
+        if (ujLink) {
+            this.szerkesztesiAdatok().recept().linkek.push(ujLink);
+        } else {
+            console.error('ReceptSzerkesztoComponent - linkFelveve - Link nem megadott! ', ujLink);
+        }
     }
 
-    linkTorlesOK(link: ReceptLink): void {
-        // TODO: megcsinálni a lekezelését
-        console.debug('ReceptSzerkesztoComponent - linkTorlesOK', link);
+    linkModositva(modositottLink: ReceptLink, index: number): void {
+        if (modositottLink && index !== null && index > -1) {
+            this.szerkesztesiAdatok().recept().linkek = this.szerkesztesiAdatok().recept().linkek.map((recepLink, li) => {
+                if (li === index) {
+                    // console.debug('ReceptSzerkesztoComponent - linkModositva - CSERE', li, index);
+                    return modositottLink;
+                } else {
+                    // console.debug('ReceptSzerkesztoComponent - linkModositva - NINCS CSERE', li, index);
+                    return recepLink;
+                }
+            });
+        } else {
+            console.error('ReceptSzerkesztoComponent - linkModositva - Link nem megadott, vagy az index problémás! ', modositottLink, index);
+        }
+        console.debug('ReceptSzerkesztoComponent - linkModositva', modositottLink, index, this.szerkesztesiAdatok()?.recept()?.linkek);
+    }
+
+    linkTorlesOK(torlendoLink: ReceptLink, index: number): void {
+        if (torlendoLink && index !== null && index > -1) {
+            this.szerkesztesiAdatok().recept().linkek.splice(index, 1);
+        } else {
+            console.error('ReceptSzerkesztoComponent - linkTorlesOK - Link nem megadott, vagy az index problémás! ', torlendoLink, index);
+        }
+        console.debug('ReceptSzerkesztoComponent - linkTorlesOK', torlendoLink, index);
+    }
+
+    kepKezelesInditas(): void {
+        const kivalReceptAzon = this.szerkesztesiAdatok()?.forrasRecept?.azon;
+        this.szerkesztesiAdatok().kepkezelesAktiv.set(true);
+        console.debug('ReceptSzerkesztoComponent - kepKezelesInditas', kivalReceptAzon);
+        this.adatServiceService.receptFajlInfokLekerese(kivalReceptAzon).subscribe({
+            next: (fajlInfok) => {
+                console.debug('ReceptSzerkesztoComponent - FÁJL INFÓK: ', fajlInfok);
+                this.szerkesztesiAdatok().kepekInfo.set(fajlInfok);
+            },
+            error: (fajlInfokError) => {
+                console.error('ReceptSzerkesztoComponent - FÁJL INFÓK LEKERES HIBA ', fajlInfokError);
+            }
+        });
+
+    }
+
+    kepKezelesVege(): void {
+        this.szerkesztesiAdatok().kepkezelesAktiv.set(false);
+        console.debug('ReceptSzerkesztoComponent - kepKezelesVege');
     }
 
     receptMentheto(): boolean {

@@ -1,0 +1,45 @@
+<div class="rk-wrapper">
+    <div class="rk-kep">
+        {{kepInfo()?.name}} - {{sajatE()}}
+        @if (urlInfo()?.kepUrl()?.length > 0) {
+        <!-- <img src="{{urlInfo()?.kepUrl()}}" height="300px" width="530px"/>  -->
+        <p-image [src]="urlInfo()?.kepUrl()"
+                 alt="Image"
+                 width="300"
+                 [preview]="true" />
+        }
+    </div>
+    <div class="rk-torles">
+        @if (sajatE()) {
+        <p-button icon="pi pi-trash"
+                  severity="danger"
+                  [size]="'small'"
+                  [rounded]="true"
+                  [text]="true"
+                  [raised]="true"
+                  (onClick)="kepTorles($event)"></p-button>
+        <p-confirmPopup #kepTorlesConfirmPopupRef
+                        key="kepTorlesConfirmPopupRef">
+            <ng-template pTemplate="headless"
+                         let-message>
+                <div class="egyszeru-confirm-keret">
+                    <div class="eck-uzi">
+                        <span>{{ message.message }}</span>
+                    </div>
+                    <div class="eck-gombok">
+                        <p-button icon="pi pi-trash"
+                                  severity="danger"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="kepTorlesAccept()"></p-button>
+                        <p-button icon="pi pi pi-undo"
+                                  [rounded]="true"
+                                  [text]="true"
+                                  (onClick)="kepTorlesReject()"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+        </p-confirmPopup>
+        }
+    </div>
+</div>

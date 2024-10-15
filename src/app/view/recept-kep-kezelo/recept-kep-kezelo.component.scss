@@ -1,0 +1,17 @@
+.rk-wrapper {
+    width: 400px;
+    display: flex;
+    flex-wrap: nowrap;
+    border: 1px solid orange;
+    border-radius: 1rem;
+    padding: 1rem;
+
+    .rk-kep {
+        width: 300px;
+        height: 300px;
+    }
+
+    .rk-torles {
+        margin-left: 1rem;
+    }
+}

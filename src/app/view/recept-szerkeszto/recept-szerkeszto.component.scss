@@ -36,11 +36,29 @@
         align-items: center;
         // background-color: pink;
 
+        &.keptorzs {
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex-wrap: wrap;
+            column-gap: 1rem;
+            row-gap: 10px;
+        }
+
         .torzs-sor {
             margin: 5px 0;
         }
 
-        .nev, .keszites, .leiras, .megjegyzesek, .linkek {
+        .nem-sajat {
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: $kk-piros;
+            padding: 15px;
+        }
+
+        .nev, .keszites, .leiras, .megjegyzesek, .linkek, .kepek {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -65,10 +83,14 @@
                     min-width: 100%;
                     min-height: 46px;
                 }
+
+                .kep-readonly {
+                    font-weight: 500;
+                }
             }
         }
 
-        .leiras, .megjegyzesek, .linkek{
+        .leiras, .megjegyzesek, .linkek {
             align-items: start;
 
             .mezo-felirat {
@@ -145,14 +167,11 @@
                     text-align: center;
                     margin-bottom: 1rem;
                 }
-                
-                .uj-link {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-top: 1rem;
-                }
             }
+        }
+
+        .kepek {
+            margin-top: 0.8rem;
         }
     }
 }

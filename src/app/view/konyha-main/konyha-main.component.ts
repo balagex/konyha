@@ -42,7 +42,6 @@ export class KonyhaMainComponent implements OnInit {
                         const receptLista = this.adatServiceService.receptLista();
                         const kedvencReceptekLista = this.adatServiceService.kedvencReceptekLista();
                         console.debug('KonyhaMainComponent - KEDVENC RECEPTEK: ', kReceptek, receptLista, kedvencReceptekLista);
-
                     },
                     error: (kReceptekError) => {
                         console.error('KonyhaMainComponent - KEDVENC RECEPT LISTA LEKERES HIBA ', kReceptekError);

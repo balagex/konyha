@@ -5,8 +5,16 @@
                   severity="help"
                   [text]="true"
                   [raised]="true"
-                  [label]="'Vissza'"
+                  [label]="'Elég a képekből'"
                   (onClick)="kepKezelesVege()"></p-button>
+        @if (szerkesztesiAdatok()?.recept()?.sajatE && !szerkesztesiAdatok()?.ujKepFelvetelInditva()) {
+        <p-button icon="pi pi-plus"
+                  severity="success"
+                  [text]="true"
+                  [raised]="true"
+                  label="Új kép"
+                  (onClick)="ujKepFelvetelInditas()"></p-button>
+        }
         } @else {
         @if (szerkesztesiAdatok()?.recept()?.azon) {
         <div class="kedvenc-allito">
@@ -17,12 +25,15 @@
                       [raised]="true"
                       (onClick)="kedvencsegAllitas()"></p-button>
         </div>
+        @if(szerkesztesiAdatok()?.forrasRecept?.azon && (szerkesztesiAdatok()?.recept()?.sajatE ||
+        this.szerkesztesiAdatok()?.kepekInfo()?.items?.length > 0)) {
         <p-button icon="pi pi-image"
                   severity="help"
                   [text]="true"
                   [raised]="true"
                   [label]="'Képek'"
                   (onClick)="kepKezelesInditas()"></p-button>
+        }
         @if (szerkesztesiAdatok()?.recept()?.sajatE || sajatMegjegyzesVanE()) {
         <p-button icon="pi pi-save"
                   severity="primary"
@@ -45,17 +56,107 @@
     </div>
     @if (this.szerkesztesiAdatok()?.kepkezelesAktiv()) {
     <div class="resze-torzs keptorzs">
-        @if (this.szerkesztesiAdatok()?.kepekInfo()?.items?.length > 0) {}
+        @if (szerkesztesiAdatok()?.ujKepFelvetelInditva()) {
+        <div class="kep-felvetel">
+            <!-- <input type="file"
+                   id="file"
+                   #userPhoto
+                   (change)="onFileSelected($event)"
+                   name="image"
+                   accept="image/png, image/jpg, image/jpeg"
+                   autocomplete="off" />
+            <div class="uj-kep-bev"> {{ujKepNev()}}</div> -->
+            <p-fileUpload #kepvalaszto
+                          mode="advanced"
+                          chooseIcon="pi pi-upload"
+                          customUpload="true"
+                          fileLimit="1"
+                          accept="image/png, image/jpg, image/jpeg"
+                          [invalidFileTypeMessageSummary]="'{0}: Nem megfelelő fájl formátum!'"
+                          [invalidFileTypeMessageDetail]="'Választhatók: {0}'"
+                          (onSelect)="onSelect($event)"
+                          (uploadHandler)="uploadHandler($event)"
+                          (onBeforeUpload)="onBeforeUpload($event)"
+                          (onUpload)="onUpload($event)"
+                          (onClear)="onClear()"
+                          chooseLabel="Kép kiválasztása">
+                <ng-template pTemplate="header"
+                             let-files
+                             let-chooseCallback="chooseCallback"
+                             let-clearCallback="clearCallback"
+                             let-uploadCallback="uploadCallback">
+                    <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
+                        <div class="flex gap-2">
+                            <p-button (onClick)="kepValasztasAbort()"
+                                      icon="pi pi-undo"
+                                      severity="warning"
+                                      [rounded]="true"/>
+                            <p-button (onClick)="choose($event, chooseCallback)"
+                                      icon="pi pi-images"
+                                      [rounded]="true"
+                                      [disabled]="files?.length > 0"/>
+                            <p-button (onClick)="uploadCallback()"
+                                      icon="pi pi-cloud-upload"
+                                      [rounded]="true"
+                                      severity="success"
+                                      [disabled]="!files || files.length === 0 || ujKepNev()?.length < 1" />
+                            <p-button (onClick)="clearCallback()"
+                                      icon="pi pi-times"
+                                      [rounded]="true"
+                                      severity="danger"
+                                      [disabled]="!files || files.length === 0" />
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content"
+                             let-files
+                             let-uploadedFiles="uploadedFiles"
+                             let-removeFileCallback="removeFileCallback"
+                             let-removeUploadedFileCallback="removeUploadedFileCallback">
+                    @if (files.length > 0) {
+                    <div class="kep-val-content">
+                        <div class="kep-val-preview">
+                            <img class="kep-val-preview-img" role="presentation" [alt]="files[0].name" [src]="files[0].objectURL"/>
+                        </div>
+                        <div class="kep-val-nev-allito">
+                            <input type="text"
+                                   pInputText
+                                   class="mezo-input"
+                                   [ngClass]="{'ng-invalid ng-dirty': ujKepNev()?.length < 1}"
+                                   [(ngModel)]="ujKepNev"
+                                   (ngModelChange)="ujKepNevModositas($event)" />
+                        </div>
+                    </div>
+                    }
+                </ng-template>
+                <ng-template pTemplate="file"></ng-template>
+                <ng-template pTemplate="empty">
+                    <div class="nincs-kiv-kep">Válassz képet...</div>
+                </ng-template>
+            </p-fileUpload>
+        </div>
+        }
+        @if (this.szerkesztesiAdatok()?.kepekInfo()?.items?.length > 0) {
         @for (kepInfo of this.szerkesztesiAdatok()?.kepekInfo()?.items; track kepInfo.name) {
         <app-recept-kep-kezelo [kepInfo]="kepInfo"
-                               [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"></app-recept-kep-kezelo>
+                               [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"
+                               (kepTorlesOK)="kepTorlesOK($event)"></app-recept-kep-kezelo>
+        }
+        } @else {
+        <div class="nincs-kep">A recept kapcsán nincs kép rögzítve</div>
         }
     </div>
     } @else {
     <div class="resze-torzs">
-        @if (!szerkesztesiAdatok()?.recept()?.sajatE) {
+        @if (szerkesztesiAdatok()?.recept()?.azon && !szerkesztesiAdatok()?.recept()?.sajatE) {
         <div class="torzs-sor nem-sajat">
             Nem saját recept esetén csak a saját megjegyzés módosítható.
+        </div>
+        }
+        @if (szerkesztesiAdatok()?.recept()?.azon && szerkesztesiAdatok()?.recept()?.sajatE &&
+        !szerkesztesiAdatok()?.forrasRecept?.azon) {
+        <div class="torzs-sor kepek-nem">
+            <span class="kep-readonly">A recept elmentéséig a képek kezelése nem elérhető</span>
         </div>
         }
         @if (torzsMegjelenithetoE()) {
@@ -143,7 +244,7 @@
                                                   [rounded]="true"
                                                   [text]="true"
                                                   (onClick)="megjTorlesAccept()"></p-button>
-                                        <p-button icon="pi pi pi-undo"
+                                        <p-button icon="pi pi-undo"
                                                   [rounded]="true"
                                                   [text]="true"
                                                   (onClick)="megjTorlesReject()"></p-button>
@@ -208,21 +309,6 @@
                 }
             </div>
         </div>
-        <!-- <div class="torzs-sor kepek">
-            <div class="mezo-felirat">Képek:</div>
-            <div class="mezo-torzs">
-                @if(szerkesztesiAdatok()?.forrasRecept?.azon) {
-                <p-button icon="pi pi-image"
-                          severity="help"
-                          [text]="true"
-                          [raised]="true"
-                          [label]="szerkesztesiAdatok()?.recept()?.kepek?.length + ' db'"
-                          (onClick)="kepKezelesInditas()"></p-button>
-                } @else {
-                <span class="kep-readonly">A recept elmentéséig a képek kezelése nem elérhető</span>
-                }
-            </div>
-        </div> -->
         }
     </div>
     }

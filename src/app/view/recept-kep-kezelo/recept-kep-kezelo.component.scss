@@ -1,5 +1,5 @@
 .rk-wrapper {
-    width: 400px;
+    max-width: 400px;
     display: flex;
     flex-wrap: nowrap;
     border: 1px solid orange;
@@ -7,11 +7,31 @@
     padding: 1rem;
 
     .rk-kep {
-        width: 300px;
-        height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        // max-width: 280px;
+        // max-height: 280px;
+
+        .rk-kep-nev {
+            padding-bottom: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
     }
 
     .rk-torles {
         margin-left: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
+}
+
+:host::ng-deep.rk-kep-img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: contain;
 }

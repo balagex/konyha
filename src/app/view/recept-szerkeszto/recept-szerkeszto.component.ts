@@ -1,5 +1,5 @@
 import { AdatServiceService } from './../../adat-service.service';
-import { Component, input, output, computed, signal, OnInit, ViewChild } from '@angular/core';
+import { Component, input, output, computed, signal, OnInit, ViewChild, model } from '@angular/core';
 import { Recept } from '../../model/recept.type';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -20,13 +20,14 @@ import { ReceptLink } from '../../model/recept-link.type';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ReceptLinkerComponent } from '../recept-linker/recept-linker.component';
 import { ReceptKepKezeloComponent } from '../recept-kep-kezelo/recept-kep-kezelo.component';
-import { ListResult } from 'firebase/storage';
+import { ListResult, StorageReference } from 'firebase/storage';
+import { FileSelectEvent, FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 
 
 @Component({
     selector: 'app-recept-szerkeszto',
     standalone: true,
-    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, FileUploadModule],
     providers: [ConfirmationService],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
@@ -35,6 +36,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     @ViewChild('megjegyzesConfirmPopupRef', { static: false }) megjTorlesConfirmPopup: ConfirmPopup;
     // @ViewChild('linkConfirmPopupRef', { static: false }) linkTorlesConfirmPopup!: ConfirmPopup;
+    @ViewChild('kepvalaszto', { static: false }) kepFajlValaszto: FileUpload;
 
     mobilE = input<boolean>(false);
 
@@ -47,12 +49,15 @@ export class ReceptSzerkesztoComponent implements OnInit {
     // https://www.youtube.com/watch?v=aKxcIQMWSNU
     // A linket video alapján lehet trükközni, hogy a computed által visszaadott readonly signál értékébe teszünk írható signal mezőt.
 
+    ujKepNev = model<string>(null);
+
     szerkesztesiAdatok = computed(() => {
 
         return {
             forrasRecept: this.adatServiceService.kivalasztottRecept(),
             recept: signal<Recept>(this.adatServiceService.szerkesztendoRecept()),
             kepkezelesAktiv: signal<boolean>(false),
+            ujKepFelvetelInditva: signal<boolean>(false),
             kepekInfo: signal<ListResult>(null)
         };
     });
@@ -110,7 +115,21 @@ export class ReceptSzerkesztoComponent implements OnInit {
     };
 
     ujReceptFelvetelInditas(): void {
+        const voltEKivalasztottRecept = this.adatServiceService.kivalasztottRecept()?.azon ? true : false;
         this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
+        if (!voltEKivalasztottRecept) {
+            // Azért van ez a szörnyű kínlódás, mert ha nem volt recept kiválasztva, akkor az úf felvételekor a
+            // név és leírás mezők invalid státusza nem állítódik be, és mivel nem formban vagyunk, nem tudunk mit rábírni
+            // az új validáció futtatásra...
+            setTimeout(() => {
+                this.szerkesztesiAdatok().recept().nev = ' ';
+                this.szerkesztesiAdatok().recept().leiras = ' ';
+                setTimeout(() => {
+                    this.szerkesztesiAdatok().recept().nev = '';
+                    this.szerkesztesiAdatok().recept().leiras = '';
+                }, 100);
+            }, 100);
+        }
     }
 
     nevModositas(nev: string): void {
@@ -260,9 +279,13 @@ export class ReceptSzerkesztoComponent implements OnInit {
     }
 
     kepKezelesInditas(): void {
-        const kivalReceptAzon = this.szerkesztesiAdatok()?.forrasRecept?.azon;
         this.szerkesztesiAdatok().kepkezelesAktiv.set(true);
-        console.debug('ReceptSzerkesztoComponent - kepKezelesInditas', kivalReceptAzon);
+        this.kepFajlInfokLekerese();
+    }
+
+    kepFajlInfokLekerese(): void {
+        const kivalReceptAzon = this.szerkesztesiAdatok()?.forrasRecept?.azon;
+        console.debug('ReceptSzerkesztoComponent - kepFajlInfokLekerese', kivalReceptAzon);
         this.adatServiceService.receptFajlInfokLekerese(kivalReceptAzon).subscribe({
             next: (fajlInfok) => {
                 console.debug('ReceptSzerkesztoComponent - FÁJL INFÓK: ', fajlInfok);
@@ -272,13 +295,148 @@ export class ReceptSzerkesztoComponent implements OnInit {
                 console.error('ReceptSzerkesztoComponent - FÁJL INFÓK LEKERES HIBA ', fajlInfokError);
             }
         });
-
     }
 
     kepKezelesVege(): void {
         this.szerkesztesiAdatok().kepkezelesAktiv.set(false);
+        this.szerkesztesiAdatok().ujKepFelvetelInditva.set(false);
         console.debug('ReceptSzerkesztoComponent - kepKezelesVege');
     }
+
+    ujKepFelvetelInditas(): void {
+        this.szerkesztesiAdatok().ujKepFelvetelInditva.set(true);
+        this.ujKepNev.set('');
+        console.debug('ReceptSzerkesztoComponent - ujKepFelvetelInditas');
+    }
+
+    kepValasztasAbort(): void {
+        this.szerkesztesiAdatok().ujKepFelvetelInditva.set(false);
+        this.ujKepNev.set('');
+    }
+
+    choose(event: any, callback: any) {
+        console.debug('ReceptSzerkesztoComponent - choose', event, callback);
+        callback();
+    }
+
+    uploadEvent(callback: any) {
+        console.debug('ReceptSzerkesztoComponent - uploadEvent', callback);
+        callback();
+    }
+
+    onSelect(event: FileSelectEvent) {
+        console.debug('ReceptSzerkesztoComponent - onSelect ', event);
+        if (event.currentFiles?.length > 0) {
+            this.ujKepNev.set(event.currentFiles[0].name);
+        } else {
+            this.ujKepNev.set('');
+        }
+        // setTimeout(() => {
+        //     this.kepFajlValaszto.upload();
+        // }, 2000);
+    }
+
+    onClear(): void {
+        console.debug('ReceptSzerkesztoComponent - onClear ');
+    }
+
+    ujKepNevModositas(event: string): void {
+        console.debug('ReceptSzerkesztoComponent - ujKepNevModositas ', event);
+    }
+
+    uploadHandler(event: FileUploadHandlerEvent) {
+        console.debug('ReceptSzerkesztoComponent - uploadHandler ', event);
+        if (event.files?.length > 0) {
+            const file: File = event.files[0]; if (file) {
+                if (file.type == 'image/jpeg' || file.type == 'image/jpg' || file.type == 'image/png') {
+                    if (this.szerkesztesiAdatok()?.kepekInfo()?.items?.length > 0 && this.szerkesztesiAdatok()?.kepekInfo()?.items.findIndex(i => input.name === file.name) > -1) {
+                        console.warn('ReceptSzerkesztoComponent - Meglévő névvel azonos nevű kép kiválasztva! ', file.name);
+                    }
+                    this.adatServiceService.receptKepFeltoltese(file, this.szerkesztesiAdatok().recept().azon, this.ujKepNev()).subscribe({
+                        next: (feltValasz) => {
+                            console.debug('ReceptSzerkesztoComponent - SIKERES KÉP TÖRLÉS', feltValasz);
+                            const uzi = new GrowlMsg('Sikeres kép feltöltés', 'info');
+                            this.growlService.idozitettUzenetMegjelenites(uzi, 2000);
+                            this.kepFajlInfokLekerese();
+                            this.szerkesztesiAdatok().ujKepFelvetelInditva.set(false);
+                        },
+                        error: (feltHiba) => {
+                            const hibaSzoveg = feltHiba instanceof String ? feltHiba : JSON.stringify(feltHiba);
+                            console.error('ReceptSzerkesztoComponent - KÉP FELTÖLTÉSI HIBA ! ', feltHiba, hibaSzoveg);
+                            let duma = 'Nem sikerült a képet feltölteni!' + UJ_SOR + UJ_SOR +
+                                hibaSzoveg;
+                            const uzi = new GrowlMsg(duma, 'hiba');
+                            this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+                        }
+                    });
+
+
+                } else {
+                    console.error('ReceptSzerkesztoComponent - Nem megfelelő típusú fájl lett kiválasztva!', file.type);
+                    let duma = 'Nem megfelelő típusú fájl lett kiválasztva!' + UJ_SOR + UJ_SOR +
+                        'Csak jpeg vagy png választható ki.';
+                    const uzi = new GrowlMsg(duma, 'hiba');
+                    this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+                }
+            }
+        }
+
+    }
+
+    onBeforeUpload(event: any) {
+        console.debug('ReceptSzerkesztoComponent - onBeforeUpload ', event);
+    }
+
+    onUpload(event: any) {
+        console.debug('ReceptSzerkesztoComponent - onUpload ', event);
+    }
+
+    // TODO: Esetleg átrakini egy felvelő komponensbe, ami bekéri a nevet, majd kiválasztjuk a fájlt...
+    onFileSelected(event: any) {
+
+        const file: File = event.target.files[0];
+        let fileFelulirasLesz: boolean = false;
+        console.debug('ReceptSzerkesztoComponent - onFileSelected ', event, file);
+        if (file) {
+            if (file.type == 'image/jpeg' || file.type == 'image/jpg' || file.type == 'image/png') {
+                if (this.szerkesztesiAdatok()?.kepekInfo()?.items?.length > 0 && this.szerkesztesiAdatok()?.kepekInfo()?.items.findIndex(i => input.name === file.name) > -1) {
+                    console.warn('ReceptSzerkesztoComponent - Meglévő névvel azonos nevű kép kiválasztva! ', file.name);
+                    fileFelulirasLesz = true;
+                }
+                this.adatServiceService.receptKepFeltoltese(file, this.szerkesztesiAdatok().recept().azon).subscribe({
+                    next: (feltValasz) => {
+                        console.debug('ReceptSzerkesztoComponent - SIKERES KÉP TÖRLÉS', feltValasz);
+                        const uzi = new GrowlMsg('Sikeres kép feltöltés', 'info');
+                        this.growlService.idozitettUzenetMegjelenites(uzi, 2000);
+                        this.kepFajlInfokLekerese();
+                        this.szerkesztesiAdatok().ujKepFelvetelInditva.set(false);
+                    },
+                    error: (feltHiba) => {
+                        const hibaSzoveg = feltHiba instanceof String ? feltHiba : JSON.stringify(feltHiba);
+                        console.error('ReceptSzerkesztoComponent - KÉP FELTÖLTÉSI HIBA ! ', feltHiba, hibaSzoveg);
+                        let duma = 'Nem sikerült a képet feltölteni!' + UJ_SOR + UJ_SOR +
+                            hibaSzoveg;
+                        const uzi = new GrowlMsg(duma, 'hiba');
+                        this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+                    }
+                });
+
+
+            } else {
+                console.error('ReceptSzerkesztoComponent - Nem megfelelő típusú fájl lett kiválasztva!', file.type);
+                let duma = 'Nem megfelelő típusú fájl lett kiválasztva!' + UJ_SOR + UJ_SOR +
+                    'Csak jpeg vagy png választható ki.';
+                const uzi = new GrowlMsg(duma, 'hiba');
+                this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+            }
+        }
+    }
+
+    kepTorlesOK(kepInfo: StorageReference): void {
+        console.debug('ReceptSzerkesztoComponent - kepTorlesOK', kepInfo);
+        this.kepFajlInfokLekerese();
+    }
+
 
     receptMentheto(): boolean {
         const recept = this.szerkesztesiAdatok().recept();

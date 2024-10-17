@@ -356,21 +356,20 @@ export class AdatServiceService {
 
     // Firebase fájl feltöltés példa. Itt kellene még kódban is méret ellenőrzés, illetve típus korlátozás van, de azt is ellenőrizni.
     // Ugyan olyan név megadása esetén, mint ami már fent van, felülíródik a tárolt kép. 
-    receptKepFeltoltese(file: File): Observable<UploadResult> {
+    receptKepFeltoltese(file: File, receptAzon: string, kepnev?: string): Observable<UploadResult> {
 
         const fbStorage: FirebaseStorage = getStorage();
-
-        var n = Date.now();
-        const filePath = `Koki/${file.name}`;
+        const nev = kepnev?.length > 0 ? kepnev : file.name;
+        const filePath = `Koki/${receptAzon}/${nev}`;
         const fileRef = ref(fbStorage, filePath);
-        console.debug('receptKepFeltoltese ', file, fileRef);
+        console.debug('receptKepFeltoltese ', file, receptAzon, kepnev, nev, fileRef);
         const reader = new FileReader();
 
         const result = new Observable<UploadResult>(
             observer => {
                 reader.readAsDataURL(file);
                 reader.onload = async () => {
-                    await resizeImage(reader.result as string).then((resolve: any) => {
+                    await resizeImage(reader.result as string, file.type).then((resolve: any) => {
                         console.debug('resolved image', resolve);
                         uploadString(fileRef, resolve, StringFormat.DATA_URL).then(valasz => {
                             console.debug('UPLOAD RESULT', valasz);
@@ -401,23 +400,17 @@ export class AdatServiceService {
     }
 
     // FIGYELEM, mint a tárolt adatok mennyisége korlátoa, mint a letöltési mennyiség! Ezeket átlépve fizetni kell! Mindenképp ez alatt kell maradni!
-    receptKepURLLekerese(kepLink: string): Observable<string> {
+    receptKepURLLekerese(kepUtvonal: string): Observable<string> {
         const fbStorage: FirebaseStorage = getStorage();
-        const filePath = 'Koki/2es.png';
-        const fileRef = ref(fbStorage, filePath);
+        const fileRef = ref(fbStorage, kepUtvonal);
         const downloadPromise = getDownloadURL(fileRef);
         return from(downloadPromise);
     }
 
-    receptKepTorlese(kepLink: string): Observable<void> {
-        // fájl törlés minta
-        // import { getStorage, ref, deleteObject } from "firebase/storage";
-
+    receptKepTorlese(kepUtvonal: string): Observable<void> {
         const fbStorage: FirebaseStorage = getStorage();
-
         // // Create a reference to the file to delete
-        const desertRef = ref(fbStorage, 'Koki/' + kepLink);
-
+        const desertRef = ref(fbStorage, kepUtvonal);
         // // Delete the file
         const deletePromise = deleteObject(desertRef);
         return from(deletePromise);

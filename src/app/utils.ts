@@ -120,7 +120,7 @@ export function sortFunction(a: any, b: any, direction: number, property: string
 }
 
 // https://www.adobe.com/express/feature/image/resize
-export function resizeImage(imageURL: any): Promise<any> {
+export function resizeImage(imageURL: any, fajlTipus: string): Promise<any> {
     return new Promise((resolve) => {
         const image = new Image();
 
@@ -147,7 +147,7 @@ export function resizeImage(imageURL: any): Promise<any> {
             if (ctx != null) {
                 ctx.drawImage(image, 0, 0, szelesseg, magassag);
             }
-            var data = canvas.toDataURL('image/jpeg', 1);
+            var data = canvas.toDataURL(fajlTipus, 1);
             resolve(data);
         };
         image.src = imageURL;

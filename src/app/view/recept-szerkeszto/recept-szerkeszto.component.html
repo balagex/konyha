@@ -90,11 +90,11 @@
                             <p-button (onClick)="kepValasztasAbort()"
                                       icon="pi pi-undo"
                                       severity="warning"
-                                      [rounded]="true"/>
+                                      [rounded]="true" />
                             <p-button (onClick)="choose($event, chooseCallback)"
                                       icon="pi pi-images"
                                       [rounded]="true"
-                                      [disabled]="files?.length > 0"/>
+                                      [disabled]="files?.length > 0" />
                             <p-button (onClick)="uploadCallback()"
                                       icon="pi pi-cloud-upload"
                                       [rounded]="true"
@@ -116,7 +116,10 @@
                     @if (files.length > 0) {
                     <div class="kep-val-content">
                         <div class="kep-val-preview">
-                            <img class="kep-val-preview-img" role="presentation" [alt]="files[0].name" [src]="files[0].objectURL"/>
+                            <img class="kep-val-preview-img"
+                                 role="presentation"
+                                 [alt]="files[0].name"
+                                 [src]="files[0].objectURL" />
                         </div>
                         <div class="kep-val-nev-allito">
                             <input type="text"

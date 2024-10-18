@@ -198,6 +198,21 @@
     }
 }
 
+p-fileupload.p-element {
+    width: 90%;
+    min-width: 400px;
+    max-width: 600px;
+}
+
+.kep-felt-gombok {
+    display: flex;
+    justify-content: space-evenly;
+
+    .kep-felt-g-spacer {
+        width: 60px;
+    }
+}
+
 .kep-val-content {
     display: flex;
     flex-direction: column;
@@ -214,6 +229,23 @@
         }
         
 
+    }
+
+    .kep-val-nev-allito {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+
+        .kep-val-nev-allito-label {
+            font-weight: 900;
+            padding: 0 0 3px 2px;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+        }
     }
 
 }

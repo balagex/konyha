@@ -7,12 +7,10 @@
 .kmain-keret {
     width: 100%;
     height: 100svh;
-    // background-color: chartreuse;
     overflow: hidden;
 
     .keret-fej {
         height: 60px;
-        // background-color: aquamarine;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -21,8 +19,6 @@
 
 
         .fej-bal, .fej-jobb {
-            
-            // background-color: blue;
             min-width: 55px;
             text-align: center;
 
@@ -36,7 +32,6 @@
         }
 
         .fej-kozep {
-            // background-color: blueviolet;
             text-align: center;
             color: white;
             
@@ -61,65 +56,21 @@
     .keret-torzs {
         width: 100%;
         height: calc(100svh - 60px);
-        // background-color: aqua;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
 
-        .torzs-bal {
-            height: 100%;
-            width: 50%;
-            // background-color: beige;
-
-            @media screen and (max-width: 1200px) {
-                display: none;
-            }
-
-            // .receptlista {
-            //     background-color: red;
-            //     display: flex;
-            //     flex-wrap: wrap;
-            //     justify-content: space-evenly;
-            //     align-items: center;
-            // }
+        @media screen and (max-width: 1200px) {
+            grid-template-columns: 1fr;
         }
 
-        .torzs-kozep-max {
-            height: 100%;
-            width: 30%;
-            // background-color: bisque;
+        .torzs-bal, .torzs-jobb {
+            height: calc(100svh - 60px);
 
-            @media screen and (max-width: 1200px) {
-                display: none;
-            }
-            
-        }
-
-        .full-torzs {
-            height: 100%;
-            display: none;
-            // background-color: red;
-
-            @media screen and (max-width: 1200px) {
+            &.rejtett {
                 display: block;
-                width: 100%;
-            }
-
-            // .receptlista {
-            //     background-color: blue;
-            //     display: flex;
-            //     flex-wrap: wrap;
-            //     justify-content: space-evenly;
-            //     align-items: center;
-            // }
-
-        }
-
-        .torzs-jobb {
-            height: 100%;
-            width: 50%;
-            // background-color: burlywood;
-
-            @media screen and (max-width: 1200px) {
-                display: none;
+                @media screen and (max-width: 1200px) {
+                    display: none;
+                }
             }
         }
     }

@@ -5,16 +5,24 @@ import { Recept } from '../../model/recept.type';
 import { ButtonModule } from 'primeng/button';
 import { ReceptListaComponent } from '../recept-lista/recept-lista.component';
 import { ReceptSzerkesztoComponent } from '../recept-szerkeszto/recept-szerkeszto.component';
+import { NgClass } from '@angular/common';
 
 
 @Component({
     selector: 'app-konyha-main',
     standalone: true,
-    imports: [ButtonModule, ReceptListaComponent, ReceptSzerkesztoComponent],
+    imports: [ButtonModule, ReceptListaComponent, ReceptSzerkesztoComponent, NgClass],
     templateUrl: './konyha-main.component.html',
     styleUrl: './konyha-main.component.scss'
 })
 export class KonyhaMainComponent implements OnInit {
+
+    // Ezek minta ahhoz, hogyan lehet egy elem méret változását figyelni. Mivel kivezettük a mobilE kezelést
+    // az alkomponensekből, így csak ki lett próbálva, hogy tudunk-e programozottan, külön api telepítése nélkül
+    // a méret változásra reagálni.
+    // @ViewChild('keretDiv', { static: true }) wapperElement: ElementRef;
+    // szelesseg = signal<number>(null);
+    // observer: ResizeObserver;
 
     public ful = signal<number>(1);
     public nagyiMod = signal<boolean>(false);
@@ -48,17 +56,23 @@ export class KonyhaMainComponent implements OnInit {
                 this.fireAuthService.logout();
             }
         });
+
+        // this.observer = new ResizeObserver(entries => {
+        //     const width = entries[0].contentRect.width;
+        //     // console.log('KonyhaMainComponent - RESIZE: ', entries, width);
+        //     this.szelesseg.set(width);
+        // });
+
+        // this.observer.observe(this.wapperElement.nativeElement);
     }
 
     balra(): void {
         this.ful.set(1);
+        this.adatServiceService.szerkesztendoRecept.set(null);
+        this.adatServiceService.kivalasztottRecept.set(null);
     }
 
     jobbra(): void {
-        // if (!this.adatServiceService.kivalasztottRecept()?.azon) {
-        //     this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
-        // }
-        // this.adatServiceService.kivalasztottRecept.set(null);
         this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
         this.ful.set(2);
     }
@@ -77,5 +91,9 @@ export class KonyhaMainComponent implements OnInit {
             this.balra();
         }
     }
+
+    // ngOnDestroy() {
+    //     this.observer.unobserve(this.wapperElement.nativeElement);
+    // }
 
 }

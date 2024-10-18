@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -17,11 +17,12 @@ import { GrowlService } from '../growl/growl.service';
 })
 export class ReceptListaComponent {
 
-    mobilE = input<boolean>(false);
-    // Mivel a main komponens úgy lett elkészítve, hogy két helyen is tartalmazza ezt a komponenst a mobilE bemenet különböző
-    // megadásával, így ebből a komponensból a különbüző módokban külön példányok jönnek létre, így ha ebbe kerülnének 
+    // Mivel a main komponens úgy lett először elkészítve, hogy két helyen is tartalmazza ezt a komponenst a mobilE bemenet különböző
+    // megadásával, így ebből a komponensból a különbüző módokban külön példányok jöttek létre, így ha ebbe kerültek volna 
     // a szűréshez kapcsolódó változók és lista szűrés, akkor egyesetleges mód váltásnál a másik példány ezekről semmit nem
-    // tudna. Emiatt a változók és az arra alapuló szűrés átkerült az AdatServiceService hatáskörébe.
+    // tudott volna. Emiatt a változók és az arra alapuló szűrés átkerült az AdatServiceService hatáskörébe.
+    // Miután át lett alakítva a megoldás úgy, hogy csak egy példány használatos, és nincs mobilE bemenet, a dolgok már 
+    // nem kerültek ide átmozgatásra a service-ből.
 
     sortDir = computed<-1 | 1>(() => {
         return this.adatServiceService.sortDir();
@@ -67,6 +68,7 @@ export class ReceptListaComponent {
 
     kedvenceketEAllitas(): void {
         this.adatServiceService.csakKedvencekE.set(!this.adatServiceService.csakKedvencekE());
+        this.receptKivalasztasTorles();
     }
 
     listaRendezes(): void {
@@ -76,6 +78,7 @@ export class ReceptListaComponent {
 
     csakSajatEAllitas(): void {
         this.adatServiceService.csakSajatE.set(!this.adatServiceService.csakSajatE());
+        this.receptKivalasztasTorles();
     }
 
     szuroSzovegAllitas(szoveg: string): void {
@@ -86,15 +89,18 @@ export class ReceptListaComponent {
         this.adatServiceService.listaSzuroSzoveg.set('');
     }
 
+    receptKivalasztasTorles(): void {
+        this.adatServiceService.szerkesztendoRecept.set(null);
+        this.adatServiceService.kivalasztottRecept.set(null);
+    }
+
     receptKivalasztas(kivalasztottRecept: Recept): void {
         console.debug('ReceptListaComponent - receptKivalasztas', kivalasztottRecept, kivalasztottRecept instanceof Recept);
         this.adatServiceService.kivalasztottRecept.set(kivalasztottRecept);
         const masolat = cloneDeep(kivalasztottRecept);
         console.debug('ReceptListaComponent - receptKivalasztas', masolat, masolat instanceof Recept);
         this.adatServiceService.szerkesztendoRecept.set(masolat);
-        if (this.mobilE) {
-            this.receptKivalasztva.emit(kivalasztottRecept);
-        }
+        this.receptKivalasztva.emit(kivalasztottRecept);
     }
 
 }

@@ -38,8 +38,6 @@ export class ReceptSzerkesztoComponent implements OnInit {
     // @ViewChild('linkConfirmPopupRef', { static: false }) linkTorlesConfirmPopup!: ConfirmPopup;
     @ViewChild('kepvalaszto', { static: false }) kepFajlValaszto: FileUpload;
 
-    mobilE = input<boolean>(false);
-
     szerkesztesVege = output<Recept>();
 
     // A recept kiválasztás hatására kell a szerkesztő mezőkhöz értékeket beállítani, amiknek a mezők által móódosíthatóaknak kell lenniük.

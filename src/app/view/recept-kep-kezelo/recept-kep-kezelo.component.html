@@ -12,8 +12,8 @@
         </p-image>
         }
     </div>
+    @if (sajatE()) {
     <div class="rk-torles">
-        @if (sajatE()) {
         <p-button icon="pi pi-trash"
                   severity="danger"
                   [size]="'small'"
@@ -43,6 +43,6 @@
                 </div>
             </ng-template>
         </p-confirmPopup>
-        }
     </div>
+    }
 </div>

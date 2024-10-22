@@ -61,7 +61,6 @@ export class ReceptListaComponent {
         return this.adatServiceService.kivalasztottRecept()?.azon;
     });
 
-
     receptKivalasztva = output<Recept>();
 
     constructor(private adatServiceService: AdatServiceService, private growlService: GrowlService) { }

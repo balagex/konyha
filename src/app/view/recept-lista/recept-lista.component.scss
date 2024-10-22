@@ -1,5 +1,48 @@
 @import "../../app-colors.scss";
 
+@keyframes elem-megjelenes {
+    from {
+        opacity: 0;
+        // transform: translateX(-100px);
+        // clip-path: inset(100% 100% 0 0);
+        scale: 0.5;
+    }
+    to {
+        opacity: 1;
+        // transform: translateX(0px);
+        // clip-path: inset(0 0 0 0);
+        scale: 1;
+    }
+}
+
+@keyframes beki {
+    0% {
+        opacity: 0;
+        // transform: translateX(-100px);
+        // clip-path: inset(100% 100% 0 0);
+        scale: 0.5;
+    }
+    12% {
+        opacity: 1;
+        // transform: translateX(0px);
+        // clip-path: inset(0 0 0 0);
+        scale: 1;
+    }
+    90% {
+        opacity: 1;
+        // transform: translateX(0px);
+        // clip-path: inset(0 0 0 0);
+        scale: 1;
+    }
+    100% {
+        opacity: 0;
+        // transform: translateX(-100px);
+        // clip-path: inset(100% 100% 0 0);
+        scale: 0.5;
+    }
+
+}
+
 .rl-wrapper {
     width: 100%;
     height: 100%;
@@ -63,6 +106,9 @@
         gap: 1rem;
         justify-self: center;
         padding: 1rem;
+        // Animáció miatt megnővelt felső és alsó padding
+        padding-bottom: 2rem;
+        padding-top: 2rem;
     
         .recept-panel {
             // width: 90%;
@@ -74,6 +120,16 @@
             border: 1px solid $kk-sotetzold;
             min-height: 3rem;
             align-items: center;
+
+            // https://www.youtube.com/watch?v=L1pGRZN_YLo&list=PLNYkxOF6rcICM3ttukz9x5LCNOHfWBVnn&index=4
+            
+            // animation: elem-megjelenes;
+            // animation-timeline: view();
+            // animation-range: entry 0% cover 12%;
+
+            animation: beki;
+            animation-timeline: view();
+            animation-range: entry exit;
 
             &.kivalasztott {
                 border: 2px solid $prime-warning;

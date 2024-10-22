@@ -58,6 +58,10 @@
         height: calc(100svh - 60px);
         display: grid;
         grid-template-columns: 1fr 1fr;
+        background-image: url(../../../assets/pizza.jpg);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
 
         @media screen and (max-width: 1200px) {
             grid-template-columns: 1fr;
@@ -65,6 +69,7 @@
 
         .torzs-bal, .torzs-jobb {
             height: calc(100svh - 60px);
+            z-index: 2;
 
             &.rejtett {
                 display: block;
@@ -73,5 +78,15 @@
                 }
             }
         }
+    }
+
+    .keret-torzs::before {
+        content         : "";
+        position        : absolute;
+        top             : 60px;
+        right           : 0px;
+        bottom          : 0px;
+        left            : 0px;
+        background-color: rgb(255 255 255 / 90%);
     }
 }

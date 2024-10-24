@@ -102,10 +102,11 @@
         // align-items: center;
         // padding-top: 30px;
         display: grid;
-        grid-template-columns: repeat(auto-fit, (minmax(380px, 1fr)));
+        grid-template-columns: repeat(auto-fit, (minmax(360px, 1fr)));
         gap: 1rem;
         justify-self: center;
         padding: 1rem;
+        padding-right: 2rem;
         // Animáció miatt megnővelt felső és alsó padding
         padding-bottom: 2rem;
         padding-top: 2rem;
@@ -120,6 +121,7 @@
             border: 1px solid $kk-sotetzold;
             min-height: 3rem;
             align-items: center;
+            padding: 0 1rem;
 
             // https://www.youtube.com/watch?v=L1pGRZN_YLo&list=PLNYkxOF6rcICM3ttukz9x5LCNOHfWBVnn&index=4
             
@@ -141,10 +143,10 @@
     
             .recept-nev {
                 width: 60%;
-                min-width: 250px;
+                min-width: 220px;
                 flex-grow: 1;
                 border-top-left-radius: 10px;
-                padding: 5px 5px 5px 16px;
+                padding: 5px;
                 font-weight: 900;
 
                 .nev-kieg {
@@ -161,17 +163,10 @@
     
             .recept-keszites {
                 width: 40%;
-                min-width: 160px;
+                min-width: 140px;
                 flex-grow: 1;
                 border-top-right-radius: 10px;
-                padding: 5px 16px 5px 10px;
-            }
-    
-            .recept-info {
-                width: 100%;
-                border-bottom-right-radius: 10px;
-                border-bottom-left-radius: 10px;
-                padding: 10px 16px;
+                padding: 5px;
             }
         }
     }
@@ -192,13 +187,13 @@
                 .recept-nev {
                     width: 100%;
                     border-top-right-radius: 10px;
-                    padding-right: 16px;
+                    // padding-right: 16px;
                 }
     
                 .recept-keszites {
                     width: 100%;
                     border-top-right-radius: 0;
-                    padding-left: 16px;
+                    // padding-left: 16px;
                 }
             }
         }

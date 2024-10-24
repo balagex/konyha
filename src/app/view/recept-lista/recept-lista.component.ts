@@ -101,5 +101,4 @@ export class ReceptListaComponent {
         this.adatServiceService.szerkesztendoRecept.set(masolat);
         this.receptKivalasztva.emit(kivalasztottRecept);
     }
-
 }

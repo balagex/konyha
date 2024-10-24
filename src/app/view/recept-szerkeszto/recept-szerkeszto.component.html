@@ -26,29 +26,38 @@
                       (onClick)="kedvencsegAllitas()"></p-button>
         </div>
         @if(szerkesztesiAdatok()?.forrasRecept?.azon) {
-        <p-button icon="pi pi-image"
-                  severity="help"
-                  [text]="true"
-                  [raised]="true"
-                  [label]="'Képek'"
-                  (onClick)="kepKezelesInditas()"></p-button>
+        <div class="kepkezeles-gomb">
+            <p-button icon="pi pi-image"
+                      severity="help"
+                      [text]="true"
+                      [raised]="true"
+                      styleClass="kepek-gomb"
+                      [label]="'K'"
+                      (onClick)="kepKezelesInditas()"></p-button>
+        </div>
         }
         @if (szerkesztesiAdatok()?.recept()?.sajatE || sajatMegjegyzesVanE()) {
-        <p-button icon="pi pi-save"
-                  severity="primary"
-                  [text]="true"
-                  [raised]="true"
-                  label="Mentés"
-                  (onClick)="mentes()"
-                  [disabled]="!receptMentheto()"></p-button>
+        <div class="mentes-gomb-div">
+            <p-button icon="pi pi-save"
+                      severity="primary"
+                      [text]="true"
+                      [raised]="true"
+                      styleClass="mentes-gomb"
+                      label="M"
+                      (onClick)="mentes()"
+                      [disabled]="!receptMentheto()"></p-button>
+        </div>
         }
         }
-        <p-button icon="pi pi-plus"
-                  severity="success"
-                  [text]="true"
-                  [raised]="true"
-                  label="Új recept"
-                  (onClick)="ujReceptFelvetelInditas()"></p-button>
+        <div class="uj-recept">
+            <p-button icon="pi pi-plus"
+                      severity="success"
+                      [text]="true"
+                      [raised]="true"
+                      label="Új"
+                      styleClass="uj-r-gomb"
+                      (onClick)="ujReceptFelvetelInditas()"></p-button>
+        </div>
         }
     </div>
     @if (this.szerkesztesiAdatok()?.kepkezelesAktiv()) {
@@ -95,7 +104,7 @@
                                       icon="pi pi-images"
                                       [rounded]="true"
                                       [disabled]="files?.length > 0" />
-                            
+
                         </div>
                         <div class="kep-felt-g-spacer"></div>
                         <div class="kep-felt-gomb">
@@ -104,7 +113,7 @@
                                       [rounded]="true"
                                       severity="success"
                                       [disabled]="!files || files.length === 0 || ujKepNev()?.length < 1" />
-                            
+
                         </div>
                         <div class="kep-felt-gomb">
                             <p-button (onClick)="clearCallback()"

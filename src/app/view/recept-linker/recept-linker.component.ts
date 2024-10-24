@@ -7,6 +7,7 @@ import { ReceptLink } from '../../model/recept-link.type';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmPopup, ConfirmPopupModule } from 'primeng/confirmpopup';
 import { cloneDeep } from 'lodash';
+import { AdatServiceService } from '../../adat-service.service';
 
 @Component({
     selector: 'app-recept-linker',
@@ -26,10 +27,22 @@ export class ReceptLinkerComponent {
     linkTorlesOK = output<ReceptLink>();
     linkModositva = output<ReceptLink>();
 
-    public szerkesztesAlatt = signal<boolean>(false);
-    public szerkesztettLink = signal<ReceptLink>(null);
+    // public szerkesztesAlatt = signal<boolean>(false);
+    // public szerkesztettLink = signal<ReceptLink>(null);
 
-    constructor(private confirmationService: ConfirmationService) { }
+    // Azért csináljuk így, hogy ha a külvilágban receptet váltanak, vagy új recept felvételét indítják, akkor a recept szerkesztőbe
+    // ágyazott minden link kezelő alapállapotba álljon. Enélkül egy megnyitott új link felvétel recept váltáskor is nyitva maradt.
+    szerkesztesiAdatok = computed(() => {
+
+        const recept = this.adatServiceService.szerkesztendoRecept()
+
+        return {
+            szerkesztesAlatt: signal<boolean>(false),
+            szerkesztettLink: signal<ReceptLink>(null)
+        };
+    });
+
+    constructor(private adatServiceService: AdatServiceService, private confirmationService: ConfirmationService) { }
 
     openLink(): void {
         console.debug('ReceptLinkerComponent - openLink ', this.link());
@@ -39,8 +52,8 @@ export class ReceptLinkerComponent {
     linkModositasInditas(): void {
         console.debug('ReceptLinkerComponent - linkModositasInditas ', this.link());
         const linkClone = cloneDeep(this.link());
-        this.szerkesztettLink.set(linkClone);
-        this.szerkesztesAlatt.set(true);
+        this.szerkesztesiAdatok().szerkesztettLink.set(linkClone);
+        this.szerkesztesiAdatok().szerkesztesAlatt.set(true);
         // TODO: ez csak teszt, át kell menni edit mode-ban, és majd onnan kell meghívni
         // this.linkModositva.emit(this.link());
     }
@@ -48,14 +61,20 @@ export class ReceptLinkerComponent {
     ujLinkRogzitesInditas(): void {
         console.debug('ReceptLinkerComponent - ujLinkRogzitesInditas');
         const ujREcept = new ReceptLink(null);
-        this.szerkesztettLink.set(ujREcept);
-        this.szerkesztesAlatt.set(true);
+        ujREcept.nev = ' ';
+        ujREcept.link = ' ';
+        this.szerkesztesiAdatok().szerkesztettLink.set(ujREcept);
+        this.szerkesztesiAdatok().szerkesztesAlatt.set(true);
+        setTimeout(() => {
+            this.szerkesztesiAdatok().szerkesztettLink().nev = '';
+            this.szerkesztesiAdatok().szerkesztettLink().link = '';
+        }, 100);
     }
 
     linkModMegse(): void {
         console.debug('ReceptLinkerComponent - linkModositas ', this.ujLinkFelvetelE());
-        this.szerkesztettLink.set(null);
-        this.szerkesztesAlatt.set(false);
+        this.szerkesztesiAdatok().szerkesztettLink.set(null);
+        this.szerkesztesiAdatok().szerkesztesAlatt.set(false);
         // if (this.ujLinkFelvetelE()) {
         //     this.linkModositva.emit(null);
         // } else {
@@ -76,9 +95,9 @@ export class ReceptLinkerComponent {
 
     linkModOK(): void {
         // TODO: befejezni
-        this.linkModositva.emit(this.szerkesztettLink());
-        this.szerkesztesAlatt.set(false);
-        console.debug('ReceptLinkerComponent - linkModOK ', this.szerkesztettLink());
+        this.linkModositva.emit(this.szerkesztesiAdatok().szerkesztettLink());
+        this.szerkesztesiAdatok().szerkesztesAlatt.set(false);
+        console.debug('ReceptLinkerComponent - linkModOK ', this.szerkesztesiAdatok().szerkesztettLink());
     }
 
     linkTorles(event: Event): void {

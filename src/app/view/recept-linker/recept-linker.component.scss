@@ -7,6 +7,8 @@
     background-color: aliceblue;
     border-radius: 1rem;
     margin: 0.3rem 0;
+    container-type: inline-size;
+    container-name: linkblokk;
 
     .link-nev, .link-szerk-mezok {
         flex-grow: 1;
@@ -14,6 +16,13 @@
         margin: 0.2rem 0;
         border-radius: 0.5rem;
         line-height: 0.7rem;
+
+        @container linkblokk (min-width: 400px) {
+            .kisblokk {
+                display: none !important;
+            }
+        }
+    
     }
 
     .link-szerk-cancel, .link-mod {
@@ -26,6 +35,12 @@
         display: flex;
         align-items: center;
         margin-left: 1rem;
+    }
+
+    @container linkblokk (max-width: 400px) {
+        .nagyblokk {
+            display: none;
+        }
     }
 
     .link-szerk-mezok {

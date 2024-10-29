@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 import { FireAuthService } from './fire-auth.service';
 import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
-import { Observable, debounceTime, distinctUntilChanged, from, map, tap, switchMap, concatMap } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, from, map, tap, switchMap, concatMap, of, mergeMap, forkJoin, catchError } from 'rxjs';
 import { dateToYYYYMMDD, resizeImage, sortFunction } from './utils';
 import { FirebaseStorage, ListResult, StorageReference, StringFormat, UploadResult, deleteObject, getDownloadURL, getStorage, listAll, ref, uploadString } from 'firebase/storage';
 import { Recept } from './model/recept.type';
@@ -164,6 +164,28 @@ export class AdatServiceService {
         );
     }
 
+    recepTorlese(torlendoRecept: Recept, token: string): Observable<Recept[]> {
+
+        return this.receptekLekereseAlap(token).pipe(
+            map(rl => rl.filter(r => r.azon !== torlendoRecept.azon)),
+            tap(x => console.debug('AdatServiceService - recepTorlese x', x)),
+            concatMap(roviditettLista => this.httpClient.put<ReceptIF[]>('https://bevasarlolista-8247e.firebaseio.com/receptek.json?auth=' + token,
+                this.mentendoReceptListaConvertForSave(roviditettLista),
+                {
+                    observe: 'body',
+                    responseType: 'json'
+                }).pipe(
+                    map(response => Recept.convertFromIfList(response)),
+                    tap(mentettReceptek => {
+                        // A receptLista signal-ban a lekérdezéskor kapott
+                        // receptek maradnak, ezért kell a mentés után is elvégezni az állítást. 
+                        this.receptlistaAllitas(mentettReceptek);
+                        // console.debug('AdatServiceService - recepMentese y', this.jeloltReceptLista());
+                    })
+                ))
+        );
+    }
+
     // Azért nem használhatjuk a recept gazda felhasználó azonosítóját, mert más felhasználó receptjét is megjelölhetjük kedvencnek
     sajatKedvencReceptekListaKalkulalasa(recept: Recept, kedvencReceptekLista: KedvencReceptek[], felhasznaloAzon: string): KedvencReceptek[] {
         let sajatKedvencek: KedvencReceptek = kedvencReceptekLista.find(krl => krl.felhasznaloAzon === felhasznaloAzon);
@@ -243,6 +265,37 @@ export class AdatServiceService {
         );
     }
 
+    receptKiveteleAKedvencekbol(kitorlendoRecept: Recept, kedvencek: KedvencReceptek[]): KedvencReceptek[] {
+        const eredmeny: KedvencReceptek[] = [];
+        if (kitorlendoRecept?.azon && kedvencek?.length > 0) {
+            kedvencek.forEach(kedvenc => {
+                kedvenc.kedvencek = [].concat(kedvenc.kedvencek.filter(k => k != kitorlendoRecept.azon));
+                eredmeny.push(kedvenc);
+                // console.debug('AdatServiceService - receptKiveteleAKedvencekbol ', kitorlendoRecept, kedvenc);
+            });
+        }
+        return eredmeny;
+    }
+
+    torlesAKedvencekKozul(recept: Recept, token: string): Observable<KedvencReceptek[]> {
+        return this.kedvencReceptekLekereseAlap(token).pipe(
+            map(krl => this.receptKiveteleAKedvencekbol(recept, krl)),
+            tap(x => console.debug('AdatServiceService - torlesAKedvencekKozul x', x)),
+            concatMap(ujLista => this.httpClient.put<KedvencReceptekIF[]>('https://bevasarlolista-8247e.firebaseio.com/kedvencReceptek.json?auth=' + token,
+                this.mentendoKedvencReceptekConvertForSave(ujLista),
+                {
+                    observe: 'body',
+                    responseType: 'json'
+                }).pipe(
+                    map(response => KedvencReceptek.convertFromIfList(response)),
+                    tap(mentettKedvencek => {
+                        this.kedvencReceptekLista.set(mentettKedvencek);
+                        console.debug('AdatServiceService - torlesAKedvencekKozul y', mentettKedvencek);
+                    })
+                ))
+        );
+    }
+
     // Firebase fájl feltöltés példa. Itt kellene még kódban is méret ellenőrzés, illetve típus korlátozás van, de azt is ellenőrizni.
     // Ugyan olyan név megadása esetén, mint ami már fent van, felülíródik a tárolt kép. 
     receptKepFeltoltese(file: File, receptAzon: string, kepnev?: string): Observable<UploadResult> {
@@ -303,6 +356,21 @@ export class AdatServiceService {
         // // Delete the file
         const deletePromise = deleteObject(desertRef);
         return from(deletePromise);
+    }
+
+    receptOsszesKepTorlese(konyvtarNev: string): Observable<void[]> {
+        // https://rafee03.medium.com/multiple-inner-observable-inside-switchmap-mergemap-concatmap-326de4d29be4
+        return this.receptFajlInfokLekerese(konyvtarNev).pipe(
+            mergeMap((listResult: ListResult) => {
+                if (listResult && listResult.items?.length > 0) {
+                    // https://betterprogramming.pub/rxjs-error-handling-with-forkjoin-3d4027df70fc
+                    const requestArray = listResult.items.map(item => this.receptKepTorlese(item.fullPath).pipe(catchError(error => of(error))));
+                    return forkJoin(requestArray);
+                } else {
+                    return of([void 0]);
+                }
+            })
+        );
     }
 }
 

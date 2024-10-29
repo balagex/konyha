@@ -1,4 +1,5 @@
-<div class="kmain-keret" #keretDiv>
+<div class="kmain-keret"
+     #keretDiv>
     <div class="keret-fej">
         <div class="fej-bal">
             @if (ful() > 1) {
@@ -7,6 +8,12 @@
                       [rounded]="true"
                       [outlined]="true"
                       (onClick)="balra()"></p-button>
+            } @else {
+            <p-button icon="pi pi-sign-out"
+                      class="fej-gomb"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (onClick)="kilepes()"></p-button>
             }
         </div>
         <div class="fej-kozep fk-min ">
@@ -17,23 +24,48 @@
             }
         </div>
         <div class="fej-kozep fk-max">
+            <p-button icon="pi pi-info-circle"
+                      class="fej-gomb"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (onClick)="infoKell()"></p-button>
             KONYHAI KISOKOS
+            <p-button icon="pi pi-sign-out"
+                      class="fej-gomb"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (onClick)="kilepes()"></p-button>
         </div>
         <div class="fej-jobb">
-            @if (ful() < 2) {
-                <p-button icon="pi pi-plus"
-                    class="fej-gomb"
-                    [rounded]="true"
-                    [outlined]="true"
-                    (onClick)="jobbra()"></p-button>
+            @if (ful() > 1) {
+            <p-button icon="pi pi-sign-out"
+                      class="fej-gomb"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (onClick)="kilepes()"></p-button>
+            } @else {
+            <p-button icon="pi pi-plus"
+                      class="fej-gomb"
+                      [rounded]="true"
+                      [outlined]="true"
+                      (onClick)="jobbra()"></p-button>
             }
         </div>
     </div>
     <div class="keret-torzs">
-        <div class="torzs-bal" [ngClass]="{'rejtett': ful()>1}">
+        <div class="torzs-bal"
+             [ngClass]="{'rejtett': ful()>1}">
             <app-recept-lista (receptKivalasztva)="receptKivalasztas($event)"></app-recept-lista>
+            <div class="info-gomb-sor">
+                <p-button icon="pi pi-info-circle"
+                          class="fej-gomb"
+                          [rounded]="true"
+                          severity="primary"
+                          (onClick)="infoKell()"></p-button>
+            </div>
         </div>
-        <div class="torzs-jobb" [ngClass]="{'rejtett': ful()<2}">
+        <div class="torzs-jobb"
+             [ngClass]="{'rejtett': ful()<2}">
             <app-recept-szerkeszto (szerkesztesVege)="receptSzerkesztesKesz($event)"></app-recept-szerkeszto>
         </div>
     </div>

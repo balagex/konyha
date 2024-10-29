@@ -25,6 +25,14 @@
             font-weight: 500;
         }
 
+        @container reszekeret (max-width: 600px) {
+            .kepkezeles-gomb, .uj-recept, .mentes-gomb-div, .torles-gomb-div {
+                ::ng-deep.resze-gomb {
+                    padding: 0.75rem;
+                }
+            }
+        }
+
         @container reszekeret (min-width: 600px) {
             .kepkezeles-gomb {
                 ::ng-deep.kepek-gomb::after {
@@ -44,6 +52,13 @@
             .mentes-gomb-div {
                 ::ng-deep.mentes-gomb::after {
                     content: 'entés';
+                    font-weight: 700;
+                }
+            }
+
+            .torles-gomb-div {
+                ::ng-deep.torles-gomb::after {
+                    content: 'örlés';
                     font-weight: 700;
                 }
             }

@@ -54,8 +54,6 @@ export class ReceptLinkerComponent {
         const linkClone = cloneDeep(this.link());
         this.szerkesztesiAdatok().szerkesztettLink.set(linkClone);
         this.szerkesztesiAdatok().szerkesztesAlatt.set(true);
-        // TODO: ez csak teszt, át kell menni edit mode-ban, és majd onnan kell meghívni
-        // this.linkModositva.emit(this.link());
     }
 
     ujLinkRogzitesInditas(): void {
@@ -75,26 +73,19 @@ export class ReceptLinkerComponent {
         console.debug('ReceptLinkerComponent - linkModositas ', this.ujLinkFelvetelE());
         this.szerkesztesiAdatok().szerkesztettLink.set(null);
         this.szerkesztesiAdatok().szerkesztesAlatt.set(false);
-        // if (this.ujLinkFelvetelE()) {
-        //     this.linkModositva.emit(null);
-        // } else {
-        //     this.szerkesztettLink.set(null);
-        //     this.szerkesztesAlatt.set(false);
-        // }
     }
 
     linkNevModositas(nev: string): void {
-        // TODO: befejezni
         console.debug('ReceptLinkerComponent - linkNevModositas ', nev);
+        this.szerkesztesiAdatok().szerkesztettLink().nev = nev;
     }
 
     linkLinkModositas(link: string): void {
-        // TODO: befejezni
         console.debug('ReceptLinkerComponent - linkLinkModositas ', link);
+        this.szerkesztesiAdatok().szerkesztettLink().link = link;
     }
 
     linkModOK(): void {
-        // TODO: befejezni
         this.linkModositva.emit(this.szerkesztesiAdatok().szerkesztettLink());
         this.szerkesztesiAdatok().szerkesztesAlatt.set(false);
         console.debug('ReceptLinkerComponent - linkModOK ', this.szerkesztesiAdatok().szerkesztettLink());

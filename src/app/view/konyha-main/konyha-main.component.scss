@@ -44,7 +44,10 @@
             }
         
             &.fk-max {
-                display: block;
+                display: inline-flex;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
 
                 @media screen and (max-width: 1200px) {
                     display: none;
@@ -74,6 +77,18 @@
             &.rejtett {
                 display: block;
                 @media screen and (max-width: 1200px) {
+                    display: none;
+                }
+            }
+
+            .info-gomb-sor {
+                position: fixed;
+                bottom: 0.5rem;
+                left: 0.5rem;
+                height: 50px;
+                display: flex;
+
+                @media screen and (min-width: 1200px) {
                     display: none;
                 }
             }

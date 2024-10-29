@@ -22,6 +22,7 @@ import { ReceptLinkerComponent } from '../recept-linker/recept-linker.component'
 import { ReceptKepKezeloComponent } from '../recept-kep-kezelo/recept-kep-kezelo.component';
 import { ListResult, StorageReference } from 'firebase/storage';
 import { FileSelectEvent, FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
+import { subscribeOn } from 'rxjs';
 
 
 @Component({
@@ -34,6 +35,7 @@ import { FileSelectEvent, FileUpload, FileUploadHandlerEvent, FileUploadModule }
 })
 export class ReceptSzerkesztoComponent implements OnInit {
 
+    @ViewChild('reTorConfirmPopupRef', { static: false }) receptTorlesConfirmPopup: ConfirmPopup;
     @ViewChild('megjegyzesConfirmPopupRef', { static: false }) megjTorlesConfirmPopup: ConfirmPopup;
     // @ViewChild('linkConfirmPopupRef', { static: false }) linkTorlesConfirmPopup!: ConfirmPopup;
     @ViewChild('kepvalaszto', { static: false }) kepFajlValaszto: FileUpload;
@@ -463,8 +465,10 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
         this.adatServiceService.recepMentese(mentendoRecept, this.fireAuthService.getToken()).subscribe({
             next: (receptek) => {
-                console.debug('ReceptSzerkesztoComponent - mentés válasz: ', receptek, this.adatServiceService.receptLista());
+                const mentettRecept = receptek.find(r => r.azon === mentendoRecept.azon);
+                console.debug('ReceptSzerkesztoComponent - mentés válasz: ', receptek, this.adatServiceService.receptLista(), mentettRecept);
                 if (ujReceptetMentunkE) {
+                    this.adatServiceService.kivalasztottRecept.set(mentettRecept);
                     this.kedvencekAktualizalasa(mentendoRecept);
                 } else {
                     const uzi = new GrowlMsg('Sikeres mentés', 'info');
@@ -483,6 +487,87 @@ export class ReceptSzerkesztoComponent implements OnInit {
                 this.growlService.idozitettUzenetMegjelenites(uzi, 0);
             }
         });
+    }
+
+    torles(event: Event): void {
+        console.debug('ReceptSzerkesztoComponent - recept törlés', event);
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            key: 'reTorConfirmPopupRef',
+            message: 'Biztos töröli a receptet?' + UJ_SOR + UJ_SOR + 'A törlés után a recept adatai nem lesznek visszaállíthatók!',
+            header: null,
+            icon: 'pi pi-exclamation-triangle',
+            acceptIcon: "none",
+            rejectIcon: "none",
+            rejectButtonStyleClass: "p-button-text",
+            accept: () => {
+                console.debug('ReceptSzerkesztoComponent - RECEPT TÖRLÉS INDUL...');
+                const kivalReceptAzon = this.szerkesztesiAdatok()?.forrasRecept?.azon;
+                this.confirmationService.close();
+                const teszt = this.adatServiceService.receptKiveteleAKedvencekbol(this.szerkesztesiAdatok()?.forrasRecept, this.adatServiceService.kedvencReceptekLista());
+                console.debug('ReceptSzerkesztoComponent - AKTUALIZÁLT KEDVENCEK TESZT: ', teszt);
+                this.adatServiceService.receptOsszesKepTorlese(kivalReceptAzon).subscribe({
+                    next: (eredmeny) => {
+                        console.debug('ReceptSzerkesztoComponent - RECEPT KÉPEK TÖRÖLVE: ', eredmeny);
+                        this.adatServiceService.torlesAKedvencekKozul(this.szerkesztesiAdatok()?.forrasRecept, this.fireAuthService.getToken()).subscribe({
+                            next: (megmaradtKedvencek) => {
+                                console.debug('ReceptSzerkesztoComponent - Kedvencek aktualizálása után: ', megmaradtKedvencek);
+                                this.adatServiceService.recepTorlese(this.szerkesztesiAdatok()?.forrasRecept, this.fireAuthService.getToken()).subscribe({
+                                    next: (megmaradtReceptek) => {
+                                        console.debug('ReceptSzerkesztoComponent - Recept törlése utáni recept lista: ', megmaradtReceptek);
+                                        const uzi = new GrowlMsg('Sikeres recept törlés', 'info');
+                                        this.growlService.idozitettUzenetMegjelenites(uzi, 2000);
+                                    },
+                                    error: (recTorError) => {
+                                        console.error('ReceptSzerkesztoComponent - RECEPT TÖRLÉSI HIBA ', recTorError);
+                                        let duma = 'Hiba történt a recept törlése során!';
+                                        if (recTorError instanceof HttpErrorResponse) {
+                                            duma = duma + UJ_SOR + UJ_SOR +
+                                                JSON.stringify(recTorError?.error);
+                                        }
+                                        const uzi = new GrowlMsg(duma, 'hiba');
+                                        this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+                                    }
+                                });
+                            },
+                            error: (kedvencAktError) => {
+                                console.error('ReceptSzerkesztoComponent - KEDVENCEK AKTUALIZÁLÁSI HIBA ', kedvencAktError);
+                                let duma = 'Hiba történt a recept kivétele a kedvenc receptek közül művelet során!';
+                                if (kedvencAktError instanceof HttpErrorResponse) {
+                                    duma = duma + UJ_SOR + UJ_SOR +
+                                        JSON.stringify(kedvencAktError?.error);
+                                }
+                                const uzi = new GrowlMsg(duma, 'hiba');
+                                this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+                            }
+                        });
+                    },
+                    error: (torlesError) => {
+                        console.error('ReceptSzerkesztoComponent - RECEP KÉPEK TÖRLÉSI HIBA ', torlesError);
+                        this.confirmationService.close();
+                        let duma = 'Hiba történt a recepthez tartozó képek törlése során, emiatt a recept törlése nem történt meg!';
+                        if (torlesError instanceof HttpErrorResponse) {
+                            duma = duma + UJ_SOR + UJ_SOR +
+                                JSON.stringify(torlesError?.error);
+                        }
+                        const uzi = new GrowlMsg(duma, 'hiba');
+                        this.growlService.idozitettUzenetMegjelenites(uzi, 0);
+                    }
+                });
+            },
+            reject: () => {
+                console.debug('ReceptSzerkesztoComponent - RECEPT TÖRLÉS CANCEL');
+                this.confirmationService.close();
+            }
+        });
+    }
+
+    receptTorlesAccept() {
+        this.receptTorlesConfirmPopup.accept();
+    }
+
+    receptTorlesReject() {
+        this.receptTorlesConfirmPopup.reject();
     }
 
     kedvencsegAllitas(): void {

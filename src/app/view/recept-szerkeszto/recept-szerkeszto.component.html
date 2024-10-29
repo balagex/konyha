@@ -31,7 +31,7 @@
                       severity="help"
                       [text]="true"
                       [raised]="true"
-                      styleClass="kepek-gomb"
+                      styleClass="kepek-gomb resze-gomb"
                       [label]="'K'"
                       (onClick)="kepKezelesInditas()"></p-button>
         </div>
@@ -42,10 +42,43 @@
                       severity="primary"
                       [text]="true"
                       [raised]="true"
-                      styleClass="mentes-gomb"
+                      styleClass="mentes-gomb resze-gomb"
                       label="M"
                       (onClick)="mentes()"
                       [disabled]="!receptMentheto()"></p-button>
+        </div>
+        }
+        @if (szerkesztesiAdatok()?.forrasRecept?.azon && szerkesztesiAdatok()?.recept()?.sajatE) {
+        <div class="torles-gomb-div">
+            <p-button icon="pi pi-trash"
+                      severity="danger"
+                      [text]="true"
+                      [raised]="true"
+                      styleClass="torles-gomb resze-gomb"
+                      label="T"
+                      (onClick)="torles($event)"></p-button>
+            <p-confirmPopup #reTorConfirmPopupRef
+                            key="reTorConfirmPopupRef">
+                <ng-template pTemplate="headless"
+                             let-message>
+                    <div class="egyszeru-confirm-keret">
+                        <div class="eck-uzi">
+                            <span>{{ message.message }}</span>
+                        </div>
+                        <div class="eck-gombok">
+                            <p-button icon="pi pi-trash"
+                                      severity="danger"
+                                      [rounded]="true"
+                                      [text]="true"
+                                      (onClick)="receptTorlesAccept()"></p-button>
+                            <p-button icon="pi pi-undo"
+                                      [rounded]="true"
+                                      [text]="true"
+                                      (onClick)="receptTorlesReject()"></p-button>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-confirmPopup>
         </div>
         }
         }
@@ -55,7 +88,7 @@
                       [text]="true"
                       [raised]="true"
                       label="Új"
-                      styleClass="uj-r-gomb"
+                      styleClass="uj-r-gomb resze-gomb"
                       (onClick)="ujReceptFelvetelInditas()"></p-button>
         </div>
         }

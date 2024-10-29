@@ -92,6 +92,14 @@ export class KonyhaMainComponent implements OnInit {
         }
     }
 
+    infoKell(): void {
+        // TODO
+    }
+
+    kilepes(): void {
+        this.fireAuthService.logout();
+    }
+
     // ngOnDestroy() {
     //     this.observer.unobserve(this.wapperElement.nativeElement);
     // }

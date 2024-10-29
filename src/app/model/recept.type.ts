@@ -2,6 +2,8 @@ import { ReceptLinkIF } from "./recept-link.interface";
 import { ReceptLink } from "./recept-link.type";
 import { ReceptMegjegyzesIF } from "./recept-megjegyzes.interface";
 import { ReceptMegjegyzes } from "./recept-megjegyzes.type";
+import { ReceptOsszetevoIF } from "./recept-osszetevo.interface";
+import { ReceptOsszetevo } from "./recept-osszetevo.type";
 import { ReceptIF } from "./recept.interface";
 
 export class Recept {
@@ -11,7 +13,7 @@ export class Recept {
     keszites: string;
     leiras: string;
     gazdaFelhasznaloAzon: string;
-    kepek: string[];
+    osszetevok: ReceptOsszetevo[];
     linkek: ReceptLink[];
     megjegyzesek: ReceptMegjegyzes[];
     // származtatott érték, a kedvenxek lekérése után lehet a bejelentkezett felhazsnáló kapcsán megvizsgálni, hogy
@@ -49,7 +51,13 @@ export class Recept {
             this.keszites = recept.keszites;
             this.leiras = recept.leiras;
             this.gazdaFelhasznaloAzon = recept.gazdaFelhasznaloAzon;
-            this.kepek = recept.kepek ? recept.kepek : [];
+            this.osszetevok = [];
+            if (recept.osszetevok && recept.osszetevok.length > 0) {
+                recept.osszetevok.forEach(roi => {
+                    const ro = new ReceptOsszetevo(roi);
+                    this.osszetevok.push(ro);
+                });
+            }
             this.linkek = [];
             if (recept.linkek && recept.linkek.length > 0) {
                 recept.linkek.forEach(rli => {
@@ -75,7 +83,7 @@ export class Recept {
             this.keszites = null;
             this.leiras = null;
             this.gazdaFelhasznaloAzon = null;
-            this.kepek = [];
+            this.osszetevok = [];
             this.linkek = [];
             this.megjegyzesek = [];
             this.kedvencE = false;
@@ -84,6 +92,14 @@ export class Recept {
     }
 
     convertForSave(): ReceptIF {
+
+        const osszetevoLista: ReceptOsszetevoIF[] = [];
+        if (this.osszetevok && this.osszetevok.length > 0) {
+            this.osszetevok.forEach(ro => {
+                const roi = ro.convertForSave();
+                osszetevoLista.push(roi);
+            });
+        }
 
         const linkLista: ReceptLinkIF[] = [];
         if (this.linkek && this.linkek.length > 0) {
@@ -107,7 +123,7 @@ export class Recept {
             keszites: this.keszites,
             leiras: this.leiras,
             gazdaFelhasznaloAzon: this.gazdaFelhasznaloAzon,
-            kepek: this.kepek ? this.kepek : [],
+            osszetevok: osszetevoLista,
             linkek: linkLista,
             megjegyzesek: megjegyzesLista
         };

@@ -18,12 +18,13 @@
 @keyframes beki {
     0% {
         opacity: 0;
-        // transform: translateX(-100px);
+        transform: translateX(300px);
         // clip-path: inset(100% 100% 0 0);
         scale: 0.5;
     }
     12% {
         opacity: 1;
+        transform: translateX(0px);
         // transform: translateX(0px);
         // clip-path: inset(0 0 0 0);
         scale: 1;
@@ -108,7 +109,7 @@
         padding: 1rem;
         padding-right: 2rem;
         // Animáció miatt megnővelt felső és alsó padding
-        padding-bottom: 2rem;
+        padding-bottom: 4rem;
         padding-top: 2rem;
     
         .recept-panel {

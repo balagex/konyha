@@ -4,6 +4,7 @@ export class ReceptOsszetevo {
 
     nev: string;
     mennyiseg: string;
+    sorrend: number;
 
     static convertFromIfList(list: ReceptOsszetevoIF[]): ReceptOsszetevo[] {
         const result: ReceptOsszetevo[] = [];
@@ -15,13 +16,15 @@ export class ReceptOsszetevo {
         return result;
     }
 
-    constructor(megjegyzes?: ReceptOsszetevoIF) {
-        if (megjegyzes) {
-            this.nev = megjegyzes.nev;
-            this.mennyiseg = megjegyzes.mennyiseg;
+    constructor(osszetevo?: ReceptOsszetevoIF) {
+        if (osszetevo) {
+            this.nev = osszetevo.nev;
+            this.mennyiseg = osszetevo.mennyiseg;
+            this.sorrend = osszetevo.sorrend
         } else {
             this.nev = null;
             this.mennyiseg = null;
+            this.sorrend = null;
         }
     }
 
@@ -29,7 +32,8 @@ export class ReceptOsszetevo {
     convertForSave(): ReceptOsszetevoIF {
         return {
             nev: this.nev,
-            mennyiseg: this.mennyiseg
+            mennyiseg: this.mennyiseg,
+            sorrend: this.sorrend
         };
     }
 

@@ -1,0 +1,99 @@
+<div class="osszetevo-kezelo-wrapper">
+    @if(szerkesztesiAdatok()?.osszetevok()?.length > 0) {
+    <p-table [value]="szerkesztesiAdatok()?.osszetevok()"
+             [styleClass]="'p-datatable-sm'"
+             selectionMode="single"
+             [(selection)]="kivalasztottOsszetevo"
+             (onRowSelect)="sorKivalasztas($event)"
+             (onEditComplete)="szerkesztesTortent($event)">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width:10%">
+                </th>
+                <th style="width:45%">
+                    Név
+                </th>
+                <th style="width:45%">
+                    Mennyiség
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body"
+                     let-osszetevo
+                     let-editing="editing"
+                     let-ri="rowIndex">
+            <tr [pSelectableRow]="osszetevo" [pSelectableRowIndex]="ri">
+                <td>
+                    <div class="torles-cella">
+                        <button pButton
+                                pRipple
+                                type="button"
+                                icon="pi pi-trash"
+                                (click)="sorTorles(osszetevo, ri)"
+                                class="p-button-rounded p-button-text p-button-danger ossz-torles-gomb"
+                                size="small">
+                        </button>
+                    </div>
+                </td>
+                <td [pEditableColumn]="osszetevo.nev"
+                    pEditableColumnField="nev">
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input pInputText
+                                   class="mezo-input"
+                                   type="text"
+                                   [(ngModel)]="osszetevo.nev" />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ osszetevo.nev }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td [pEditableColumn]="osszetevo.mennyiseg"
+                    pEditableColumnField="mennyiseg">
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <input pInputText
+                                   class="mezo-input"
+                                   type="text"
+                                   [(ngModel)]="osszetevo.mennyiseg"
+                                   required />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ osszetevo.mennyiseg }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    } @else {
+    <div class="nincs-osszetevo">
+        Nincs összetevő megadva
+    </div>
+    }
+    <div class="gombsor">
+        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 && szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
+        <p-button icon="pi pi-arrow-down"
+                  severity="info"
+                  [text]="true"
+                  [raised]="true"
+                  [disabled]="szerkesztesiAdatok()?.kivalasztottSorIndex()+1 >= szerkesztesiAdatok()?.osszetevok()?.length"
+                  (onClick)="osszetevoLe()"></p-button>
+        }
+        <p-button icon="pi pi-plus"
+                  severity="help"
+                  [text]="true"
+                  [raised]="true"
+                  label="Új összetevő"
+                  (onClick)="ujOsszetevoRogzitesInditas()"></p-button>
+        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 && szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
+        <p-button icon="pi pi-arrow-up"
+                  severity="info"
+                  [text]="true"
+                  [raised]="true"
+                  [disabled]="szerkesztesiAdatok()?.kivalasztottSorIndex() === 0"
+                  (onClick)="osszetevoFel()"></p-button>
+        }
+    </div>
+</div>

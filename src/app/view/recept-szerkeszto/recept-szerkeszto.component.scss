@@ -125,7 +125,7 @@
             padding: 15px;
         }
 
-        .nev, .keszites, .leiras, .megjegyzesek, .linkek, .kepek {
+        .nev, .keszites, .leiras, .osszetevok, .megjegyzesek, .linkek, .kepek {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -155,7 +155,7 @@
             }
         }
 
-        .leiras, .megjegyzesek, .linkek {
+        .leiras, .megjegyzesek, .osszetevok, .linkek {
             align-items: start;
 
             .mezo-felirat {
@@ -241,7 +241,7 @@
 
         @container reszekeret (max-width: 800px) {
 
-            .nev, .keszites, .leiras, .megjegyzesek, .linkek, .kepek {
+            .nev, .keszites, .leiras, .osszetevok, .megjegyzesek, .linkek, .kepek {
                 flex-direction: column;
                 align-items: start;
                 width: 100%;

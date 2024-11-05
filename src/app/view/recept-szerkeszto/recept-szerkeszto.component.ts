@@ -22,13 +22,12 @@ import { ReceptLinkerComponent } from '../recept-linker/recept-linker.component'
 import { ReceptKepKezeloComponent } from '../recept-kep-kezelo/recept-kep-kezelo.component';
 import { ListResult, StorageReference } from 'firebase/storage';
 import { FileSelectEvent, FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
-import { subscribeOn } from 'rxjs';
-
+import { ReceptOsszetevoKezeloComponent } from '../recept-osszetevo-kezelo/recept-osszetevo-kezelo.component';
 
 @Component({
     selector: 'app-recept-szerkeszto',
     standalone: true,
-    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, FileUploadModule],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, ReceptOsszetevoKezeloComponent, FileUploadModule],
     providers: [ConfirmationService],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
@@ -37,8 +36,8 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     @ViewChild('reTorConfirmPopupRef', { static: false }) receptTorlesConfirmPopup: ConfirmPopup;
     @ViewChild('megjegyzesConfirmPopupRef', { static: false }) megjTorlesConfirmPopup: ConfirmPopup;
-    // @ViewChild('linkConfirmPopupRef', { static: false }) linkTorlesConfirmPopup!: ConfirmPopup;
     @ViewChild('kepvalaszto', { static: false }) kepFajlValaszto: FileUpload;
+    @ViewChild('osszetevok', { static: false }) osszetevoKezelo: ReceptOsszetevoKezeloComponent;
 
     szerkesztesVege = output<Recept>();
 
@@ -107,6 +106,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
         private domSanitizer: DomSanitizer) { }
 
     ngOnInit(): void {
+        console.debug('ReceptSzerkesztoComponent- ON INIT FUT...');
     }
 
     sajatMegjegyzesVanE(): boolean {
@@ -114,6 +114,9 @@ export class ReceptSzerkesztoComponent implements OnInit {
         return recept?.megjegyzesek?.findIndex(m => m.sajatE) > -1;
     };
 
+    // TODO: ez mobil módban nem fut le, mert nem ezt a metódust hívjuk hanem a main komponensben csak fület váltunk és a
+    // this.adatServiceService.ujSzerkesztendoReceptLetrehozasa(); utasítást.
+    // Vagy ott is be kell hívni ide, vagy át kell térni formra...
     ujReceptFelvetelInditas(): void {
         const voltEKivalasztottRecept = this.adatServiceService.kivalasztottRecept()?.azon ? true : false;
         this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
@@ -136,7 +139,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
         const recept = this.szerkesztesiAdatok().recept();
         recept.nev = nev;
         this.szerkesztesiAdatok().recept.set(recept);
-        console.debug('ReceptSzerkesztoComponent - nevModositas ', nev, this.adatServiceService.szerkesztendoRecept());
+        // console.debug('ReceptSzerkesztoComponent - nevModositas ', nev, this.adatServiceService.szerkesztendoRecept());
     }
 
     keszitesModositas(keszites: string): void {
@@ -150,7 +153,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
         const recept: Recept = this.szerkesztesiAdatok().recept() as Recept;
         recept.leiras = leiras;
         this.szerkesztesiAdatok().recept.set(recept);
-        console.debug('ReceptSzerkesztoComponent - leirasModositas ', leiras, recept, recept instanceof Recept);
+        // console.debug('ReceptSzerkesztoComponent - leirasModositas ', leiras, recept, recept instanceof Recept);
     }
 
     megjegyzesModositas(megjegyzes: ReceptMegjegyzes): void {
@@ -458,7 +461,9 @@ export class ReceptSzerkesztoComponent implements OnInit {
     mentes(): void {
         // TODO service oldalon a megjegyzés fésülés hátravan
         const mentendoRecept: Recept = this.szerkesztesiAdatok().recept();
-        console.debug('ReceptSzerkesztoComponent - mentes ', this.szerkesztesiAdatok().recept(), mentendoRecept);
+        const osszetevok = this.osszetevoKezelo?.szerkesztesiAdatok()?.osszetevok();
+        console.debug('ReceptSzerkesztoComponent - mentes ', this.szerkesztesiAdatok().recept(), mentendoRecept, osszetevok);
+        mentendoRecept.osszetevok = osszetevok?.length > 0 ? osszetevok : [];
 
         // Azért jegyezzük meg mentés előtt, mert utána automata átvált false-ra és nem indul a kedvenc aktualizálás.
         const ujReceptetMentunkE = this.ujReceptE();

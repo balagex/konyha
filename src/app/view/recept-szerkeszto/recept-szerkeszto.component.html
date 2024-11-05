@@ -250,6 +250,12 @@
                 </textarea>
             </div>
         </div>
+        <div class="torzs-sor osszetevok">
+            <div class="mezo-felirat">Összetevők:</div>
+            <div class="mezo-torzs">
+                <app-recept-osszetevo-kezelo #osszetevok [osszetevok]="szerkesztesiAdatok()?.recept()?.osszetevok"></app-recept-osszetevo-kezelo>
+            </div>
+        </div>
         <div class="torzs-sor megjegyzesek">
             <div class="mezo-felirat">Megjegyzések:</div>
             <div class="mezo-torzs megj-torzs">

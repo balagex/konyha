@@ -1,0 +1,42 @@
+@import "../../app-colors.scss";
+
+.osszetevo-kezelo-wrapper {
+    width:100%;
+
+    .gombsor {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 1rem 0;
+    }
+}
+
+.ossz-torles-gomb {
+    height: 1.2rem;
+}
+
+:host::ng-deep.mezo-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 36px;
+    font-size: 1rem;
+}
+
+:host::ng-deep.p-datatable-thead {
+
+    tr { 
+        th {
+        background-color: antiquewhite;
+        }
+
+        th:first-child {
+            border-top-left-radius: 6px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 6px;
+        }
+    }
+
+}

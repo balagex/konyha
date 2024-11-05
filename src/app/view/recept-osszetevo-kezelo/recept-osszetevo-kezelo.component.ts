@@ -31,7 +31,8 @@ export class ReceptOsszetevoKezeloComponent {
 
         return {
             osszetevok: signal<ReceptOsszetevo[]>(sorrendezettOsszetevok),
-            kivalasztottSorIndex: signal<number>(null)
+            kivalasztottSorIndex: signal<number>(null),
+            sajatE: this.adatServiceService.szerkesztendoRecept().sajatE
         };
     });
 

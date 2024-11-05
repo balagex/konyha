@@ -22,9 +22,11 @@
                      let-osszetevo
                      let-editing="editing"
                      let-ri="rowIndex">
-            <tr [pSelectableRow]="osszetevo" [pSelectableRowIndex]="ri">
+            <tr [pSelectableRow]="osszetevo"
+                [pSelectableRowIndex]="ri">
                 <td>
                     <div class="torles-cella">
+                        @if (szerkesztesiAdatok()?.sajatE) {
                         <button pButton
                                 pRipple
                                 type="button"
@@ -33,8 +35,10 @@
                                 class="p-button-rounded p-button-text p-button-danger ossz-torles-gomb"
                                 size="small">
                         </button>
+                        }
                     </div>
                 </td>
+                @if (szerkesztesiAdatok()?.sajatE) {
                 <td [pEditableColumn]="osszetevo.nev"
                     pEditableColumnField="nev">
                     <p-cellEditor>
@@ -64,6 +68,14 @@
                         </ng-template>
                     </p-cellEditor>
                 </td>
+                } @else {
+                <td>
+                    {{ osszetevo.nev }}
+                </td>
+                <td>
+                    {{ osszetevo.mennyiseg }}
+                </td>
+                }
             </tr>
         </ng-template>
     </p-table>
@@ -72,8 +84,10 @@
         Nincs összetevő megadva
     </div>
     }
+    @if (szerkesztesiAdatok()?.sajatE) {
     <div class="gombsor">
-        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 && szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
+        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 &&
+        szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
         <p-button icon="pi pi-arrow-down"
                   severity="info"
                   [text]="true"
@@ -87,7 +101,8 @@
                   [raised]="true"
                   label="Új összetevő"
                   (onClick)="ujOsszetevoRogzitesInditas()"></p-button>
-        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 && szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
+        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 &&
+        szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
         <p-button icon="pi pi-arrow-up"
                   severity="info"
                   [text]="true"
@@ -96,4 +111,5 @@
                   (onClick)="osszetevoFel()"></p-button>
         }
     </div>
+    }
 </div>

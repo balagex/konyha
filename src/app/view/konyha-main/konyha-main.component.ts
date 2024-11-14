@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, model, signal } from '@angular/core';
 import { AdatServiceService } from '../../adat-service.service';
 import { FireAuthService } from '../../fire-auth.service';
 import { Recept } from '../../model/recept.type';
@@ -6,12 +6,13 @@ import { ButtonModule } from 'primeng/button';
 import { ReceptListaComponent } from '../recept-lista/recept-lista.component';
 import { ReceptSzerkesztoComponent } from '../recept-szerkeszto/recept-szerkeszto.component';
 import { NgClass } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
 
 
 @Component({
     selector: 'app-konyha-main',
     standalone: true,
-    imports: [ButtonModule, ReceptListaComponent, ReceptSzerkesztoComponent, NgClass],
+    imports: [ButtonModule, ReceptListaComponent, ReceptSzerkesztoComponent, NgClass, DialogModule],
     templateUrl: './konyha-main.component.html',
     styleUrl: './konyha-main.component.scss'
 })
@@ -26,6 +27,7 @@ export class KonyhaMainComponent implements OnInit {
 
     public ful = signal<number>(1);
     public nagyiMod = signal<boolean>(false);
+    infoMod = model<boolean>(false);
 
     kivalasztottRecept = computed<Recept>(() => {
         return this.adatServiceService.kivalasztottRecept();
@@ -93,7 +95,7 @@ export class KonyhaMainComponent implements OnInit {
     }
 
     infoKell(): void {
-        // TODO
+        this.infoMod.set(true);
     }
 
     kilepes(): void {

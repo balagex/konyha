@@ -70,3 +70,95 @@
         </div>
     </div>
 </div>
+<p-dialog header="Kézikönyv"
+          [modal]="true"
+          [(visible)]="infoMod"
+          [style]="{ width: '60vw' }"
+          [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+          [maximizable]="false">
+    <div class="kk-modal-body">
+
+        <h3>Cél</h3>
+        <p>
+            Az alkalmazás létrejöttét az hívta életre, hogy milyen jó lenne, ha egyes receptek kapcsán gyorsan meg
+            lehetne
+            nézni, hogy a korábbi tapasztalatok alapján milyen hőfokon, mennyi ideig kell azt készíteni, és ehhez ne
+            kelljen
+            cetliket írogatni, keresgetni.
+        </p>
+        <h3>Felhasználók</h3>
+        <p>
+            A használata felhasználói regisztrációhoz kötött. Minden felhasználó csak a saját receptjeit tarthatja
+            karban,
+            de láthatja a mások által felvett recepteket is, azokhoz saját megjegyzést fűzhet (amit a többiek is
+            látnak),
+            valamint bárki receptjét megjelölheti kedvencként.
+        </p>
+        <h3>Használat</h3>
+        <p>
+            Az alkalmazás desktop és mobil eszközökön is használható, a képernyő mérettől függően pedig részben eltér a
+            kinézet és a működés. Desktop módban mind a receptek listája, mind az azokhoz kapcsolt tartalom egyszerre
+            látható, szerkeszthető. Mobil méret esetén a tartalom ketté lett osztva. Alapból a receptek listája látható,
+            és
+            egy receptet kiválasztva, vagy új recept felvételét kezdeményezve jelenik meg (a lista helyén) a recept
+            szerkesztő.
+        </p>
+        <p>
+            A receptek listájában megjelenik azok neve és a készítésük kapcsán megadott információ. A saját receptek
+            lilaszínnel kiemeltek, valamint a kedvenc recepteket egy ( <span class="pi pi-star-fill"></span> ) ikon
+            jelöli.
+        </p>
+        <p>
+            A receptek listája több szempont szerint szűrhető.
+        </p>
+        <ul>
+            <li>A <span class="pi pi-star"></span> gombal a kedvencekre lehet szűrni.</li>
+            <li>A <span class="pi pi-sort-alpha-down"></span> gombbal a receptek neve ABC szerint rendezhető.</li>
+            <li>A <span class="pi pi-users"></span> gombbal lista leszűkíthető csak a saját receptekre.</li>
+            <li>A receptek nevére szöveges kereső mezővel is szűrni lehet. Ennek tartalma a <span
+                      class="pi pi-filter-slash"></span> gombbal törölhető.</li>
+        </ul>
+        <p>
+            Mobil esetén a lista nézetben a fejlécben található <span class="pi pi-plus"></span> gombbal kezdeményezhető
+            új recept felvétele.
+        </p>
+        <p>
+            Egy receptre klikkelve jeleníthetők meg a hozzá tartozó információk. A recept adatai csak akkor
+            szerkeszthetők, ha a bejelentkezett felhasználó vette fel eredetileg. Egyéb esetben csak egy megjegyzés
+            rögzíthető, illetve a recept kedvenc-e jellemzője állítható.
+        </p>
+        <ul>
+            <li>Egy recept kapcsán a név és a leírás megadása kötelező.</li>
+            <li>A kedvencség állítása azonnal mentésre kerül, azonban a többi módosítás csak a <span
+                      class="pi pi-save"></span> mentés gomb megnyomásával rögzül, ennek elfelejtése esetén a
+                módosítások
+                elvesznek.</li>
+            <li>Összetevők táblázatába felvehető sorokban nem kötelező egyik mező kitöltése sem. Az összetevők sorrendje
+                átrendezhető a sor kiválasztása, valamit a <span class="pi pi-arrow-down"></span> és <span
+                      class="pi pi-arrow-up"></span> gombok segítségével. A kijelölt összetevő sor törölhető is a <span
+                      class="pi pi-trash"></span> gombbal.</li>
+            <li>Egy recepthez minden felhasználó egy megjegyzést rögzíthet, a sajátját bármikor módosíthatja, vagy
+                törölheti. Az összes megjegyzés látható mindenki számára.</li>
+            <li>Egy recept kapcsán egy vagy több link is rögzíthető, tartható karban. Egy link esetén a név és az URL
+                megadása is kötelező. A linkre klikkelve a megadott URL-en elérhető tartalom jelenik meg (desktop módban
+                egy
+                másik böngésző fülön).</li>
+            <li>A recept gazdájának van lehetősége ahhoz képeket is feltöltenie. Mivel a képek is a recept adatokkal
+                együtt egy ingyenes szolgáltatás igénybevételével tárolódnak, így erősen korlátos a tárolható
+                adatmennyiség, és a képek megnézésével kapcsolatos adatforgalom napi mértéke is. Emiatt a feltöltött
+                képek mérete feltöltés előtt konvertálásra kerül. Emellett a képek a recept adatokkal együtt nem
+                kerülnek a szerkesztés megkezdésekor automatikusan letöltésre, hanem a szerkesztő lett úgy megvalósítva,
+                hogy csak a <span class="pi pi-image"></span></li> gomb megnyomása után töltödjenek le.
+            <li>A képek feltöltésekor a <span class="pi pi-undo"></span> gomb segítségével lehet a feltöltési szándéktől
+                elállni. A <span class="pi pi-images"></span> gombbal lehet a kép kiválasztást kezdeményezni. A kép
+                kivákasztását követően annak feltöltése a <span class="pi pi-cloud-upload"></span> gombbal
+                kezdeményezhető, vagy a kiválasztás a <span class="pi pi-times"></span> gombbal szüntetgető meg.</li>
+            <li>A képekre klikkelve teljes képernyős módban megnézhető a kép, forgatható, nagyítható.</li>
+        </ul>
+        <p>
+            Mobil esetén a recept szerkesztőből a fejlécben lévő <span class="pi pi-angle-double-left"></span> gombbal
+            lehet visszatérni a receptek listájához. <strong>A visszalépéskor az el nem mentett módosítások
+                elvesznek!</strong>
+        </p>
+    </div>
+</p-dialog>

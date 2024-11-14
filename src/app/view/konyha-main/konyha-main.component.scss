@@ -105,3 +105,9 @@
         background-color: rgb(255 255 255 / 90%);
     }
 }
+
+:host::ng-deep .p-dialog-content {
+    .kk-modal-body {
+        text-align: justify;
+    }
+}

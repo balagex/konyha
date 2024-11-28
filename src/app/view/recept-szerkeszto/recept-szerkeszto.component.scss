@@ -77,6 +77,10 @@
         align-items: center;
         // background-color: pink;
 
+        form {
+            width: 100%;
+        }
+
         &.keptorzs {
             flex-direction: row;
             align-items: center;
@@ -341,5 +345,6 @@ p-fileupload.p-element {
     }
 
 }
+
 
 

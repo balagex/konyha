@@ -212,8 +212,44 @@
             <span class="kep-readonly">A recept elmentéséig a képek kezelése nem elérhető</span>
         </div>
         }
-        @if (torzsMegjelenithetoE()) {
-        <div class="torzs-sor nev">
+        @if (torzsMegjelenithetoE() && alapForm) {
+        <form [formGroup]="alapForm">
+            <div class="torzs-sor nev">
+                <div class="mezo-felirat">Név:</div>
+                <div class="mezo-torzs">
+                    <input type="text"
+                           pInputText
+                           class="mezo-input"
+                           [formControl]="getFC('nev')"
+                           (ngModelChange)="nevModositas($event)" />
+                </div>
+            </div>
+            <div class="torzs-sor keszites">
+                <div class="mezo-felirat">Készítés:</div>
+                <div class="mezo-torzs">
+                    <input type="text"
+                           pInputText
+                           class="mezo-input"
+                           [formControl]="getFC('keszites')"
+                           (ngModelChange)="keszitesModositas($event)" />
+                </div>
+            </div>
+            <div class="torzs-sor leiras">
+                <div class="mezo-felirat">Leírás:</div>
+                <div class="mezo-torzs">
+                    @if (autoresize()) {
+                    <textarea rows="2"
+                              class="mezo-input"
+                              pInputTextarea
+                              #leirasInput
+                              [autoResize]="autoresize()"
+                              [formControl]="getFC('leiras')"
+                              (ngModelChange)="leirasModositas($event)">
+                    </textarea>
+                    }
+                </div>
+            </div>
+            <!-- <div class="torzs-sor nev">
             <div class="mezo-felirat">Név:</div>
             <div class="mezo-torzs">
                 <input type="text"
@@ -249,115 +285,136 @@
                           (ngModelChange)="leirasModositas($event)">
                 </textarea>
             </div>
-        </div>
-        <div class="torzs-sor osszetevok">
-            <div class="mezo-felirat">Összetevők:</div>
-            <div class="mezo-torzs">
-                <app-recept-osszetevo-kezelo #osszetevok [osszetevok]="szerkesztesiAdatok()?.recept()?.osszetevok"></app-recept-osszetevo-kezelo>
+        </div> -->
+            <div class="torzs-sor osszetevok">
+                <div class="mezo-felirat">Összetevők:</div>
+                <div class="mezo-torzs">
+                    <app-recept-osszetevo-kezelo #osszetevok
+                                                 [osszetevok]="szerkesztesiAdatok()?.recept()?.osszetevok"></app-recept-osszetevo-kezelo>
+                </div>
             </div>
-        </div>
-        <div class="torzs-sor megjegyzesek">
-            <div class="mezo-felirat">Megjegyzések:</div>
-            <div class="mezo-torzs megj-torzs">
-                @if (szerkesztesiAdatok()?.recept()?.megjegyzesek?.length > 0) {
-                @for (megjegyzes of szerkesztesiAdatok()?.recept()?.megjegyzesek; track megjegyzes) {
-                <div class="megj-blokk">
-                    <div class="mb-bal">
-                        <div class="mb-bal-felh">
-                            {{ megjegyzes.felhasznaloAzon }}
+            <div class="torzs-sor megjegyzesek">
+                <div class="mezo-felirat">Megjegyzések:</div>
+                <div class="mezo-torzs megj-torzs">
+                    @if (szerkesztesiAdatok()?.recept()?.megjegyzesek?.length > 0) {
+                    @for (megjegyzes of szerkesztesiAdatok()?.recept()?.megjegyzesek; track megjegyzes) {
+                    <div class="megj-blokk">
+                        <div class="mb-bal">
+                            <div class="mb-bal-felh">
+                                {{ megjegyzes.felhasznaloAzon }}
+                            </div>
+                            <div class="mb-bal-ido">
+                                {{ megjegyzes.idopont }}
+                            </div>
                         </div>
-                        <div class="mb-bal-ido">
-                            {{ megjegyzes.idopont }}
+                        <div class="mb-jobb">
+                            @if (megjegyzes.sajatE) {
+                            <textarea rows="2"
+                                      class="mb-input"
+                                      pInputTextarea
+                                      [autoResize]="true"
+                                      [formControl]="getFC('sajatMegjegyzesSzoveg')"
+                                      (ngModelChange)="megjegyzesModositas($event, megjegyzes)">
+                            </textarea>
+                            } @else {
+                            <textarea rows="2"
+                                      class="mb-input"
+                                      pInputTextarea
+                                      [disabled]="!megjegyzes.sajatE"
+                                      [autoResize]="true"
+                                      [ngModel]="megjegyzes.duma"
+                                      [ngModelOptions]="{standalone: true}">
+                            </textarea>
+                            }
+                            <!-- <textarea rows="2"
+                                      class="mb-input"
+                                      pInputTextarea
+                                      [disabled]="!megjegyzes.sajatE"
+                                      [autoResize]="true"
+                                      [ngClass]="{ 'ng-invalid ng-dirty': megjegyzes.sajatE && megjegyzes.duma?.length < 1}"
+                                      [(ngModel)]="megjegyzes.duma"
+                                      [ngModelOptions]="{standalone: true}"
+                                      (ngModelChange)="megjegyzesModositas(megjegyzes)">
+                            </textarea> -->
                         </div>
-                    </div>
-                    <div class="mb-jobb">
-                        <textarea rows="2"
-                                  class="mb-input"
-                                  pInputTextarea
-                                  [disabled]="!megjegyzes.sajatE"
-                                  [autoResize]="true"
-                                  [ngClass]="{ 'ng-invalid ng-dirty': megjegyzes.sajatE && megjegyzes.duma?.length < 1}"
-                                  [(ngModel)]="megjegyzes.duma"
-                                  (ngModelChange)="megjegyzesModositas(megjegyzes)">
-                        </textarea>
-                    </div>
-                    @if (megjegyzes.sajatE) {
-                    <div class="megj-torles">
-                        <p-button icon="pi pi-trash"
-                                  severity="danger"
-                                  [rounded]="true"
-                                  [text]="true"
-                                  [raised]="true"
-                                  (onClick)="sajatMegjegyzesTorles($event, megjegyzes)"></p-button>
-                        <p-confirmPopup #megjegyzesConfirmPopupRef
-                                        key="megjegyzesConfirmPopupRef">
-                            <ng-template pTemplate="headless"
-                                         let-message>
-                                <div class="egyszeru-confirm-keret">
-                                    <div class="eck-uzi">
-                                        <span>{{ message.message }}</span>
+                        @if (megjegyzes.sajatE) {
+                        <div class="megj-torles">
+                            <p-button icon="pi pi-trash"
+                                      severity="danger"
+                                      [rounded]="true"
+                                      [text]="true"
+                                      [raised]="true"
+                                      (onClick)="sajatMegjegyzesTorles($event, megjegyzes)"></p-button>
+                            <p-confirmPopup #megjegyzesConfirmPopupRef
+                                            key="megjegyzesConfirmPopupRef">
+                                <ng-template pTemplate="headless"
+                                             let-message>
+                                    <div class="egyszeru-confirm-keret">
+                                        <div class="eck-uzi">
+                                            <span>{{ message.message }}</span>
+                                        </div>
+                                        <div class="eck-gombok">
+                                            <p-button icon="pi pi-trash"
+                                                      severity="danger"
+                                                      [rounded]="true"
+                                                      [text]="true"
+                                                      (onClick)="megjTorlesAccept()"></p-button>
+                                            <p-button icon="pi pi-undo"
+                                                      [rounded]="true"
+                                                      [text]="true"
+                                                      (onClick)="megjTorlesReject()"></p-button>
+                                        </div>
                                     </div>
-                                    <div class="eck-gombok">
-                                        <p-button icon="pi pi-trash"
-                                                  severity="danger"
-                                                  [rounded]="true"
-                                                  [text]="true"
-                                                  (onClick)="megjTorlesAccept()"></p-button>
-                                        <p-button icon="pi pi-undo"
-                                                  [rounded]="true"
-                                                  [text]="true"
-                                                  (onClick)="megjTorlesReject()"></p-button>
-                                    </div>
-                                </div>
-                            </ng-template>
-                        </p-confirmPopup>
+                                </ng-template>
+                            </p-confirmPopup>
+                        </div>
+                        }
+                    </div>
+                    }
+                    } @else {
+                    <div class="nincs-megj">
+                        <em>Nincs megjegyzés rögzítve</em>
+                    </div>
+                    } @if (!sajatMegjegyzesVanE()) {
+                    <div class="uj-megjegyzes">
+                        <div class="uj-megj-gomb">
+                            <p-button icon="pi pi-plus"
+                                      severity="help"
+                                      [text]="true"
+                                      [raised]="true"
+                                      label="Új megjegyzés"
+                                      (onClick)="ujMegjegyzesRogzitesInditas()"></p-button>
+                        </div>
                     </div>
                     }
                 </div>
-                }
-                } @else {
-                <div class="nincs-megj">
-                    <em>Nincs megjegyzés rögzítve</em>
-                </div>
-                } @if (!sajatMegjegyzesVanE()) {
-                <div class="uj-megjegyzes">
-                    <div class="uj-megj-gomb">
-                        <p-button icon="pi pi-plus"
-                                  severity="help"
-                                  [text]="true"
-                                  [raised]="true"
-                                  label="Új megjegyzés"
-                                  (onClick)="ujMegjegyzesRogzitesInditas()"></p-button>
+            </div>
+            <div class="torzs-sor linkek">
+                <div class="mezo-felirat">Linkek:</div>
+                <div class="mezo-torzs link-torzs"
+                     [ngClass]="{ 'idegen': !szerkesztesiAdatok()?.recept()?.sajatE}">
+                    @if (szerkesztesiAdatok()?.recept()?.linkek?.length > 0) {
+                    @for (link of szerkesztesiAdatok()?.recept()?.linkek; track link) {
+                    <app-recept-linker [link]="link"
+                                       [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"
+                                       [ujLinkFelvetelE]="false"
+                                       (linkModositva)="linkModositva($event, $index)"
+                                       (linkTorlesOK)="linkTorlesOK($event, $index)"></app-recept-linker>
+                    }
+                    } @else {
+                    <div class="nincs-link">
+                        <em>Nincs Link rögzítve</em>
                     </div>
+                    }
+                    @if (szerkesztesiAdatok()?.recept()?.sajatE) {
+                    <app-recept-linker [link]="null"
+                                       [sajatE]="true"
+                                       [ujLinkFelvetelE]="true"
+                                       (linkModositva)="linkFelveve($event)"></app-recept-linker>
+                    }
                 </div>
-                }
             </div>
-        </div>
-        <div class="torzs-sor linkek">
-            <div class="mezo-felirat">Linkek:</div>
-            <div class="mezo-torzs link-torzs"
-                 [ngClass]="{ 'idegen': !szerkesztesiAdatok()?.recept()?.sajatE}">
-                @if (szerkesztesiAdatok()?.recept()?.linkek?.length > 0) {
-                @for (link of szerkesztesiAdatok()?.recept()?.linkek; track link) {
-                <app-recept-linker [link]="link"
-                                   [sajatE]="szerkesztesiAdatok()?.recept()?.sajatE"
-                                   [ujLinkFelvetelE]="false"
-                                   (linkModositva)="linkModositva($event, $index)"
-                                   (linkTorlesOK)="linkTorlesOK($event, $index)"></app-recept-linker>
-                }
-                } @else {
-                <div class="nincs-link">
-                    <em>Nincs Link rögzítve</em>
-                </div>
-                }
-                @if (szerkesztesiAdatok()?.recept()?.sajatE) {
-                <app-recept-linker [link]="null"
-                                   [sajatE]="true"
-                                   [ujLinkFelvetelE]="true"
-                                   (linkModositva)="linkFelveve($event)"></app-recept-linker>
-                }
-            </div>
-        </div>
+        </form>
         }
     </div>
     }

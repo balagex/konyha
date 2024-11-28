@@ -1,10 +1,10 @@
 import { AdatServiceService } from './../../adat-service.service';
-import { Component, input, output, computed, signal, OnInit, ViewChild, model } from '@angular/core';
+import { Component, input, output, computed, signal, OnInit, ViewChild, model, effect } from '@angular/core';
 import { Recept } from '../../model/recept.type';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { cloneDeep } from 'lodash';
 import { FireAuthService } from '../../fire-auth.service';
@@ -17,7 +17,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmPopup, ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmationService } from 'primeng/api';
 import { ReceptLink } from '../../model/recept-link.type';
-import { DomSanitizer } from '@angular/platform-browser';
 import { ReceptLinkerComponent } from '../recept-linker/recept-linker.component';
 import { ReceptKepKezeloComponent } from '../recept-kep-kezelo/recept-kep-kezelo.component';
 import { ListResult, StorageReference } from 'firebase/storage';
@@ -27,7 +26,7 @@ import { ReceptOsszetevoKezeloComponent } from '../recept-osszetevo-kezelo/recep
 @Component({
     selector: 'app-recept-szerkeszto',
     standalone: true,
-    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, ReceptOsszetevoKezeloComponent, FileUploadModule],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, ReceptOsszetevoKezeloComponent, FileUploadModule, ReactiveFormsModule],
     providers: [ConfirmationService],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
@@ -49,6 +48,10 @@ export class ReceptSzerkesztoComponent implements OnInit {
     // A linket video alapján lehet trükközni, hogy a computed által visszaadott readonly signál értékébe teszünk írható signal mezőt.
 
     ujKepNev = model<string>(null);
+
+    public autoresize = signal<boolean>(true);
+
+    alapForm: FormGroup = null;
 
     szerkesztesiAdatok = computed(() => {
 
@@ -81,6 +84,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     torzsMegjelenithetoE = computed(() => {
         let result = this.adatServiceService.szerkesztendoRecept()?.azon;
+
         console.debug('ReceptSzerkesztoComponent - torzsMegjelenithetoE', this.adatServiceService.szerkesztendoRecept()?.azon, result);
         return result;
     });
@@ -103,10 +107,47 @@ export class ReceptSzerkesztoComponent implements OnInit {
         private fireAuthService: FireAuthService,
         private growlService: GrowlService,
         private confirmationService: ConfirmationService,
-        private domSanitizer: DomSanitizer) { }
+        private formBuilder: FormBuilder) {
+        // Ha változik a recept azon, akkor újra építjük az alap formot.
+        effect(() => {
+            let result = this.adatServiceService.szerkesztendoRecept()?.azon;
+            this.alapFormBuild();
+        }, { allowSignalWrites: true })
+    }
 
     ngOnInit(): void {
         console.debug('ReceptSzerkesztoComponent- ON INIT FUT...');
+    }
+
+    alapFormBuild(): void {
+        let sajatMegjegyzes: ReceptMegjegyzes = null;
+        if (this.szerkesztesiAdatok()?.recept()?.megjegyzesek?.length > 0 && this.szerkesztesiAdatok()?.recept()?.megjegyzesek.findIndex(m => m.sajatE) > -1) {
+            sajatMegjegyzes = this.szerkesztesiAdatok()?.recept()?.megjegyzesek.find(m => m.sajatE);
+        }
+        // TODO: lecserélni a sajatMegjegyzesSzoveg mezőt egy formArray-re, és csak a saját esetén rátenni a validátort, mert így saját
+        // megjegyzés nélküli form esetén az invalid, még ha ezt a stzátuszt egyenlőre nem is nézzük.
+        // Megjegyzés felvétele és törlése esetén pedig be kell tenni / ki kell venni a formArray-ba/ból az érintett controlt.
+        // Mások megjegyzései nem módosíthatók, fix disabled lesz, és nem is törölhetők.
+        this.alapForm = this.formBuilder.group({
+            nev: [{ value: this.szerkesztesiAdatok()?.recept()?.nev, disabled: !this.szerkesztesiAdatok()?.recept()?.sajatE }, Validators.required],
+            keszites: [{ value: this.szerkesztesiAdatok()?.recept()?.keszites, disabled: !this.szerkesztesiAdatok()?.recept()?.sajatE }],
+            leiras: [{ value: this.szerkesztesiAdatok()?.recept()?.leiras, disabled: !this.szerkesztesiAdatok()?.recept()?.sajatE }, Validators.required],
+            sajatMegjegyzesSzoveg: [sajatMegjegyzes?.duma ? sajatMegjegyzes?.duma : null, Validators.required]
+        });
+
+        this.formBuilder.control('')
+
+        // Ez a kínlódás azért van, mert a textarea autoResize funkciója csak az első recept kiválasztásakori form megjelenítés alkalmával fut le.
+        // Recept váltáskor a form értéke ugyan módosul, de a komponens nem méreteződik át. Emiatt kell ez a trükközés.
+        this.autoresize.set(false);
+        setTimeout(() => {
+            this.autoresize.set(true);
+        }, 100);
+        console.debug('ReceptSzerkesztoComponent - alapFormBuild', this.alapForm, this.alapForm.getRawValue());
+    }
+
+    getFC(nev: string): FormControl {
+        return this.alapForm?.controls[nev] as FormControl;
     }
 
     sajatMegjegyzesVanE(): boolean {
@@ -118,21 +159,21 @@ export class ReceptSzerkesztoComponent implements OnInit {
     // this.adatServiceService.ujSzerkesztendoReceptLetrehozasa(); utasítást.
     // Vagy ott is be kell hívni ide, vagy át kell térni formra...
     ujReceptFelvetelInditas(): void {
-        const voltEKivalasztottRecept = this.adatServiceService.kivalasztottRecept()?.azon ? true : false;
+        // const voltEKivalasztottRecept = this.adatServiceService.kivalasztottRecept()?.azon ? true : false;
         this.adatServiceService.ujSzerkesztendoReceptLetrehozasa();
-        if (!voltEKivalasztottRecept) {
-            // Azért van ez a szörnyű kínlódás, mert ha nem volt recept kiválasztva, akkor az úf felvételekor a
-            // név és leírás mezők invalid státusza nem állítódik be, és mivel nem formban vagyunk, nem tudunk mit rábírni
-            // az új validáció futtatásra...
-            setTimeout(() => {
-                this.szerkesztesiAdatok().recept().nev = ' ';
-                this.szerkesztesiAdatok().recept().leiras = ' ';
-                setTimeout(() => {
-                    this.szerkesztesiAdatok().recept().nev = '';
-                    this.szerkesztesiAdatok().recept().leiras = '';
-                }, 100);
-            }, 100);
-        }
+        // if (!voltEKivalasztottRecept) {
+        //     // Azért van ez a szörnyű kínlódás, mert ha nem volt recept kiválasztva, akkor az úf felvételekor a
+        //     // név és leírás mezők invalid státusza nem állítódik be, és mivel nem formban vagyunk, nem tudunk mit rábírni
+        //     // az új validáció futtatásra...
+        //     setTimeout(() => {
+        //         this.szerkesztesiAdatok().recept().nev = ' ';
+        //         this.szerkesztesiAdatok().recept().leiras = ' ';
+        //         setTimeout(() => {
+        //             this.szerkesztesiAdatok().recept().nev = '';
+        //             this.szerkesztesiAdatok().recept().leiras = '';
+        //         }, 100);
+        //     }, 100);
+        // }
     }
 
     nevModositas(nev: string): void {
@@ -156,9 +197,10 @@ export class ReceptSzerkesztoComponent implements OnInit {
         // console.debug('ReceptSzerkesztoComponent - leirasModositas ', leiras, recept, recept instanceof Recept);
     }
 
-    megjegyzesModositas(megjegyzes: ReceptMegjegyzes): void {
+    megjegyzesModositas(duma: string, megjegyzes: ReceptMegjegyzes): void {
         megjegyzes.idopont = dateToYYYYMMDDhhmmss(new Date(), true);
-        // console.debug('ReceptSzerkesztoComponent - megjegyzesModositas ', megjegyzes);
+        megjegyzes.duma = duma;
+        console.debug('ReceptSzerkesztoComponent - megjegyzesModositas ', duma, megjegyzes);
     }
 
     ujMegjegyzesRogzitesInditas(): void {
@@ -176,14 +218,14 @@ export class ReceptSzerkesztoComponent implements OnInit {
         // az új megjegyzés megjelenésekor ez átáll magátol valid és untouched-ra.
         // Mivel nem használunk form-ot és az input nem form control, így nem tudunk rá validátort tenni és kódból kikényszerííteni a validálást.
         // Helyette ezzel a hekkeléssel beírunk egy space-t, és kiveszünk, és így megjelenik az invalid jelölés. 
-        setTimeout(() => {
-            ujMegjegyzes.duma = ' ';
-            this.megjegyzesModositas(ujMegjegyzes);
-            setTimeout(() => {
-                ujMegjegyzes.duma = '';
-                this.megjegyzesModositas(ujMegjegyzes);
-            }, 200);
-        }, 200);
+        // setTimeout(() => {
+        //     ujMegjegyzes.duma = ' ';
+        //     this.megjegyzesModositas(ujMegjegyzes);
+        //     setTimeout(() => {
+        //         ujMegjegyzes.duma = '';
+        //         this.megjegyzesModositas(ujMegjegyzes);
+        //     }, 200);
+        // }, 200);
     }
 
     sajatMegjegyzesTorles(event: Event, megjegyzes: ReceptMegjegyzes): void {
@@ -206,6 +248,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
             rejectIcon: "none",
             rejectButtonStyleClass: "p-button-text",
             accept: () => {
+                this.alapForm.controls['sajatMegjegyzesSzoveg'].setValue(null);
                 const recept = this.szerkesztesiAdatok().recept();
                 const roviditettMegjegyzesLista = recept.megjegyzesek.filter(m => m.felhasznaloAzon !== megjegyzes.felhasznaloAzon);
                 recept.megjegyzesek = [].concat(recept.megjegyzesek.filter(m => m.felhasznaloAzon !== megjegyzes.felhasznaloAzon));

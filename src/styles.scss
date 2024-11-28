@@ -34,3 +34,9 @@ html {
     }
 
 }
+
+// A kezdetben invalid, de még nem bizergált mezőt nem jelez a primeng invalidnak, csak ha dirty is. 
+// Így lehet elérni, hogy már az elején is invalid legyen.
+.p-inputtext.ng-invalid {
+    border-color: #e24c4c;
+}

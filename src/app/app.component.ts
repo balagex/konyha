@@ -17,7 +17,7 @@ import { LoadingIndicatorComponent } from './view/loading-indicator/loading-indi
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    title = 'uj-lista';
+    title = 'koki';
 
     constructor(private config: PrimeNGConfig, public translateService: TranslateService) {
         // translateService.addLangs(['hu']);

@@ -4,14 +4,13 @@ import { RouterOutlet } from '@angular/router';
 import { initializeApp } from 'firebase/app';
 import { getStorage, FirebaseStorage, uploadBytes, ref } from 'firebase/storage';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { PrimeNGConfig } from 'primeng/api';
+import { PrimeNG } from 'primeng/config';
 import { GrowlComponent } from './view/growl/growl.component';
 import { LoadingIndicatorComponent } from './view/loading-indicator/loading-indicator.component';
 
 
 @Component({
     selector: 'app-root',
-    standalone: true,
     imports: [CommonModule, RouterOutlet, TranslateModule, GrowlComponent, LoadingIndicatorComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
@@ -19,14 +18,14 @@ import { LoadingIndicatorComponent } from './view/loading-indicator/loading-indi
 export class AppComponent implements OnInit {
     title = 'koki';
 
-    constructor(private config: PrimeNGConfig, public translateService: TranslateService) {
+    constructor(private primeng: PrimeNG, public translateService: TranslateService) {
         // translateService.addLangs(['hu']);
         // translateService.setDefaultLang('hu');
     }
 
     ngOnInit() {
         this.translateService.setDefaultLang('hu');
-        this.translateService.get('primeng').subscribe(res => this.config.setTranslation(res));
+        this.translateService.get('primeng').subscribe(res => this.primeng.setTranslation(res));
 
         const akemx: Map<number, number[]> = new Map([
             [1, [65, 74, 124, 100, 87, 126, 72, 112, 62, 76, 90, 89, 123]],

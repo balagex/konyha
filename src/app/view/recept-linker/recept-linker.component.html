@@ -3,7 +3,7 @@
     @if (szerkesztesiAdatok()?.szerkesztesAlatt()) {
     <div class="link-szerk-cancel nagyblokk">
         <p-button icon="pi pi-undo"
-                  severity="warning"
+                  severity="warn"
                   [size]="'small'"
                   [rounded]="true"
                   [text]="true"
@@ -36,7 +36,7 @@
         <div class="link-szerk-mezo kisblokk">
             <div class="link-szerk-cancel">
                 <p-button icon="pi pi-undo"
-                          severity="warning"
+                          severity="warn"
                           [size]="'small'"
                           [rounded]="true"
                           [text]="true"
@@ -68,7 +68,7 @@
     } @else if(!ujLinkFelvetelE()) {
     <div class="link-mod">
         <p-button icon="pi pi-file-edit"
-                  severity="warning"
+                  severity="warn"
                   [size]="'small'"
                   [rounded]="true"
                   [text]="true"

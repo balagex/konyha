@@ -11,7 +11,6 @@ import { GrowlMsg } from '../../model/groel-msg.type';
 
 @Component({
     selector: 'app-recept-kep-kezelo',
-    standalone: true,
     imports: [ButtonModule, ConfirmPopupModule, ImageModule],
     templateUrl: './recept-kep-kezelo.component.html',
     styleUrl: './recept-kep-kezelo.component.scss'
@@ -90,10 +89,10 @@ export class ReceptKepKezeloComponent {
     }
 
     kepTorlesAccept() {
-        this.kepTorlesConfirmPopup.accept();
+        this.kepTorlesConfirmPopup.onAccept();
     }
 
     kepTorlesReject() {
-        this.kepTorlesConfirmPopup.reject();
+        this.kepTorlesConfirmPopup.onReject();
     }
 }

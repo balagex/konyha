@@ -11,7 +11,6 @@ import { DialogModule } from 'primeng/dialog';
 
 @Component({
     selector: 'app-konyha-main',
-    standalone: true,
     imports: [ButtonModule, ReceptListaComponent, ReceptSzerkesztoComponent, NgClass, DialogModule],
     templateUrl: './konyha-main.component.html',
     styleUrl: './konyha-main.component.scss'

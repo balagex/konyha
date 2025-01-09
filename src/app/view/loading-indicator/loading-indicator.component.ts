@@ -4,7 +4,6 @@ import { LoadingService } from '../../loading.service';
 
 @Component({
     selector: 'app-loading-indicator',
-    standalone: true,
     imports: [NgClass],
     templateUrl: './loading-indicator.component.html',
     styleUrl: './loading-indicator.component.scss'

@@ -8,7 +8,6 @@ import { dateToYYYYMMDD, napRovidites } from '../../utils';
 
 @Component({
     selector: 'app-login',
-    standalone: true,
     imports: [NgClass, FormsModule, NgIf],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss'

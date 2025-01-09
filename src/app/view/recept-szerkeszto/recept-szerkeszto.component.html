@@ -19,7 +19,7 @@
         @if (szerkesztesiAdatok()?.recept()?.azon) {
         <div class="kedvenc-allito">
             <p-button [icon]="szerkesztesiAdatok()?.recept()?.kedvencE ? 'pi pi-star-fill' : 'pi pi-star'"
-                      severity="warning"
+                      severity="warn"
                       [rounded]="true"
                       [text]="true"
                       [raised]="true"
@@ -109,6 +109,7 @@
                           mode="advanced"
                           chooseIcon="pi pi-upload"
                           customUpload="true"
+                          id="kepvalaszto"
                           fileLimit="1"
                           accept="image/png, image/jpg, image/jpeg"
                           [invalidFileTypeMessageSummary]="'{0}: Nem megfelelő fájl formátum!'"
@@ -128,7 +129,7 @@
                         <div class="kep-felt-gomb">
                             <p-button (onClick)="kepValasztasAbort()"
                                       icon="pi pi-undo"
-                                      severity="warning"
+                                      severity="warn"
                                       [rounded]="true" />
                         </div>
                         <div class="kep-felt-g-spacer"></div>
@@ -240,7 +241,7 @@
                     @if (autoresize()) {
                     <textarea rows="2"
                               class="mezo-input"
-                              pInputTextarea
+                              pTextarea
                               #leirasInput
                               [autoResize]="autoresize()"
                               [formControl]="getFC('leiras')"
@@ -311,7 +312,7 @@
                             @if (megjegyzes.sajatE) {
                             <textarea rows="2"
                                       class="mb-input"
-                                      pInputTextarea
+                                      pTextarea
                                       [autoResize]="true"
                                       [formControl]="getFC('sajatMegjegyzesSzoveg')"
                                       (ngModelChange)="megjegyzesModositas($event, megjegyzes)">
@@ -319,7 +320,7 @@
                             } @else {
                             <textarea rows="2"
                                       class="mb-input"
-                                      pInputTextarea
+                                      pTextarea
                                       [disabled]="!megjegyzes.sajatE"
                                       [autoResize]="true"
                                       [ngModel]="megjegyzes.duma"

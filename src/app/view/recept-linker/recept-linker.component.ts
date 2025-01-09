@@ -11,7 +11,6 @@ import { AdatServiceService } from '../../adat-service.service';
 
 @Component({
     selector: 'app-recept-linker',
-    standalone: true,
     imports: [ButtonModule, FormsModule, InputTextModule, NgClass, ConfirmPopupModule],
     templateUrl: './recept-linker.component.html',
     styleUrl: './recept-linker.component.scss'
@@ -115,11 +114,11 @@ export class ReceptLinkerComponent {
     }
 
     linkTorlesAccept() {
-        this.linkTorlesConfirmPopup.accept();
+        this.linkTorlesConfirmPopup.onAccept();
     }
 
     linkTorlesReject() {
-        this.linkTorlesConfirmPopup.reject();
+        this.linkTorlesConfirmPopup.onReject();
     }
 
 }

@@ -5,7 +5,6 @@ import { GrowlMsg } from '../../model/groel-msg.type';
 
 @Component({
     selector: 'app-growl',
-    standalone: true,
     imports: [NgClass],
     templateUrl: './growl.component.html',
     styleUrl: './growl.component.scss'

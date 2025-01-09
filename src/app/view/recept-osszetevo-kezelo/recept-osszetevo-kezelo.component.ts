@@ -8,7 +8,6 @@ import { AdatServiceService } from '../../adat-service.service';
 
 @Component({
     selector: 'app-recept-osszetevo-kezelo',
-    standalone: true,
     imports: [ButtonModule, FormsModule, TableModule],
     templateUrl: './recept-osszetevo-kezelo.component.html',
     styleUrl: './recept-osszetevo-kezelo.component.scss'

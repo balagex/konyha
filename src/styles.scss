@@ -6,6 +6,7 @@ html {
     height     : 100vh;
     padding    : 0;
     margin     : 0;
+    font-family: "Inter var", Helvetica, Arial, sans-serif;
 }
 
 .helykitolto {
@@ -36,7 +37,7 @@ html {
 }
 
 // A kezdetben invalid, de még nem bizergált mezőt nem jelez a primeng invalidnak, csak ha dirty is. 
-// Így lehet elérni, hogy már az elején is invalid legyen.
-.p-inputtext.ng-invalid {
-    border-color: #e24c4c;
+// Így lehet elérni, hogy már az elején is látszódjon, hogy invalid.
+.p-inputtext.ng-invalid, .p-textarea.ng-invalid {
+    border-color: var(--p-inputtext-invalid-border-color,#f87171);
 }

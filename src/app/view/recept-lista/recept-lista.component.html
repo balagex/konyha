@@ -3,7 +3,7 @@
         <div class="szuro-gombok">
             <div class="szuro-gomb">
                 <p-button [icon]="kedvencGombIkon()"
-                          [severity]="csakKedvencekE() ? 'warning' : 'secondary'"
+                          [severity]="csakKedvencekE() ? 'warn' : 'secondary'"
                           [rounded]="true"
                           [text]="true"
                           [raised]="true"
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="lista-torzs">
-        @for (recept of receptLista(); track "azon") {
+        @for (recept of receptLista(); track recept.azon) {
         <div class="recept-panel"
              (click)="receptKivalasztas(recept)"
              [ngClass]="{'kivalasztott': kivalasztottReceptAzon() == recept.azon, 'sajat': recept.sajatE}">

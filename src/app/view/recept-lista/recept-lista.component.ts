@@ -10,7 +10,6 @@ import { GrowlService } from '../growl/growl.service';
 
 @Component({
     selector: 'app-recept-lista',
-    standalone: true,
     imports: [ButtonModule, InputTextModule, FormsModule, NgClass],
     templateUrl: './recept-lista.component.html',
     styleUrl: './recept-lista.component.scss'

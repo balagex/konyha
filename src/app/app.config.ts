@@ -6,9 +6,12 @@ import { importProvidersFrom } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
 import { LoadingInterceptorProvider } from './loading-interceptor';
+import { ThemePreset } from './prime-theme-preset';
 
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http);
@@ -28,6 +31,25 @@ export const appConfig: ApplicationConfig = {
         LoadingInterceptorProvider,
         provideRouter(routes),
         provideAnimations(),
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: ThemePreset
+            }
+        }),
         provideHttpClient(withInterceptorsFromDi())
     ]
 };
+
+// providePrimeNG({
+//     theme: {
+//         preset: Lara,
+//         options: {
+//             cssLayer: {
+//                 name: 'primeng',
+//                 order: 'app-styles, primeng, another-css-library'
+//             }
+//         }
+//     }
+// }),
+

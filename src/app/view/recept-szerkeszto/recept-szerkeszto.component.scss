@@ -38,6 +38,7 @@
                 ::ng-deep.kepek-gomb::after {
                     content: 'épek';
                     font-weight: 700;
+                    margin-left: calc(var(--p-button-gap) * -1);
                 }
             }
 
@@ -45,7 +46,7 @@
                 ::ng-deep.uj-r-gomb::after {
                     content: 'recept';
                     font-weight: 700;
-                    padding-left: 1ch;
+                    // padding-left: 1ch;
                 }
             }
 
@@ -53,6 +54,7 @@
                 ::ng-deep.mentes-gomb::after {
                     content: 'entés';
                     font-weight: 700;
+                    margin-left: calc(var(--p-button-gap) * -1);
                 }
             }
 
@@ -60,6 +62,7 @@
                 ::ng-deep.torles-gomb::after {
                     content: 'örlés';
                     font-weight: 700;
+                    margin-left: calc(var(--p-button-gap) * -1);
                 }
             }
         }
@@ -294,7 +297,7 @@
     }
 }
 
-p-fileupload.p-element {
+#kepvalaszto {
     width: 90%;
     min-width: 400px;
     max-width: 600px;
@@ -303,6 +306,7 @@ p-fileupload.p-element {
 .kep-felt-gombok {
     display: flex;
     justify-content: space-evenly;
+    width: 100%;
 
     .kep-felt-g-spacer {
         width: 60px;
@@ -345,6 +349,5 @@ p-fileupload.p-element {
     }
 
 }
-
 
 

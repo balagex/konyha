@@ -3,7 +3,7 @@ import { Component, input, output, computed, signal, OnInit, ViewChild, model, e
 import { Recept } from '../../model/recept.type';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { cloneDeep } from 'lodash';
@@ -22,11 +22,11 @@ import { ReceptKepKezeloComponent } from '../recept-kep-kezelo/recept-kep-kezelo
 import { ListResult, StorageReference } from 'firebase/storage';
 import { FileSelectEvent, FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { ReceptOsszetevoKezeloComponent } from '../recept-osszetevo-kezelo/recept-osszetevo-kezelo.component';
+import { sajatMegjegyzesValidator } from '../../sajat-megjegyzes-validator';
 
 @Component({
     selector: 'app-recept-szerkeszto',
-    standalone: true,
-    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, InputTextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, ReceptOsszetevoKezeloComponent, FileUploadModule, ReactiveFormsModule],
+    imports: [ButtonModule, FormsModule, InputTextModule, NgClass, TextareaModule, ConfirmPopupModule, ReceptLinkerComponent, ReceptKepKezeloComponent, ReceptOsszetevoKezeloComponent, FileUploadModule, ReactiveFormsModule],
     providers: [ConfirmationService],
     templateUrl: './recept-szerkeszto.component.html',
     styleUrl: './recept-szerkeszto.component.scss'
@@ -35,7 +35,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
 
     @ViewChild('reTorConfirmPopupRef', { static: false }) receptTorlesConfirmPopup: ConfirmPopup;
     @ViewChild('megjegyzesConfirmPopupRef', { static: false }) megjTorlesConfirmPopup: ConfirmPopup;
-    @ViewChild('kepvalaszto', { static: false }) kepFajlValaszto: FileUpload;
+    // @ViewChild('kepvalaszto', { static: false }) kepFajlValaszto: FileUpload;
     @ViewChild('osszetevok', { static: false }) osszetevoKezelo: ReceptOsszetevoKezeloComponent;
 
     szerkesztesVege = output<Recept>();
@@ -103,6 +103,15 @@ export class ReceptSzerkesztoComponent implements OnInit {
     //     return nevOk && leirasOk && megjegyzesekOk;
     // });
 
+    // 18-as primeNG óta átalakították a stílus kezelést és annak konfigurálását.
+    // https://primeng.org/theming
+    // Egy komponensnek pl a [dt] inputján lehet beadni egy objektumot, amivel ng:deep helyett ezzel lehet felülírni a stílus elemeit.
+    // PL. a Button komponens esetén gombon belüli cuccok egy inline-flex cuccba kerültek, ahol van egy gap változó, ehhez tartozó token a button.gap.
+    // A felüldefiniáláshoz az alábbi osztályt kell átadni, ahol az álatlános 0.5rem helyett mondjuk 2 rem-et adung meg.
+    // mentesDesignTokens = {
+    //     gap: '2rem'
+    // }
+
     constructor(private adatServiceService: AdatServiceService,
         private fireAuthService: FireAuthService,
         private growlService: GrowlService,
@@ -124,15 +133,20 @@ export class ReceptSzerkesztoComponent implements OnInit {
         if (this.szerkesztesiAdatok()?.recept()?.megjegyzesek?.length > 0 && this.szerkesztesiAdatok()?.recept()?.megjegyzesek.findIndex(m => m.sajatE) > -1) {
             sajatMegjegyzes = this.szerkesztesiAdatok()?.recept()?.megjegyzesek.find(m => m.sajatE);
         }
-        // TODO: lecserélni a sajatMegjegyzesSzoveg mezőt egy formArray-re, és csak a saját esetén rátenni a validátort, mert így saját
-        // megjegyzés nélküli form esetén az invalid, még ha ezt a stzátuszt egyenlőre nem is nézzük.
-        // Megjegyzés felvétele és törlése esetén pedig be kell tenni / ki kell venni a formArray-ba/ból az érintett controlt.
+        // Le lehetne cserélni a sajatMegjegyzesSzoveg mezőt egy formArray-re, és csak a saját esetén rátenni a Validators.required-et, mert így saját
+        // megjegyzés nélküli form esetén a sajatMegjegyzesSzoveg mezőre fix Validators.required tétele esetén a form invalid lesz.
+        // Ekkor a megjegyzés felvétele és törlése esetén pedig be kellene tenni / ki kellene venni a formArray-ba/ból az érintett controlt.
         // Mások megjegyzései nem módosíthatók, fix disabled lesz, és nem is törölhetők.
+        // De e helyett készült egy egyedi validator, ami bemenő paraméterként megkapja a recept azon osztályának referencióját, amit a saját
+        // megjegyzés felvétele/törlése esetén aktualizálunk, és ha az aktuális állapot szerint van saját megjegyzés, de annak nincs duma értéke,
+        // akkor required validációs hibát dob, mint amit egy Validators.required  dobna.
+        // A saját megjegyzés felvétele/törlése esetén nem fut le az alapFormBuild() metódus, mert az ezt kiváltó effect az adatszervízben lévő recept
+        // változásra ugrik, míg a felvétel/törlés a computeden belül lévő írható receptet módosítja...
         this.alapForm = this.formBuilder.group({
             nev: [{ value: this.szerkesztesiAdatok()?.recept()?.nev, disabled: !this.szerkesztesiAdatok()?.recept()?.sajatE }, Validators.required],
             keszites: [{ value: this.szerkesztesiAdatok()?.recept()?.keszites, disabled: !this.szerkesztesiAdatok()?.recept()?.sajatE }],
             leiras: [{ value: this.szerkesztesiAdatok()?.recept()?.leiras, disabled: !this.szerkesztesiAdatok()?.recept()?.sajatE }, Validators.required],
-            sajatMegjegyzesSzoveg: [sajatMegjegyzes?.duma ? sajatMegjegyzes?.duma : null, Validators.required]
+            sajatMegjegyzesSzoveg: [sajatMegjegyzes?.duma, sajatMegjegyzesValidator(this.szerkesztesiAdatok()?.recept())]
         });
 
         this.formBuilder.control('')
@@ -143,7 +157,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
         setTimeout(() => {
             this.autoresize.set(true);
         }, 100);
-        console.debug('ReceptSzerkesztoComponent - alapFormBuild', this.alapForm, this.alapForm.getRawValue());
+        console.debug('ReceptSzerkesztoComponent - alapFormBuild', this.alapForm, this.alapForm.getRawValue(), sajatMegjegyzes);
     }
 
     getFC(nev: string): FormControl {
@@ -278,11 +292,11 @@ export class ReceptSzerkesztoComponent implements OnInit {
     }
 
     megjTorlesAccept() {
-        this.megjTorlesConfirmPopup.accept();
+        this.megjTorlesConfirmPopup.onAccept();
     }
 
     megjTorlesReject() {
-        this.megjTorlesConfirmPopup.reject();
+        this.megjTorlesConfirmPopup.onReject();
     }
 
     ujLinkRogzitesInditas(): void {
@@ -611,11 +625,11 @@ export class ReceptSzerkesztoComponent implements OnInit {
     }
 
     receptTorlesAccept() {
-        this.receptTorlesConfirmPopup.accept();
+        this.receptTorlesConfirmPopup.onAccept();
     }
 
     receptTorlesReject() {
-        this.receptTorlesConfirmPopup.reject();
+        this.receptTorlesConfirmPopup.onReject();
     }
 
     kedvencsegAllitas(): void {

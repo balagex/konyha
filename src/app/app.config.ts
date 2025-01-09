@@ -34,7 +34,10 @@ export const appConfig: ApplicationConfig = {
         provideAnimationsAsync(),
         providePrimeNG({
             theme: {
-                preset: ThemePreset
+                preset: ThemePreset,
+                options: {
+                    darkModeSelector: 'none'
+                }
             }
         }),
         provideHttpClient(withInterceptorsFromDi())

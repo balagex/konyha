@@ -1,6 +1,6 @@
 <div class="osszetevo-kezelo-wrapper">
-    @if(szerkesztesiAdatok()?.osszetevok()?.length > 0) {
-    <p-table [value]="szerkesztesiAdatok()?.osszetevok()"
+    @if(szerkesztettOsszetevok()?.length > 0) {
+    <p-table [value]="szerkesztettOsszetevok()"
              [styleClass]="'p-datatable-sm'"
              selectionMode="single"
              [(selection)]="kivalasztottOsszetevo"
@@ -26,7 +26,7 @@
                 [pSelectableRowIndex]="ri">
                 <td>
                     <div class="torles-cella">
-                        @if (szerkesztesiAdatok()?.sajatE) {
+                        @if (sajatE) {
                         <button pButton
                                 pRipple
                                 type="button"
@@ -38,7 +38,7 @@
                         }
                     </div>
                 </td>
-                @if (szerkesztesiAdatok()?.sajatE) {
+                @if (sajatE) {
                 <td [pEditableColumn]="osszetevo.nev"
                     pEditableColumnField="nev">
                     <p-cellEditor>
@@ -84,15 +84,15 @@
         Nincs összetevő megadva
     </div>
     }
-    @if (szerkesztesiAdatok()?.sajatE) {
+    @if (sajatE) {
     <div class="gombsor">
-        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 &&
-        szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
+        @if (kivalasztottOsszetevo() && szerkesztettOsszetevok()?.length > 1 &&
+        kivalasztottSorIndex() > -1) {
         <p-button icon="pi pi-arrow-down"
                   severity="info"
                   [text]="true"
                   [raised]="true"
-                  [disabled]="szerkesztesiAdatok()?.kivalasztottSorIndex()+1 >= szerkesztesiAdatok()?.osszetevok()?.length"
+                  [disabled]="kivalasztottSorIndex()+1 >= szerkesztettOsszetevok()?.length"
                   (onClick)="osszetevoLe()"></p-button>
         }
         <p-button icon="pi pi-plus"
@@ -101,13 +101,13 @@
                   [raised]="true"
                   label="Új összetevő"
                   (onClick)="ujOsszetevoRogzitesInditas()"></p-button>
-        @if (kivalasztottOsszetevo() && szerkesztesiAdatok()?.osszetevok()?.length > 1 &&
-        szerkesztesiAdatok()?.kivalasztottSorIndex() > -1) {
+        @if (kivalasztottOsszetevo() && szerkesztettOsszetevok()?.length > 1 &&
+        kivalasztottSorIndex() > -1) {
         <p-button icon="pi pi-arrow-up"
                   severity="info"
                   [text]="true"
                   [raised]="true"
-                  [disabled]="szerkesztesiAdatok()?.kivalasztottSorIndex() === 0"
+                  [disabled]="kivalasztottSorIndex() === 0"
                   (onClick)="osszetevoFel()"></p-button>
         }
     </div>

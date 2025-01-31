@@ -1,6 +1,6 @@
 @if (sajatE()) {
 <div class="link-blokk">
-    @if (szerkesztesiAdatok()?.szerkesztesAlatt()) {
+    @if (linkSzerkesztesAlatt()) {
     <div class="link-szerk-cancel nagyblokk">
         <p-button icon="pi pi-undo"
                   severity="warn"
@@ -17,8 +17,8 @@
                 <input type="text"
                        pInputText
                        class="mezo-input"
-                       [ngClass]="{'ng-invalid ng-dirty': szerkesztesiAdatok()?.szerkesztettLink()?.nev?.length < 1}"
-                       [(ngModel)]="szerkesztesiAdatok()?.szerkesztettLink().nev"
+                       [ngClass]="{'ng-invalid ng-dirty': szerkesztettLinkNev()?.length < 1}"
+                       [ngModel]="szerkesztettLinkNev()"
                        (ngModelChange)="linkNevModositas($event)" />
             </div>
         </div>
@@ -28,8 +28,8 @@
                 <input type="text"
                        pInputText
                        class="mezo-input"
-                       [ngClass]="{'ng-invalid ng-dirty': szerkesztesiAdatok()?.szerkesztettLink()?.link?.length < 1}"
-                       [(ngModel)]="szerkesztesiAdatok()?.szerkesztettLink().link"
+                       [ngClass]="{'ng-invalid ng-dirty': szerkesztettLinkLink()?.length < 1}"
+                       [ngModel]="szerkesztettLinkLink()"
                        (ngModelChange)="linkLinkModositas($event)" />
             </div>
         </div>
@@ -50,7 +50,7 @@
                           [rounded]="true"
                           [raised]="true"
                           [text]="true"
-                          [disabled]="szerkesztesiAdatok()?.szerkesztettLink()?.link?.length < 1 || szerkesztesiAdatok()?.szerkesztettLink()?.nev?.length < 1"
+                          [disabled]="szerkesztettLinkLink()?.length < 1 || szerkesztettLinkNev()?.length < 1"
                           (onClick)="linkModOK()"></p-button>
             </div>
         </div>
@@ -62,7 +62,7 @@
                   [rounded]="true"
                   [raised]="true"
                   [text]="true"
-                  [disabled]="szerkesztesiAdatok()?.szerkesztettLink()?.link?.length < 1 || szerkesztesiAdatok()?.szerkesztettLink()?.nev?.length < 1"
+                  [disabled]="szerkesztettLinkLink()?.length < 1 || szerkesztettLinkNev()?.length < 1"
                   (onClick)="linkModOK()"></p-button>
     </div>
     } @else if(!ujLinkFelvetelE()) {
@@ -113,7 +113,7 @@
     </div>
     }
 </div>
-@if (ujLinkFelvetelE() && !szerkesztesiAdatok()?.szerkesztesAlatt()) {
+@if (ujLinkFelvetelE() && !linkSzerkesztesAlatt()) {
 <div class="uj-link">
     <div class="uj-link-gomb">
         <p-button icon="pi pi-plus"

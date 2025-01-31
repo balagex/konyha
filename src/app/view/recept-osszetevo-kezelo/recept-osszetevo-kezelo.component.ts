@@ -1,10 +1,11 @@
-import { Component, computed, input, model, signal } from '@angular/core';
+import { Component, computed, input, linkedSignal, model, signal } from '@angular/core';
 import { ReceptOsszetevo } from '../../model/recept-osszetevo.type';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableEditCompleteEvent, TableModule, TableRowSelectEvent } from 'primeng/table';
 import { sortFunction } from '../../utils';
 import { AdatServiceService } from '../../adat-service.service';
+import { Recept } from '../../model/recept.type';
 
 @Component({
     selector: 'app-recept-osszetevo-kezelo',
@@ -14,11 +15,25 @@ import { AdatServiceService } from '../../adat-service.service';
 })
 export class ReceptOsszetevoKezeloComponent {
 
-    osszetevok = input.required<ReceptOsszetevo[]>();
+    szerkesztettOsszetevok = linkedSignal({
+        source: this.adatServiceService.szerkesztendoRecept,
+        computation: (recept) => this.receptOsszetevoSorrendezes(recept)
+    });
 
-    szerkesztesiAdatok = computed(() => {
+    kivalasztottSorIndex = linkedSignal({
+        source: this.adatServiceService.szerkesztendoRecept,
+        computation: () => null as number
+    });
 
-        const recept = this.adatServiceService.szerkesztendoRecept();
+    sajatE = computed(() => {
+        this.adatServiceService.szerkesztendoRecept().sajatE
+    });
+
+    public kivalasztottOsszetevo = model<ReceptOsszetevo>(null);
+
+    constructor(private adatServiceService: AdatServiceService) { }
+
+    receptOsszetevoSorrendezes(recept: Recept): ReceptOsszetevo[] {
         const kapottOsszetevok: ReceptOsszetevo[] = recept?.osszetevok?.length > 0 ? recept.osszetevok : [];
 
         // Ellőbb a kapott sorrend szerint besorrendezzük, majd as esetleges üres sorrend érték, vagy azonos értékek miatt
@@ -28,67 +43,57 @@ export class ReceptOsszetevoKezeloComponent {
         });
         sorrendezettOsszetevok.forEach((o, i) => o.sorrend = i + 1);
 
-        return {
-            osszetevok: signal<ReceptOsszetevo[]>(sorrendezettOsszetevok),
-            kivalasztottSorIndex: signal<number>(null),
-            sajatE: this.adatServiceService.szerkesztendoRecept().sajatE
-        };
-    });
-
-    public kivalasztottOsszetevo = model<ReceptOsszetevo>(null);
-
-    constructor(private adatServiceService: AdatServiceService) { }
-
+        return sorrendezettOsszetevok;
+    }
 
     ujOsszetevoRogzitesInditas(): void {
         const ujOsszetevo = new ReceptOsszetevo();
         ujOsszetevo.nev = '';
         ujOsszetevo.mennyiseg = '';
-        ujOsszetevo.sorrend = this.szerkesztesiAdatok()?.osszetevok()?.length + 1;
-        const osszetevoLista = this.szerkesztesiAdatok()?.osszetevok();
+        ujOsszetevo.sorrend = this.szerkesztettOsszetevok()?.length + 1;
+        const osszetevoLista = this.szerkesztettOsszetevok();
         osszetevoLista.push(ujOsszetevo);
-        this.szerkesztesiAdatok()?.osszetevok.set(osszetevoLista);
+        this.szerkesztettOsszetevok.set(osszetevoLista);
         // console.debug('ReceptOsszetevoKezeloComponent - ujOsszetevoRogzitesInditas', this.szerkesztesiAdatok()?.osszetevok());
     }
 
     sorTorles(torlendoOsszetevo: ReceptOsszetevo, sorIndex: number): void {
-        // console.debug('ReceptOsszetevoKezeloComponent - sorTorles', torlendoOsszetevo, sorIndex);
-        const lista = this.szerkesztesiAdatok().osszetevok();
+        const lista = this.szerkesztettOsszetevok();
         lista.splice(sorIndex, 1);
-        this.szerkesztesiAdatok().osszetevok.set(lista);
+        this.szerkesztettOsszetevok.set(lista);
     }
 
     sorKivalasztas(esemeny: TableRowSelectEvent): void {
         if (esemeny?.index !== null && esemeny?.index !== undefined) {
-            this.szerkesztesiAdatok().kivalasztottSorIndex.set(esemeny.index);
+            this.kivalasztottSorIndex.set(esemeny.index);
         }
         // console.debug('ReceptOsszetevoKezeloComponent - sorKivalasztas', esemeny, this.szerkesztesiAdatok()?.osszetevok());
     }
 
     osszetevoLe(): void {
         // console.debug('ReceptOsszetevoKezeloComponent - osszetevoLe', this.szerkesztesiAdatok());
-        const index = this.szerkesztesiAdatok().kivalasztottSorIndex();
+        const index = this.kivalasztottSorIndex();
         this.helycsere(index, index + 1);
-        this.szerkesztesiAdatok().kivalasztottSorIndex.set(index + 1);
+        this.kivalasztottSorIndex.set(index + 1);
     }
 
     osszetevoFel(): void {
         // console.debug('ReceptOsszetevoKezeloComponent - osszetevoFel', this.szerkesztesiAdatok());
-        const index = this.szerkesztesiAdatok().kivalasztottSorIndex();
+        const index = this.kivalasztottSorIndex();
         this.helycsere(index, index - 1);
-        this.szerkesztesiAdatok().kivalasztottSorIndex.set(index - 1);
+        this.kivalasztottSorIndex.set(index - 1);
     }
 
     helycsere(kitIndex: number, kireIndex: number): void {
         // console.debug('ReceptOsszetevoKezeloComponent - helycsere', kitIndex, kireIndex);
-        if (kitIndex !== null && kireIndex !== null && this.szerkesztesiAdatok()?.osszetevok()?.length > kitIndex && this.szerkesztesiAdatok()?.osszetevok()?.length > kireIndex) {
+        if (kitIndex !== null && kireIndex !== null && this.szerkesztettOsszetevok()?.length > kitIndex && this.szerkesztettOsszetevok()?.length > kireIndex) {
             // console.debug('ReceptOsszetevoKezeloComponent - helycsere érvényes adatok mehet a csere...');
-            const osszetevok = this.szerkesztesiAdatok()?.osszetevok();
+            const osszetevok = this.szerkesztettOsszetevok();
             const egyik = osszetevok[kitIndex];
             osszetevok[kitIndex] = osszetevok[kireIndex];
             osszetevok[kireIndex] = egyik;
             osszetevok.forEach((o, i) => o.sorrend = i + 1);
-            this.szerkesztesiAdatok()?.osszetevok.set(osszetevok);
+            this.szerkesztettOsszetevok.set(osszetevok);
         }
     }
 
@@ -97,10 +102,10 @@ export class ReceptOsszetevoKezeloComponent {
     }
 
     sorrendAllitas(): void {
-        if (this.szerkesztesiAdatok()?.osszetevok()?.length > 0) {
-            const osszetevok = this.szerkesztesiAdatok()?.osszetevok();
+        if (this.szerkesztettOsszetevok()?.length > 0) {
+            const osszetevok = this.szerkesztettOsszetevok();
             osszetevok.forEach((o, i) => o.sorrend = i + 1);
-            this.szerkesztesiAdatok()?.osszetevok.set(osszetevok);
+            this.szerkesztettOsszetevok.set(osszetevok);
         }
     }
 

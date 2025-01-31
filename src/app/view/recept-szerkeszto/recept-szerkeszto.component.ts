@@ -121,7 +121,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
         effect(() => {
             let result = this.adatServiceService.szerkesztendoRecept()?.azon;
             this.alapFormBuild();
-        }, { allowSignalWrites: true })
+        })
     }
 
     ngOnInit(): void {
@@ -518,7 +518,7 @@ export class ReceptSzerkesztoComponent implements OnInit {
     mentes(): void {
         // TODO service oldalon a megjegyzés fésülés hátravan
         const mentendoRecept: Recept = this.szerkesztesiAdatok().recept();
-        const osszetevok = this.osszetevoKezelo?.szerkesztesiAdatok()?.osszetevok();
+        const osszetevok = this.osszetevoKezelo?.szerkesztettOsszetevok();
         console.debug('ReceptSzerkesztoComponent - mentes ', this.szerkesztesiAdatok().recept(), mentendoRecept, osszetevok);
         mentendoRecept.osszetevok = osszetevok?.length > 0 ? osszetevok : [];
 

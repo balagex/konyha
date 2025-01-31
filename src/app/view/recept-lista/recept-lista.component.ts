@@ -23,9 +23,11 @@ export class ReceptListaComponent {
     // Miután át lett alakítva a megoldás úgy, hogy csak egy példány használatos, és nincs mobilE bemenet, a dolgok már 
     // nem kerültek ide átmozgatásra a service-ből.
 
-    sortDir = computed<-1 | 1>(() => {
-        return this.adatServiceService.sortDir();
-    });
+    // sortDir = computed<-1 | 1>(() => {
+    //     return this.adatServiceService.sortDir();
+    // });
+
+    sortDir = this.adatServiceService.sortDir;
 
     csakKedvencekE = computed<boolean>(() => {
         return this.adatServiceService.csakKedvencekE();

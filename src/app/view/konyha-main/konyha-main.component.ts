@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, model, signal } from '@angular/core';
+import { Component, OnInit, model, signal } from '@angular/core';
 import { AdatServiceService } from '../../adat-service.service';
 import { FireAuthService } from '../../fire-auth.service';
 import { Recept } from '../../model/recept.type';
@@ -27,10 +27,6 @@ export class KonyhaMainComponent implements OnInit {
     public ful = signal<number>(1);
     public nagyiMod = signal<boolean>(false);
     infoMod = model<boolean>(false);
-
-    kivalasztottRecept = computed<Recept>(() => {
-        return this.adatServiceService.kivalasztottRecept();
-    });
 
     constructor(private adatServiceService: AdatServiceService, private fireAuthService: FireAuthService) { }
 
